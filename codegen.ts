@@ -1,18 +1,18 @@
-import type { CodegenConfig } from '@graphql-codegen/cli';
+import type { CodegenConfig } from "@graphql-codegen/cli"
 
 const config: CodegenConfig = {
-	schema: 'http://localhost:8009/v2/graphql',
-	documents: ['src/**/*.vue'],
-	ignoreNoDocuments: true, // for better experience with the watcher
-	generates: {
-		'./src/gql/': {
-			preset: 'client',
-			config: {
-				useTypeImports: true,
-			},
-			plugins: [],
-		},
-	},
-};
+  schema: "https://api-client-dev.greep.io/graphql",
+  documents: ["src/**/*.vue"],
+  ignoreNoDocuments: true, // for better experience with the watcher
+  generates: {
+    "./src/gql/": {
+      preset: "client",
+      config: {
+        useTypeImports: true,
+      },
+      plugins: [],
+    },
+  },
+}
 
-export default config;
+export default config

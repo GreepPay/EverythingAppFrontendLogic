@@ -9,6 +9,9 @@ import {
   import { multipartFetchExchange } from '@urql/exchange-multipart-fetch'
   import { Logic } from '../../logic/modules'
   import { API_URL } from '../../common/constants'
+  interface XYZ {
+	
+  }
   
   export class BaseApiService {
 	private baseUrl: string = API_URL

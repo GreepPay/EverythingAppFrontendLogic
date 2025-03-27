@@ -1,188 +1,237 @@
-import { BaseApiService } from './common/BaseService'
-import { OperationResult } from 'urql'
+import { BaseApiService } from "./common/BaseService"
+import { OperationResult } from "urql"
 import {
-  SignUpForm,
-  SignInForm,
-  VerifyPhoneOTPForm,
-  ResendPhoneOTPForm,
-  PersonalizeAccountForm,
-  ResendVerifyEmailForm,
-  SendResetPasswordEmailForm,
-  UpdatePasswordForm,
-} from '../logic/types/forms/auth'
+  MutationSignUpArgs,
+  MutationSignInArgs,
+  MutationUpdatePasswordArgs,
+  AuthResponse,
+  User,
+} from "../gql/graphql"
 
 export default class AuthApi extends BaseApiService {
-  public SignUp = (data: SignUpForm) => {
+  /**
+   * @description Registers a new user with their details
+   * @by ArchyScript
+   * @params first_name, last_name, email, password, state, country, default_currency
+   * @response User object containing uuid, first_name, last_name, email, status, and created_at
+   */
+  public SignUp = (data: MutationSignUpArgs) => {
     const requestData = `
-		mutation SignUp(
-			$phone_number: String!,
-			$password: String!
-		) {
-			SignUp(phone_number: $phone_number, password: $password) {
-				id,
-				uuid,
-				phone
-			}
-		}
-		`
+    mutation SignUp(
+      $first_name: String!,
+      $last_name: String!,
+      $email: String!,
+      $password: String!,
+      $state: String!,
+      $country: String!,
+      $default_currency: String!
+    ) {
+      SignUp(
+        first_name: $first_name,
+        last_name: $last_name,
+        email: $email,
+        password: $password,
+        state: $state,
+        country: $country,
+        default_currency: $default_currency
+      ) {
+        uuid,
+        first_name,
+        last_name,
+        email,
+        status,
+        created_at
+      }
+    }
+  `
 
-    const response: Promise<OperationResult<{
-      SignUp: any
-    }>> = this.mutation(requestData, data)
+    const response: Promise<OperationResult<{ SignUp: User }>> = this.mutation(
+      requestData,
+      data
+    )
 
     return response
   }
 
-  public SignIn = (data: SignInForm) => {
+  /**
+   * @description Logs in a user with their credentials
+   * @by ArchyScript
+   * @params email, password
+   * @response User object containing uuid, email, status, and created_at
+   */
+  public SignIn = (data: MutationSignInArgs) => {
     const requestData = `
-		mutation SignIn(
-			$email: String!,
-			  $password: String!
-		  ) {
-			SignIn(email: $email, password: $password) {
-			  token,
-			  user {
-				id,
-				uuid,
-				first_name,
-				last_name,
-				phone,
-				email_verified_at,
-				phone_verified_at
-			  }
-			}
-		  }
-		`
+    mutation SignIn(
+      $email: String!,
+      $password: String!
+    ) {
+      SignIn(
+        email: $email,
+        password: $password
+      ) {
+        uuid,
+        first_name,
+        last_name,
+        email,
+        status,
+        created_at
+      }
+    }
+  `
 
-    const response: Promise<OperationResult<{
-      SignIn: any
-    }>> = this.mutation(requestData, data)
+    const response: Promise<OperationResult<{ SignIn: AuthResponse }>> =
+      this.mutation(requestData, data)
 
     return response
   }
 
-  public VerifyPhoneOTP = (data: VerifyPhoneOTPForm) => {
+  /**
+   * @description Resends the email OTP to verify a user's email
+   * @by ArchyScript
+   * @params email - The user's email address
+   * @response Boolean - Returns true if the OTP was successfully resent, false otherwise
+   */
+  public ResendEmailOTP = (data: { email: String }) => {
     const requestData = `
-		mutation VerifyPhoneOTP(
-			$user_uuid: String!,
-			  $otp: String!
-		  ) {
-			VerifyPhoneOTP(user_uuid: $user_uuid, otp: $otp) {
-			  uuid,
-			  phone,
-			  phone_verified_at
-			}
-		  }
-		`
+    mutation ResendEmailOTP($email: String!) {
+      ResendEmailOTP(email: $email)
+    }
+  `
 
-    const response: Promise<OperationResult<{
-      VerifyPhoneOTP: any
-    }>> = this.mutation(requestData, data)
+    const response: Promise<OperationResult<{ ResendEmailOTP: boolean }>> =
+      this.mutation(requestData, data)
 
     return response
   }
 
-  public ResendPhoneOTP = (data: ResendPhoneOTPForm) => {
+  /**
+   * @description Sends a reset password OTP to the user's email
+   * @by ArchyScript
+   * @params email
+   * @response Boolean indicating whether the OTP was sent successfully
+   */
+  public sendResetPasswordOTP = (data: { email: string }) => {
     const requestData = `
-		mutation ResendPhoneOTP(
-			$user_uuid: String!,
-			  $phone_number: String!
-		  ) {
-			ResendPhoneOTP(user_uuid: $user_uuid, phone_number: $phone_number) 
-		  }
-		`
+      mutation sendResetPasswordOTP($email: String!) {
+        sendResetPasswordOTP(email: $email)
+      }
+    `
 
-    const response: Promise<OperationResult<{
-      ResendPhoneOTP: boolean
-    }>> = this.mutation(requestData, data)
+    const response: Promise<
+      OperationResult<{ sendResetPasswordOTP: boolean }>
+    > = this.mutation(requestData, data)
+    return response
+  }
+
+  /**
+   * @description Resets a user's password using OTP verification
+   * @by ArchyScript
+   * @params user_uuid, otp_code, new_password
+   * @response Boolean indicating whether the password reset was successful
+   */
+  public ResetPassword = (data: {
+    user_uuid: string
+    otp_code: string
+    new_password: string
+  }) => {
+    const requestData = `
+      mutation ResetPassword(
+        $user_uuid: String!,
+        $otp_code: String!,
+        $new_password: String!
+      ) {
+        ResetPassword(
+          user_uuid: $user_uuid,
+          otp_code: $otp_code,
+          new_password: $new_password
+        )
+      }
+    `
+
+    const response: Promise<OperationResult<{ ResetPassword: boolean }>> =
+      this.mutation(requestData, data)
 
     return response
   }
 
-  public PersonalizeAccount = (data: PersonalizeAccountForm) => {
+  /**
+   * @description Verifies a user's OTP for authentication or account activation
+   * @by ArchyScript
+   * @params user_uuid, otp
+   * @response Boolean indicating whether the OTP verification was successful
+   */
+  public VerifyUserOTP = (data: { user_uuid: string; otp: string }) => {
     const requestData = `
-		mutation PersonalizeAccount($user_uuid: String!, $first_name: String!, $last_name: String!, $email: String!, $password: String!) {
-			PersonalizeAccount(
-			  user_uuid: $user_uuid
-			  first_name: $first_name
-			  last_name: $last_name
-			  email: $email
-			  password: $password
-			) {
-			  token
-			  user {
-				id
-				uuid
-				first_name
-				last_name
-				email
-				phone
-				phone_verified_at
-				email_verified_at
-			  }
-			}
-		  }
-		`
+      mutation VerifyUserOTP(
+        $user_uuid: String!,
+        $otp: String!
+      ) {
+        VerifyUserOTP(
+          user_uuid: $user_uuid,
+          otp: $otp
+        )
+      }
+    `
 
-    const response: Promise<OperationResult<{
-      PersonalizeAccount: any
-    }>> = this.mutation(requestData, data)
+    const response: Promise<OperationResult<{ VerifyUserOTP: boolean }>> =
+      this.mutation(requestData, data)
 
     return response
   }
 
-  public ResendVerifyEmail = (data: ResendVerifyEmailForm) => {
+  /**
+   * @description Updates a user's password after authentication
+   * @by ArchyScript
+   * @params current_password, new_password
+   * @response Boolean indicating whether the password update was successful
+   */
+  public UpdatePassword = (data: {
+    current_password: string
+    new_password: string
+  }) => {
     const requestData = `
-		mutation ResendVerifyEmail(
-			$user_uuid: String!
-		  ) {
-			ResendVerifyEmail(
-			  user_uuid: $user_uuid,
-			)
-		  }
-		`
+      mutation UpdatePassword(
+        $current_password: String!,
+        $new_password: String!
+      ) {
+        UpdatePassword(
+          current_password: $current_password,
+          new_password: $new_password
+        )
+      }
+    `
 
-    const response: Promise<OperationResult<{
-      ResendVerifyEmail: boolean
-    }>> = this.mutation(requestData, data)
+    const response: Promise<OperationResult<{ UpdatePassword: boolean }>> =
+      this.mutation(requestData, data)
 
     return response
   }
 
-  public SendResetPasswordEmail = (data: SendResetPasswordEmailForm) => {
+  /**
+   * @description Saves a push notification token for the authenticated user
+   * @by ArchyScript
+   * @params device_token, device_type
+   * @response Boolean indicating whether the token was saved successfully
+   */
+  public SavePushNotificationToken = (data: {
+    device_token: string
+    device_type: string
+  }) => {
     const requestData = `
-		mutation SendResetPasswordEmail(
-			$user_uuid: String!
-		  ) {
-			SendResetPasswordEmail(
-			  user_uuid: $user_uuid,
-			)
-		  }
-		`
+      mutation SavePushNotificationToken(
+        $device_token: String!,
+        $device_type: String!
+      ) {
+        SavePushNotificationToken(
+          device_token: $device_token,
+          device_type: $device_type
+        )
+      }
+    `
 
-    const response: Promise<OperationResult<{
-      SendResetPasswordEmail: boolean
-    }>> = this.mutation(requestData, data)
-
-    return response
-  }
-
-  public UpdatePassword = (data: UpdatePasswordForm) => {
-    const requestData = `
-		mutation UpdatePassword(
-			$user_uuid: String!,
-			$password: String!
-		  ) {
-			UpdatePassword(
-			  user_uuid: $user_uuid,
-			  password: $password
-			)
-		  }
-		`
-
-    const response: Promise<OperationResult<{
-      UpdatePassword: boolean
-    }>> = this.mutation(requestData, data)
+    const response: Promise<
+      OperationResult<{ SavePushNotificationToken: boolean }>
+    > = this.mutation(requestData, data)
 
     return response
   }
