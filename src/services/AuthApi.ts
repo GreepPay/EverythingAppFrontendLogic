@@ -4,6 +4,11 @@ import {
   MutationSignUpArgs,
   MutationSignInArgs,
   MutationUpdatePasswordArgs,
+  MutationVerifyUserIdentityArgs,
+  MutationVerifyUserOtpArgs,
+  MutationResetPasswordArgs,
+  MutationSendResetPasswordOtpArgs,
+  MutationResendEmailOtpArgs,
   AuthResponse,
   User,
 } from "../gql/graphql"
@@ -11,7 +16,6 @@ import {
 export default class AuthApi extends BaseApiService {
   /**
    * @description Registers a new user with their details
-   * @by ArchyScript
    * @params first_name, last_name, email, password, state, country, default_currency
    * @response User object containing uuid, first_name, last_name, email, status, and created_at
    */
@@ -55,7 +59,6 @@ export default class AuthApi extends BaseApiService {
 
   /**
    * @description Logs in a user with their credentials
-   * @by ArchyScript
    * @params email, password
    * @response User object containing uuid, email, status, and created_at
    */
@@ -87,11 +90,10 @@ export default class AuthApi extends BaseApiService {
 
   /**
    * @description Resends the email OTP to verify a user's email
-   * @by ArchyScript
    * @params email - The user's email address
    * @response Boolean - Returns true if the OTP was successfully resent, false otherwise
    */
-  public ResendEmailOTP = (data: { email: String }) => {
+  public ResendEmailOTP = (data: MutationResendEmailOtpArgs) => {
     const requestData = `
     mutation ResendEmailOTP($email: String!) {
       ResendEmailOTP(email: $email)
@@ -106,11 +108,10 @@ export default class AuthApi extends BaseApiService {
 
   /**
    * @description Sends a reset password OTP to the user's email
-   * @by ArchyScript
    * @params email
    * @response Boolean indicating whether the OTP was sent successfully
    */
-  public sendResetPasswordOTP = (data: { email: string }) => {
+  public sendResetPasswordOTP = (data: MutationSendResetPasswordOtpArgs) => {
     const requestData = `
       mutation sendResetPasswordOTP($email: String!) {
         sendResetPasswordOTP(email: $email)
@@ -125,15 +126,10 @@ export default class AuthApi extends BaseApiService {
 
   /**
    * @description Resets a user's password using OTP verification
-   * @by ArchyScript
    * @params user_uuid, otp_code, new_password
    * @response Boolean indicating whether the password reset was successful
    */
-  public ResetPassword = (data: {
-    user_uuid: string
-    otp_code: string
-    new_password: string
-  }) => {
+  public ResetPassword = (data: MutationResetPasswordArgs) => {
     const requestData = `
       mutation ResetPassword(
         $user_uuid: String!,
@@ -156,11 +152,10 @@ export default class AuthApi extends BaseApiService {
 
   /**
    * @description Verifies a user's OTP for authentication or account activation
-   * @by ArchyScript
    * @params user_uuid, otp
    * @response Boolean indicating whether the OTP verification was successful
    */
-  public VerifyUserOTP = (data: { user_uuid: string; otp: string }) => {
+  public VerifyUserOTP = (data: MutationVerifyUserOtpArgs) => {
     const requestData = `
       mutation VerifyUserOTP(
         $user_uuid: String!,
@@ -181,14 +176,10 @@ export default class AuthApi extends BaseApiService {
 
   /**
    * @description Updates a user's password after authentication
-   * @by ArchyScript
    * @params current_password, new_password
    * @response Boolean indicating whether the password update was successful
    */
-  public UpdatePassword = (data: {
-    current_password: string
-    new_password: string
-  }) => {
+  public UpdatePassword = (data: MutationUpdatePasswordArgs) => {
     const requestData = `
       mutation UpdatePassword(
         $current_password: String!,
@@ -209,7 +200,6 @@ export default class AuthApi extends BaseApiService {
 
   /**
    * @description Saves a push notification token for the authenticated user
-   * @by ArchyScript
    * @params device_token, device_type
    * @response Boolean indicating whether the token was saved successfully
    */
@@ -232,6 +222,34 @@ export default class AuthApi extends BaseApiService {
     const response: Promise<
       OperationResult<{ SavePushNotificationToken: boolean }>
     > = this.mutation(requestData, data)
+
+    return response
+  }
+
+  /**
+   * @description Verifies a user's identity.
+   * @params user_uuid, id_type, id_number, id_country
+   * @response Boolean indicating success or failure
+   */
+  public VerifyUserIdentity = (data: MutationVerifyUserIdentityArgs) => {
+    const requestData = `
+    mutation VerifyUserIdentity(
+      $user_uuid: String!,
+      $id_type: String!,
+      $id_number: String!,
+      $id_country: String!
+    ) {
+      VerifyUserIdentity(
+        user_uuid: $user_uuid,
+        id_type: $id_type,
+        id_number: $id_number,
+        id_country: $id_country
+      )
+    }
+  `
+
+    const response: Promise<OperationResult<{ VerifyUserIdentity: boolean }>> =
+      this.mutation(requestData, data)
 
     return response
   }

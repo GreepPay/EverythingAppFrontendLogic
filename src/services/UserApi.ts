@@ -1,44 +1,66 @@
 import { BaseApiService } from "./common/BaseService"
-import { OperationResult } from "urql"
+import { OperationResult } from "urql" 
 import {
-  SignInForm,
-  VerifyPhoneOTPForm,
-  ResendPhoneOTPForm,
-  PersonalizeAccountForm,
-  ResendVerifyEmailForm,
-  SendResetPasswordEmailForm,
-  UpdatePasswordForm,
-} from "../logic/types/forms/auth"
-import {
-  MutationSignUpArgs,
-  MutationSignInArgs,
-  MutationUpdatePasswordArgs,
-  AuthResponse,
-  User,
+  MutationUpdateProfileArgs,
+  MutationSavePushNotificationTokenArgs, 
 } from "../gql/graphql"
 
 export default class UserApi extends BaseApiService {
   /**
-   * @description Verifies a user's OTP for authentication or account activation
-   * @by ArchyScript
-   * @params user_uuid, otp
-   * @response Boolean indicating whether the OTP verification was successful
+   * @description Updates a user's profile with provided details.
+   * @params first_name, profile_photo, last_name, default_currency, country, state
+   * @response Boolean indicating success or failure
    */
-  public VerifyUsweweerOTP = (data: { user_uuid: string; otp: string }) => {
+  public UpdateProfile = (data: MutationUpdateProfileArgs) => {
     const requestData = `
-      mutation VerifyUserOTP(
-        $user_uuid: String!,
-        $otp: String!
-      ) {
-        VerifyUserOTP(
-          user_uuid: $user_uuid,
-          otp: $otp
-        )
-      }
-    `
+    mutation UpdateProfile(
+      $first_name: String,
+      $profile_photo: Upload,
+      $last_name: String,
+      $default_currency: String,
+      $country: String,
+      $state: String
+    ) {
+      UpdateProfile(
+        first_name: $first_name,
+        profile_photo: $profile_photo,
+        last_name: $last_name,
+        default_currency: $default_currency,
+        country: $country,
+        state: $state
+      )
+    }
+  `
 
-    const response: Promise<OperationResult<{ VerifyUserOTP: boolean }>> =
+    const response: Promise<OperationResult<{ UpdateProfile: boolean }>> =
       this.mutation(requestData, data)
+
+    return response
+  }
+
+  /**
+   * @description Saves a push notification token for the authenticated user.
+   * @params device_token, device_type
+   * @response Boolean indicating success or failure
+   */
+  public SavePushNotificationToken = (
+    data: MutationSavePushNotificationTokenArgs
+  ) => {
+    const requestData = `
+    mutation SavePushNotificationToken(
+      $device_token: String!,
+      $device_type: String!
+    ) {
+      SavePushNotificationToken(
+        device_token: $device_token,
+        device_type: $device_type
+      )
+    }
+  `
+
+    const response: Promise<
+      OperationResult<{ SavePushNotificationToken: boolean }>
+    > = this.mutation(requestData, data)
 
     return response
   }

@@ -1,43 +1,59 @@
 import { BaseApiService } from "./common/BaseService"
 import { OperationResult } from "urql"
 import {
-  SignInForm,
-  VerifyPhoneOTPForm,
-  ResendPhoneOTPForm,
-  PersonalizeAccountForm,
-  ResendVerifyEmailForm,
-  SendResetPasswordEmailForm,
-  UpdatePasswordForm,
-} from "../logic/types/forms/auth"
-import {
-  MutationSignUpArgs,
-  MutationSignInArgs,
-  MutationUpdatePasswordArgs,
-  AuthResponse,
-  User,
+  MutationAddAsBeneficiaryArgs,
+  Beneficiary,
+  MutationRemoveAsBeneficiaryArgs, 
 } from "../gql/graphql"
 
 export default class BeneficiaryApi extends BaseApiService {
   /**
-   * @description Verifies a user's OTP for authentication or account activation
-   * @by ArchyScript
-   * @params user_uuid, otp
-   * @response Boolean indicating whether the OTP verification was successful
+   * @description Adds a user as a beneficiary with the provided metadata.
+   * @params user_uuid, metadata
+   * @response Beneficiary object containing the added beneficiary's details
    */
-  public res = (data: { user_uuid: string; otp: string }) => {
+  public AddAsBeneficiary = (data: MutationAddAsBeneficiaryArgs) => {
     const requestData = `
-      mutation VerifyUserOTP(
-        $user_uuid: String!,
-        $otp: String!
+    mutation AddAsBeneficiary(
+      $user_uuid: String!,
+      $metadata: String!
+    ) {
+      AddAsBeneficiary(
+        user_uuid: $user_uuid,
+        metadata: $metadata
       ) {
-        VerifyUserOTP(
-          user_uuid: $user_uuid,
-          otp: $otp
-        )
+        uuid
+        user_uuid
+        metadata
+        created_at
       }
-    `
+    }
+  `
 
-    const response: Promise<OperationResult<{ VerifyUserOTP: boolean }>> =
+    const response: Promise<
+      OperationResult<{ AddAsBeneficiary: Beneficiary }>
+    > = this.mutation(requestData, data)
+
+    return response
+  }
+
+  /**
+   * @description Removes a user from the list of beneficiaries.
+   * @params beneficiary_uuid
+   * @response Boolean indicating success or failure
+   */
+  public RemoveAsBeneficiary = (data: MutationRemoveAsBeneficiaryArgs) => {
+    const requestData = `
+    mutation RemoveAsBeneficiary(
+      $beneficiary_uuid: String!
+    ) {
+      RemoveAsBeneficiary(
+        beneficiary_uuid: $beneficiary_uuid
+      )
+    }
+  `
+
+    const response: Promise<OperationResult<{ RemoveAsBeneficiary: boolean }>> =
       this.mutation(requestData, data)
 
     return response
