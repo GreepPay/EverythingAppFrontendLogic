@@ -77,6 +77,7 @@ export default class Common {
     icon: 'error-alert' | 'error-kite' | 'success-kite' | 'success-thumb',
     fallbackMsg = '',
   ) => {
+    console.error("error", error)
     const message = error.graphQLErrors[0].message
     this.showLoader({
       show: true,

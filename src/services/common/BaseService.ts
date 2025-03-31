@@ -9,9 +9,6 @@ import {
   import { multipartFetchExchange } from '@urql/exchange-multipart-fetch'
   import { Logic } from '../../logic/modules'
   import { API_URL } from '../../common/constants'
-  interface XYZ {
-	
-  }
   
   export class BaseApiService {
 	private baseUrl: string = API_URL
@@ -85,7 +82,7 @@ import {
 				? `Bearer ${Logic.Auth.AccessToken}`
 				: '',
 			  app_version: localStorage.getItem('app_version') || '',
-			  requestUuid: Logic.Auth.RequestUuid || '',
+			//   requestUuid: Logic.Auth.RequestUuid || '',
 			},
 		  }
 		},
@@ -96,6 +93,8 @@ import {
 		.query(query, variables)
 		.toPromise()
 		.then((response) => {
+			console.log("respnonse from base service", response)
+			
 		  if (response.error) {
 			this.handleErrors(response.error)
 			throw response.error
@@ -126,7 +125,7 @@ import {
 				? `Bearer ${Logic.Auth.AccessToken}`
 				: '',
 			  app_version: localStorage.getItem('app_version') || '',
-			  requestUuid: Logic.Auth.RequestUuid || '',
+			//   requestUuid: Logic.Auth.RequestUuid || '',
 			},
 		  }
 		},
@@ -160,7 +159,7 @@ import {
 				? `Bearer ${Logic.Auth.AccessToken}`
 				: '',
 			  app_version: localStorage.getItem('app_version') || '',
-			  requestUuid: Logic.Auth.RequestUuid || '',
+			//   requestUuid: Logic.Auth.RequestUuid || '',
 			},
 		  }
 		},
@@ -197,7 +196,7 @@ import {
 				? `Bearer ${Logic.Auth.AccessToken}`
 				: '',
 			  app_version: localStorage.getItem('app_version') || '',
-			  requestUuid: Logic.Auth.RequestUuid || '',
+			//   requestUuid: Logic.Auth.RequestUuid || '',
 			},
 		  }
 		},

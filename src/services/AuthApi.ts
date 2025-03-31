@@ -63,6 +63,8 @@ export default class AuthApi extends BaseApiService {
    * @response User object containing uuid, email, status, and created_at
    */
   public SignIn = (data: MutationSignInArgs) => {
+    console.log("fata from services", data)
+
     const requestData = `
     mutation SignIn(
       $email: String!,
@@ -72,18 +74,26 @@ export default class AuthApi extends BaseApiService {
         email: $email,
         password: $password
       ) {
-        uuid,
-        first_name,
-        last_name,
-        email,
-        status,
-        created_at
-      }
+         token
+		user {
+			uuid
+			first_name
+			last_name
+			email
+			username
+			phone
+			email_verified_at
+			phone_verified_at
+			status  
+		}
+		}
     }
   `
 
     const response: Promise<OperationResult<{ SignIn: AuthResponse }>> =
       this.mutation(requestData, data)
+
+    console.log("response from service", response)
 
     return response
   }
@@ -252,5 +262,92 @@ export default class AuthApi extends BaseApiService {
       this.mutation(requestData, data)
 
     return response
+  }
+
+  /**
+   * @description Retrieves the authenticated user's information, including profile, contact details, status, and wallet balances.
+   * @response Object containing user details such as profile information, contact details, status, and wallet balances.
+   */
+  public GetAuthUser = () => {
+    const requestData = `
+    query GetAuthUser {
+      GetAuthUser {
+        profile {
+          customer {
+            city
+            country
+            location
+            passport
+            updated_at
+            student_id
+            resident_permit
+            notification_preferences
+            id
+            created_at
+          }
+          auth_user_id
+          created_at
+          default_currency
+          verifications {
+            created_at
+            document_type
+            document_url
+            id
+            verification_data
+            user_type
+            updated_at
+            status
+          }
+          user_type
+          verification_status
+          profile_picture
+          updated_at
+        }
+        created_at
+        email
+        email_verified_at
+        first_name
+        last_name
+        phone
+        phone_verified_at
+        status
+        updated_at
+        username
+        uuid
+        wallet {
+          cash_per_point
+          uuid
+          updated_at
+          total_balance
+          point_balance
+          state
+          locked_balance
+          debited_point_amount
+          currency
+          debited_amount
+          credited_point_amount
+          credited_amount
+          created_at
+          cash_point_balance
+        }
+      }
+    }
+  `
+
+    const response: Promise<OperationResult<{ GetAuthUser: User }>> =
+      this.query(requestData, {})
+
+    return response
+  }
+
+  public TestMe = (data: MutationResendEmailOtpArgs) => {
+    const requestData = `
+    mutation ResendEmailOTP($email: String!) {
+      ResendEmailOTP(email: $email)
+    }
+  `
+    console.log("data", data)
+    console.log("requestData", requestData)
+    return { "test me": data }
   }
 }
