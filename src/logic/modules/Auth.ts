@@ -37,15 +37,7 @@ export default class Auth extends Common {
 
   public setDefaultAuth = () => {
     this.AccessToken = localStorage.getItem("access_token")
-    console.log("AccessToken", this.AccessToken)
-
-    // this.AuthUser = localStorage.getItem("auth_user")
-    //   ? JSON.parse(localStorage.getItem("auth_user") || "{}")
-    //   : undefined
-
     const authUserString = localStorage.getItem("auth_user") // Ensure a valid JSON string
-    console.log("authUserString", authUserString)
-
     this.AuthUser =
       authUserString && authUserString !== "undefined"
         ? JSON.parse(authUserString)
@@ -74,8 +66,8 @@ export default class Auth extends Common {
     if (AuthResponse) {
       this.AccessToken = AuthResponse.token
       this.AuthUser = AuthResponse.user
-      // localStorage.setItem("access_token", this.AccessToken || "")
-      // localStorage.setItem("auth_user", JSON.stringify(this.AuthUser))
+      localStorage.setItem("access_token", this.AccessToken || "")
+      localStorage.setItem("auth_user", JSON.stringify(this.AuthUser))
     }
   }
 
@@ -170,15 +162,24 @@ export default class Auth extends Common {
   public VerifyUserOTP = (formIsValid: boolean) => {
     if (formIsValid && this.VerifyUserOtpPayload) {
       Logic.Common.showLoader({ loading: true })
+
+      this.VerifyUserOtpPayload.user_uuid = this.AuthUser?.uuid as string
+
+      console.log("VerifyUserOtpPayload", this.VerifyUserOtpPayload)
+      console.log("this.AuthUser", this.AuthUser)
+
       return $api.auth
         .VerifyUserOTP(this.VerifyUserOtpPayload)
         .then((response) => {
           // this.AuthUser = response.data?.VerifyUserOTP
           // Logic.Common.hideLoader()
+          console.log(response.data?.VerifyUserOTP)
+
           return response.data?.VerifyUserOTP
         })
         .catch((error: CombinedError) => {
-          Logic.Common.showError(error, "Oops!", "Something went wrong")
+          console.log("error", error)
+          // Logic.Common.showError(error, "Oops!", "Something went wrong")
         })
     }
   }
@@ -198,5 +199,4 @@ export default class Auth extends Common {
   //       Logic.Common.showError(error, "Oops!", "error-alert")
   //     })
   // }
- 
 }
