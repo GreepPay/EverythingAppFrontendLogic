@@ -3,7 +3,7 @@ import { OperationResult } from "urql"
 import {
   MutationAddAsBeneficiaryArgs,
   Beneficiary,
-  MutationRemoveAsBeneficiaryArgs, 
+  MutationRemoveAsBeneficiaryArgs,
 } from "../gql/graphql"
 
 export default class BeneficiaryApi extends BaseApiService {

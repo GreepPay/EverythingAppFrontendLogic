@@ -1,15 +1,16 @@
-import currency from 'currency.js'
-import moment from 'moment'
-import { CombinedError } from 'urql'
-import { reactive } from 'vue'
+import currency from "currency.js"
+import moment from "moment"
+import { CombinedError } from "urql"
+import { reactive } from "vue"
 import {
   NavigationGuardNext,
   RouteLocationNormalized,
   RouteLocationNormalizedLoaded,
   Router,
-} from 'vue-router'
-import { Logic } from '..'
-import { FetchRule, LoaderSetup, ModalSetup } from '../types/common'
+} from "vue-router"
+import { Logic } from ".."
+import { AlertSetup, FetchRule, LoaderSetup, ModalSetup } from "../types/common"
+import CryptoJS from "crypto-js"
 
 export default class Common {
   public router: Router | undefined = undefined
@@ -27,11 +28,11 @@ export default class Common {
   public showBottomNav = false
 
   public currentLayout = reactive({
-    name: '',
-    path: '',
+    name: "",
+    path: "",
     from: {
-      name: '',
-      path: '',
+      name: "",
+      path: "",
     },
   })
 
@@ -48,18 +49,18 @@ export default class Common {
     useModal: false,
     hasError: false,
     loading: false,
-    message: '',
-    ctaText: '',
+    message: "",
+    ctaText: "",
     ctaFunction: () => {},
-    icon: 'success-thumb',
-    title: '',
+    icon: "success-thumb",
+    title: "",
   })
 
   public modalSetup: ModalSetup = reactive({
     show: false,
-    title: '',
-    type: '',
-    actionLabel: '',
+    title: "",
+    type: "",
+    actionLabel: "",
     action: () => {},
   })
 
@@ -71,11 +72,58 @@ export default class Common {
     this.router?.push(path)
   }
 
+  public alertSetup = reactive<AlertSetup>({
+    show: false,
+    message: "",
+    type: "success",
+  })
+
+  public encryptData = (jsonData: object, secretKey: string): string => {
+    return CryptoJS.AES.encrypt(JSON.stringify(jsonData), secretKey).toString()
+  }
+
+  public decryptData = (encryptedData: string, secretKey: string): object => {
+    const bytes = CryptoJS.AES.decrypt(encryptedData, secretKey)
+    return JSON.parse(bytes.toString(CryptoJS.enc.Utf8))
+  } 
+
+  public showAlert = (alertSetup: AlertSetup) => {
+    const showAlertHandler = (wait_until_next_alert = false) => {
+      this.alertSetup = alertSetup
+
+      if (wait_until_next_alert) {
+        return
+      }
+
+      setTimeout(() => {
+        this.alertSetup = {
+          show: false,
+          message: "",
+          type: "success",
+        }
+      }, 5100)
+    }
+    if (this.alertSetup.show) {
+      // sleep for 5 seconds
+      new Promise((resolve) => setTimeout(resolve, 5000)).then(() => {
+        this.alertSetup = {
+          show: false,
+          message: "",
+          type: "success",
+        }
+
+        showAlertHandler(alertSetup.wait_until_next_alert)
+      })
+    } else {
+      showAlertHandler(alertSetup.wait_until_next_alert)
+    }
+  }
+
   public showError = (
     error: CombinedError,
     title: string,
-    icon: 'error-alert' | 'error-kite' | 'success-kite' | 'success-thumb',
-    fallbackMsg = '',
+    icon: "error-alert" | "error-kite" | "success-kite" | "success-thumb",
+    fallbackMsg = ""
   ) => {
     console.error("error", error)
     const message = error.graphQLErrors[0].message
@@ -84,7 +132,7 @@ export default class Common {
       useModal: true,
       loading: false,
       hasError: true,
-      message: message != 'null' ? message : fallbackMsg,
+      message: message != "null" ? message : fallbackMsg,
       icon,
       title,
     })
@@ -99,7 +147,7 @@ export default class Common {
       return Option.key == key
     })
 
-    return thisData.length > 0 ? thisData[0].value : ''
+    return thisData.length > 0 ? thisData[0].value : ""
   }
 
   public showLoader = (loaderSetup: LoaderSetup) => {
@@ -107,7 +155,7 @@ export default class Common {
   }
 
   public goBack = () => {
-    window.history.length > 1 ? this.router?.go(-1) : this.router?.push('/')
+    window.history.length > 1 ? this.router?.go(-1) : this.router?.push("/")
   }
 
   public hideLoader = () => {
@@ -122,7 +170,7 @@ export default class Common {
   public globalParameters = reactive<{
     currency: string
   }>({
-    currency: 'ngn',
+    currency: "ngn",
   })
 
   public momentInstance = moment
@@ -130,21 +178,21 @@ export default class Common {
   public convertToMoney = (
     float: any,
     withZeros = true,
-    currencyType = 'ngn',
-    withSymbol = true,
+    currencyType = "ngn",
+    withSymbol = true
   ) => {
-    let currencySymbol = ''
-    if (currencyType == 'usd') {
-      currencySymbol = '$ '
-    } else if (currencyType == 'ngn') {
-      currencySymbol = '₦ '
+    let currencySymbol = ""
+    if (currencyType == "usd") {
+      currencySymbol = "$ "
+    } else if (currencyType == "ngn") {
+      currencySymbol = "₦ "
     }
     if (!withSymbol) {
-      currencySymbol = ''
+      currencySymbol = ""
     }
     if (withZeros) {
       return currency(float, {
-        separator: ',',
+        separator: ",",
         symbol: currencySymbol,
       }).format()
     } else {
@@ -153,7 +201,7 @@ export default class Common {
   }
 
   private isString = (x: any) => {
-    return Object.prototype.toString.call(x) === '[object String]'
+    return Object.prototype.toString.call(x) === "[object String]"
   }
 
   public searchArray = (arr: any[], searchKey: string) => {
@@ -168,11 +216,11 @@ export default class Common {
     method = () => {
       //
     },
-    delay = 500,
+    delay = 500
   ) => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
-    if (typeof window.LIT !== 'undefined') {
+    if (typeof window.LIT !== "undefined") {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-expect-error
       clearTimeout(window.LIT)
@@ -207,19 +255,19 @@ export default class Common {
     return new Promise(function (resolve, reject) {
       // Get file name from url.
       const xhr = new XMLHttpRequest()
-      xhr.responseType = 'blob'
+      xhr.responseType = "blob"
       xhr.onload = function () {
         resolve(xhr)
       }
       xhr.onerror = reject
-      xhr.open('GET', url)
+      xhr.open("GET", url)
       xhr.send()
     }).then(function (xhr: any) {
-      const filename = url.substring(url.lastIndexOf('/') + 1).split('?')[0]
-      const a = document.createElement('a')
+      const filename = url.substring(url.lastIndexOf("/") + 1).split("?")[0]
+      const a = document.createElement("a")
       a.href = window.URL.createObjectURL(xhr.response) // xhr.response is a blob
       a.download = filename // Set the file name.
-      a.style.display = 'none'
+      a.style.display = "none"
       document.body.appendChild(a)
       a.click()
       return xhr
@@ -235,7 +283,7 @@ export default class Common {
   }
 
   public countDownTime = (endTime: string) => {
-    return moment(moment(endTime).diff(moment.now())).format('mm:ss')
+    return moment(moment(endTime).diff(moment.now())).format("mm:ss")
   }
 
   public timeFromNow = (time: string) => {
@@ -252,7 +300,7 @@ export default class Common {
   public preFetchRouteData = (
     routeTo: RouteLocationNormalized,
     next: NavigationGuardNext,
-    routeFrom: RouteLocationNormalized,
+    routeFrom: RouteLocationNormalized
   ) => {
     const allActions: Promise<any>[] = []
     if (this.loaderSetup.loading) {
@@ -285,7 +333,7 @@ export default class Common {
 
         if (rule.requireAuth) {
           if (!Logic.Auth.AuthUser) {
-            window.location.href = '/auth/login'
+            window.location.href = "/auth/login"
 
             throw BreakException
           }
@@ -295,18 +343,18 @@ export default class Common {
 
         if (rule.condition) {
           switch (rule.condition.routeSearchItem) {
-            case 'fullPath':
-              addRuleToRequest = routeTo['fullPath'].includes(
-                rule.condition.searchQuery,
+            case "fullPath":
+              addRuleToRequest = routeTo["fullPath"].includes(
+                rule.condition.searchQuery
               )
               break
-            case 'params':
-              addRuleToRequest = routeTo['params'][rule.condition.searchQuery]
+            case "params":
+              addRuleToRequest = routeTo["params"][rule.condition.searchQuery]
                 ? true
                 : false
               break
-            case 'query':
-              addRuleToRequest = routeTo['query'][rule.condition.searchQuery]
+            case "query":
+              addRuleToRequest = routeTo["query"][rule.condition.searchQuery]
                 ? true
                 : false
               break
@@ -326,7 +374,7 @@ export default class Common {
           }
 
           if (
-            typeof rule.ignoreProperty == 'function' &&
+            typeof rule.ignoreProperty == "function" &&
             rule.ignoreProperty()
           ) {
             fetchData = true
@@ -358,15 +406,15 @@ export default class Common {
                   const allQueries: any[] = []
                   const catenation_type = rule.query_concatenation_type
                     ? rule.query_concatenation_type
-                    : 'prehend'
+                    : "prehend"
                   rule.queries?.forEach((item) => {
-                    if (catenation_type == 'prehend') {
+                    if (catenation_type == "prehend") {
                       allQueries.unshift(routeTo.query[item])
                     } else {
                       allQueries.push(routeTo.query[item])
                     }
                   })
-                  if (catenation_type == 'append') {
+                  if (catenation_type == "append") {
                     rule.params.push(...allQueries)
                   } else {
                     rule.params.unshift(...allQueries)
@@ -375,11 +423,11 @@ export default class Common {
 
                 // update userid
                 rule.params.forEach((param) => {
-                  if (typeof param === 'object') {
+                  if (typeof param === "object") {
                     if (param.where) {
                       param.where.forEach((item: any) => {
-                        if (item.field == 'user.id' || item.field == 'userId') {
-                          item.value = Logic.Auth.AuthUser?.id
+                        if (item.field == "user.id" || item.field == "userId") {
+                          item.value = Logic.Auth.AuthUser?.uuid
                         }
                       })
                     }
@@ -397,7 +445,7 @@ export default class Common {
                 request?.then((value: any) => {
                   resolve(value)
                 })
-              }),
+              })
             )
           } else {
             if (rule.silentUpdate) {
@@ -409,15 +457,15 @@ export default class Common {
                 const allQueries: any[] = []
                 const catenation_type = rule.query_concatenation_type
                   ? rule.query_concatenation_type
-                  : 'prehend'
+                  : "prehend"
                 rule.queries?.forEach((item) => {
-                  if (catenation_type == 'prehend') {
+                  if (catenation_type == "prehend") {
                     allQueries.unshift(routeTo.query[item])
                   } else {
                     allQueries.push(routeTo.query[item])
                   }
                 })
-                if (catenation_type == 'append') {
+                if (catenation_type == "append") {
                   rule.params.push(...allQueries)
                 } else {
                   rule.params.unshift(...allQueries)
@@ -450,7 +498,7 @@ export default class Common {
     const showBottomNav = () => {
       // page layout
       const layout: any = routeTo.meta?.layout
-      if (layout == 'Dashboard') {
+      if (layout == "Dashboard") {
         this.showBottomNav = true
       } else {
         this.showBottomNav = false
