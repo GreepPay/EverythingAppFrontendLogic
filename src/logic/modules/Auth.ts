@@ -19,10 +19,15 @@ export default class Auth extends Common {
   constructor() {
     super()
 
-    this.AccessToken = localStorage.getItem("access_token")
-    this.AuthUser = localStorage.getItem("auth_user")
-      ? JSON.parse(localStorage.getItem("auth_user") || "{}")
-      : undefined
+    // this.AccessToken = localStorage.getItem("access_token")
+    // this.AuthUser = localStorage.getItem("auth_user")
+    //   ? JSON.parse(localStorage.getItem("auth_user") || "{}")
+    //   : undefined
+
+    // this.AccessToken = localStorage.getItem("access_token")
+    // this.AuthUser = localStorage.getItem("auth_user")
+    //   ? JSON.parse(localStorage.getItem("auth_user") || "{}")
+    //   : undefined
     // this.setDefaultAuth()
   }
 
