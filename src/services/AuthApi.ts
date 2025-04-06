@@ -14,7 +14,11 @@ import {
 } from "../gql/graphql"
 
 export default class AuthApi extends BaseApiService {
-  // Queries
+  // #region QUERIES
+  /**
+   * @description Retrieves the authenticated user's information, including profile, contact details, status, and wallet balances.
+   * @response Object containing user details such as profile information, contact details, status, and wallet balances.
+   */
   public GetAuthUser = () => {
     const requestData = `
       query GetAuthUser {
@@ -60,7 +64,9 @@ export default class AuthApi extends BaseApiService {
 
     return response
   }
+  // #endregion QUERIES
 
+  // #region MUTATIONS
   /**
    * @description Registers a new user with their details
    * @params first_name, last_name, email, password, state, country, default_currency
@@ -320,79 +326,5 @@ export default class AuthApi extends BaseApiService {
     return response
   }
 
-  // /**
-  //  * @description Retrieves the authenticated user's information, including profile, contact details, status, and wallet balances.
-  //  * @response Object containing user details such as profile information, contact details, status, and wallet balances.
-  //  */
-  // public GetAuthUser = () => {
-  //   const requestData = `
-  //   query GetAuthUser {
-  //     GetAuthUser {
-  //       profile {
-  //         customer {
-  //           city
-  //           country
-  //           location
-  //           passport
-  //           updated_at
-  //           student_id
-  //           resident_permit
-  //           notification_preferences
-  //           id
-  //           created_at
-  //         }
-  //         auth_user_id
-  //         created_at
-  //         default_currency
-  //         verifications {
-  //           created_at
-  //           document_type
-  //           document_url
-  //           id
-  //           verification_data
-  //           user_type
-  //           updated_at
-  //           status
-  //         }
-  //         user_type
-  //         verification_status
-  //         profile_picture
-  //         updated_at
-  //       }
-  //       created_at
-  //       email
-  //       email_verified_at
-  //       first_name
-  //       last_name
-  //       phone
-  //       phone_verified_at
-  //       status
-  //       updated_at
-  //       username
-  //       uuid
-  //       wallet {
-  //         cash_per_point
-  //         uuid
-  //         updated_at
-  //         total_balance
-  //         point_balance
-  //         state
-  //         locked_balance
-  //         debited_point_amount
-  //         currency
-  //         debited_amount
-  //         credited_point_amount
-  //         credited_amount
-  //         created_at
-  //         cash_point_balance
-  //       }
-  //     }
-  //   }
-  // `
-
-  //   const response: Promise<OperationResult<{ GetAuthUser: User }>> =
-  //     this.query(requestData, {})
-
-  //   return response
-  // }
+  // #endregion MUTATIONS
 }

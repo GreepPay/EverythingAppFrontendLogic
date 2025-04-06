@@ -1,13 +1,15 @@
 import {
   MutationSavePushNotificationTokenArgs,
   NotificationPaginator,
+  QueryGetNotificationsArgs,
+  MutationMarkNotificationsAsReadArgs,
 } from "src/gql/graphql"
 import { OperationResult } from "urql"
 import { BaseApiService } from "./common/BaseService"
 
 export default class NotificationApi extends BaseApiService {
-  // Query
-  public GetNotifications = (first: number, page: number) => {
+  // #region QUERIES
+  public GetNotifications = (data: QueryGetNotificationsArgs) => {
     const requestData = `
       query GetNotifications($first: Int!, $page: Int) {
         GetNotifications(first: $first, page: $page) {
@@ -39,16 +41,16 @@ export default class NotificationApi extends BaseApiService {
       OperationResult<{
         GetNotifications: NotificationPaginator
       }>
-    > = this.query(requestData, {
-      first,
-      page,
-    })
+    > = this.query(requestData, data)
 
     return response
   }
+  // #endregion QUERIES
 
-  // Mutations
-  public MarkNotificationsAsRead = (notificationIds: number[]) => {
+  // #region MUTATIONS
+  public MarkNotificationsAsRead = (
+    data: MutationMarkNotificationsAsReadArgs
+  ) => {
     const requestData = `
       mutation MarkNotificationsAsRead($notificationIds: [Int!]!) {
         MarkNotificationsAsRead(notification_ids: $notificationIds)
@@ -59,9 +61,7 @@ export default class NotificationApi extends BaseApiService {
       OperationResult<{
         MarkNotificationsAsRead: Boolean
       }>
-    > = this.mutation(requestData, {
-      notificationIds,
-    })
+    > = this.mutation(requestData, data)
 
     return response
   }
@@ -89,4 +89,5 @@ export default class NotificationApi extends BaseApiService {
 
     return response
   }
+  // #endregion MUTATIONS
 }
