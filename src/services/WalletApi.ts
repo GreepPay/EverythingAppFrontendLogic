@@ -15,6 +15,7 @@ import {
   PointTransactionPaginator,
   QueryGetPointTransactionsArgs,
   SupportedCurrency,
+  GlobalExchangeRate,
 } from "../gql/graphql"
 
 export default class WalletsApi extends BaseApiService {
@@ -300,6 +301,30 @@ export default class WalletsApi extends BaseApiService {
 
     const response: Promise<OperationResult<{ MakePayment: boolean }>> =
       this.mutation(requestData, data)
+
+    return response
+  }
+
+  public GetGlobalExchangeRate = (base: string, target: string) => {
+    const requestData = `
+      query GetGlobalExchangeRate($base: String!, $target: String!) {
+        GetGlobalExchangeRate(base: $base, target: $target) {
+          base
+          target
+          mid
+          unit
+        }
+      }
+		`
+
+    const response: Promise<
+      OperationResult<{
+        GetGlobalExchangeRate: GlobalExchangeRate
+      }>
+    > = this.query(requestData, {
+      base,
+      target,
+    })
 
     return response
   }

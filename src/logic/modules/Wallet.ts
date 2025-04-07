@@ -13,6 +13,7 @@ import {
   PointTransactionPaginator,
   QueryGetPointTransactionsArgs,
   SupportedCurrency,
+  GlobalExchangeRate,
 } from "../../gql/graphql"
 import { $api } from "../../services"
 import { CombinedError } from "urql"
@@ -31,6 +32,7 @@ export default class Wallet extends Common {
   public ManyTransactions: TransactionPaginator | undefined
   public SinglePointTransaction: PointTransaction | undefined
   public SingleTransaction: Transaction | undefined
+  public CurrentGlobalExchangeRate: GlobalExchangeRate | undefined
 
   // Queries
   public GetExchangeRate = async (
@@ -84,6 +86,18 @@ export default class Wallet extends Common {
       })
   }
 
+  public GetGlobalExchangeRate = async (
+    base = "NGN",
+    target = ""
+  ): Promise<GlobalExchangeRate | undefined> => {
+    if (!target) {
+      target = Logic.Auth.AuthUser?.profile?.default_currency || "USD"
+    }
+    return $api.wallet.GetGlobalExchangeRate(base, target).then((response) => {
+      this.CurrentGlobalExchangeRate = response.data?.GetGlobalExchangeRate
+      return this.CurrentGlobalExchangeRate
+    })
+  }
   public GetOnRampCurrencies = (): Promise<SupportedCurrency[] | undefined> => {
     return $api.wallet
       .GetOnRampCurrencies()

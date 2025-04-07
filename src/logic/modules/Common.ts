@@ -69,6 +69,8 @@ export default class Common {
   }
 
   public GoToRoute = (path: string) => {
+    console.log(path)
+
     this.router?.push(path)
   }
 

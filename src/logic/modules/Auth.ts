@@ -96,9 +96,11 @@ export default class Auth extends Common {
         .then((response) => {
           this.SetUpAuth(response.data?.SignIn)
           this.AuthUser = response.data?.SignIn.user
+          Logic.Common.hideLoader()
           return response.data?.SignIn
         })
         .catch((error: CombinedError) => {
+          Logic.Common.hideLoader()
           Logic.Common.showError(error, "Oops!", "error-alert")
           throw new Error(error.message)
         })
