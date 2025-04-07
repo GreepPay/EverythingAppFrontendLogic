@@ -48,9 +48,17 @@ export default class AuthApi extends BaseApiService {
             }
           }
           wallet {
-            cash_per_point
-            cash_point_balance
+            currency
+            credited_point_amount
             credited_amount
+            created_at
+            cash_point_balance
+            cash_per_point
+            debited_amount
+            debited_point_amount
+            locked_balance
+            point_balance
+            total_balance
           }
         }
       }

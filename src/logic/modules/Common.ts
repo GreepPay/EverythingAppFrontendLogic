@@ -69,6 +69,8 @@ export default class Common {
   }
 
   public GoToRoute = (path: string) => {
+    console.log("path", path)
+
     this.router?.push(path)
   }
 
@@ -85,7 +87,7 @@ export default class Common {
   public decryptData = (encryptedData: string, secretKey: string): object => {
     const bytes = CryptoJS.AES.decrypt(encryptedData, secretKey)
     return JSON.parse(bytes.toString(CryptoJS.enc.Utf8))
-  } 
+  }
 
   public showAlert = (alertSetup: AlertSetup) => {
     const showAlertHandler = (wait_until_next_alert = false) => {

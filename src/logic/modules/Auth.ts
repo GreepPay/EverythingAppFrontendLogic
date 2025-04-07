@@ -9,8 +9,6 @@ import {
   MutationVerifyUserOtpArgs,
   MutationResetPasswordArgs,
   MutationSendResetPasswordOtpArgs,
-  MutationResendEmailOtpArgs,
-  AuthResponse,
   User,
 } from "../../gql/graphql"
 import { Logic } from ".."
@@ -19,16 +17,7 @@ export default class Auth extends Common {
   constructor() {
     super()
 
-    // this.AccessToken = localStorage.getItem("access_token")
-    // this.AuthUser = localStorage.getItem("auth_user")
-    //   ? JSON.parse(localStorage.getItem("auth_user") || "{}")
-    //   : undefined
-
-    // this.AccessToken = localStorage.getItem("access_token")
-    // this.AuthUser = localStorage.getItem("auth_user")
-    //   ? JSON.parse(localStorage.getItem("auth_user") || "{}")
-    //   : undefined
-    // this.setDefaultAuth()
+    this.setDefaultAuth()
   }
 
   // Base variables
@@ -61,6 +50,12 @@ export default class Auth extends Common {
       )
       localStorage.setItem("auth_user", JSON.stringify(this.AuthUser))
     }
+  }
+  private setDefaultAuth = () => {
+    this.AccessToken = localStorage.getItem("access_token")
+    this.AuthUser = localStorage.getItem("auth_user")
+      ? JSON.parse(localStorage.getItem("auth_user") || "{}")
+      : undefined
   }
 
   public GetAuthUser = async (): Promise<User | undefined> => {
@@ -98,6 +93,8 @@ export default class Auth extends Common {
       return $api.auth
         .SignIn(this.SignInPayload)
         .then((response) => {
+          console.log("ytui")
+
           this.SetUpAuth(response.data?.SignIn)
           this.AuthUser = response.data?.SignIn.user
           return response.data?.SignIn
@@ -197,19 +194,17 @@ export default class Auth extends Common {
     }
   }
 
-  // public SignOut = () => {
-  //   Logic.Common.showLoader({ loading: true })
-  //   $api.auth
-  //     .SignOut()
-  //     .then(() => {
-  //       localStorage.removeItem("auth_passcode")
-  //       localStorage.removeItem("access_token")
-  //       localStorage.removeItem("auth_user")
-  //       Logic.Common.hideLoader()
-  //       Logic.Common.GoToRoute("/auth/login")
-  //     })
-  //     .catch((error) => {
-  //       Logic.Common.showError(error, "Oops!", "error-alert")
-  //     })
-  // }
+  public SignOut = () => {
+    Logic.Common.showLoader({ loading: true })
+    // $api.auth
+    //   .SignOut()
+    //   .then(() => {
+    localStorage.clear()
+    Logic.Common.hideLoader()
+    Logic.Common.GoToRoute("/auth/login")
+    // })
+    // .catch((error) => {
+    //   Logic.Common.showError(error, "Oops!", "error-alert")
+    // })
+  }
 }
