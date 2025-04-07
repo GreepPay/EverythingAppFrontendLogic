@@ -1,31 +1,36 @@
-import currency from "currency.js"
-import moment from "moment"
-import { CombinedError } from "urql"
-import { reactive } from "vue"
+import currency from "currency.js";
+import moment from "moment";
+import { CombinedError } from "urql";
+import { reactive } from "vue";
 import {
   NavigationGuardNext,
   RouteLocationNormalized,
   RouteLocationNormalizedLoaded,
   Router,
-} from "vue-router"
-import { Logic } from ".."
-import { AlertSetup, FetchRule, LoaderSetup, ModalSetup } from "../types/common"
-import CryptoJS from "crypto-js"
+} from "vue-router";
+import { Logic } from "..";
+import {
+  AlertSetup,
+  FetchRule,
+  LoaderSetup,
+  ModalSetup,
+} from "../types/common";
+import CryptoJS from "crypto-js";
 
 export default class Common {
-  public router: Router | undefined = undefined
+  public router: Router | undefined = undefined;
 
-  public route: RouteLocationNormalizedLoaded | undefined = undefined
+  public route: RouteLocationNormalizedLoaded | undefined = undefined;
 
-  public apiUrl: string | undefined = undefined
+  public apiUrl: string | undefined = undefined;
 
-  public watchInterval: number | undefined = undefined
+  public watchInterval: number | undefined = undefined;
 
-  public forcePageTransparency = false
+  public forcePageTransparency = false;
 
-  public loadingState = false
+  public loadingState = false;
 
-  public showBottomNav = false
+  public showBottomNav = false;
 
   public currentLayout = reactive({
     name: "",
@@ -34,15 +39,15 @@ export default class Common {
       name: "",
       path: "",
     },
-  })
+  });
 
   public SetRouter = (router: Router) => {
-    this.router = router
-  }
+    this.router = router;
+  };
 
   public SetRoute = (route: RouteLocationNormalizedLoaded) => {
-    this.route = route
-  }
+    this.route = route;
+  };
 
   public loaderSetup: LoaderSetup = reactive({
     show: false,
@@ -54,7 +59,7 @@ export default class Common {
     ctaFunction: () => {},
     icon: "success-thumb",
     title: "",
-  })
+  });
 
   public modalSetup: ModalSetup = reactive({
     show: false,
@@ -62,37 +67,37 @@ export default class Common {
     type: "",
     actionLabel: "",
     action: () => {},
-  })
+  });
 
   public SetApiUrl = (apiUrl: string) => {
-    this.apiUrl = apiUrl
-  }
+    this.apiUrl = apiUrl;
+  };
 
   public GoToRoute = (path: string) => {
-    this.router?.push(path)
-  }
+    this.router?.push(path);
+  };
 
   public alertSetup = reactive<AlertSetup>({
     show: false,
     message: "",
     type: "success",
-  })
+  });
 
   public encryptData = (jsonData: object, secretKey: string): string => {
-    return CryptoJS.AES.encrypt(JSON.stringify(jsonData), secretKey).toString()
-  }
+    return CryptoJS.AES.encrypt(JSON.stringify(jsonData), secretKey).toString();
+  };
 
   public decryptData = (encryptedData: string, secretKey: string): object => {
-    const bytes = CryptoJS.AES.decrypt(encryptedData, secretKey)
-    return JSON.parse(bytes.toString(CryptoJS.enc.Utf8))
-  }
+    const bytes = CryptoJS.AES.decrypt(encryptedData, secretKey);
+    return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+  };
 
   public showAlert = (alertSetup: AlertSetup) => {
     const showAlertHandler = (wait_until_next_alert = false) => {
-      this.alertSetup = alertSetup
+      this.alertSetup = alertSetup;
 
       if (wait_until_next_alert) {
-        return
+        return;
       }
 
       setTimeout(() => {
@@ -100,9 +105,9 @@ export default class Common {
           show: false,
           message: "",
           type: "success",
-        }
-      }, 5100)
-    }
+        };
+      }, 5100);
+    };
     if (this.alertSetup.show) {
       // sleep for 5 seconds
       new Promise((resolve) => setTimeout(resolve, 5000)).then(() => {
@@ -110,22 +115,22 @@ export default class Common {
           show: false,
           message: "",
           type: "success",
-        }
+        };
 
-        showAlertHandler(alertSetup.wait_until_next_alert)
-      })
+        showAlertHandler(alertSetup.wait_until_next_alert);
+      });
     } else {
-      showAlertHandler(alertSetup.wait_until_next_alert)
+      showAlertHandler(alertSetup.wait_until_next_alert);
     }
-  }
+  };
 
   public showError = (
     error: CombinedError,
     title: string,
     icon: "error-alert" | "error-kite" | "success-kite" | "success-thumb",
-    fallbackMsg = ""
+    fallbackMsg = "",
   ) => {
-    const message = error.graphQLErrors[0].message
+    const message = error.graphQLErrors[0].message;
     // this.showLoader({
     //   show: true,
     //   useModal: true,
@@ -140,289 +145,290 @@ export default class Common {
       show: true,
       message: message,
       type: "error",
-    })
-  }
+    });
+  };
 
   public showModal = (modalSetupData: ModalSetup) => {
-    this.modalSetup = modalSetupData
-  }
+    this.modalSetup = modalSetupData;
+  };
 
   public getLabel = (data: any, key: string) => {
     const thisData = data.filter((Option: any) => {
-      return Option.key == key
-    })
+      return Option.key == key;
+    });
 
-    return thisData.length > 0 ? thisData[0].value : ""
-  }
+    return thisData.length > 0 ? thisData[0].value : "";
+  };
 
   public showLoader = (loaderSetup: LoaderSetup) => {
-    this.loaderSetup = loaderSetup
-  }
+    this.loaderSetup = loaderSetup;
+  };
 
   public goBack = () => {
-    window.history.length > 1 ? this.router?.go(-1) : this.router?.push("/")
-  }
+    window.history.length > 1 ? this.router?.go(-1) : this.router?.push("/");
+  };
 
   public hideLoader = () => {
     const Loader: LoaderSetup = {
       show: false,
       useModal: false,
       loading: false,
-    }
-    this.loaderSetup = Loader
-  }
+    };
+    this.loaderSetup = Loader;
+  };
 
   public globalParameters = reactive<{
-    currency: string
+    currency: string;
   }>({
     currency: "ngn",
-  })
+  });
 
-  public momentInstance = moment
+  public momentInstance = moment;
 
   public convertToMoney = (
     float: any,
     withZeros = true,
     currencyType = "ngn",
-    withSymbol = true
+    withSymbol = true,
   ) => {
-    let currencySymbol = ""
+    let currencySymbol = "";
     if (currencyType == "usd") {
-      currencySymbol = "$ "
+      currencySymbol = "$ ";
     } else if (currencyType == "ngn") {
-      currencySymbol = "₦ "
+      currencySymbol = "₦ ";
     }
     if (!withSymbol) {
-      currencySymbol = ""
+      currencySymbol = "";
     }
     if (withZeros) {
       return currency(float, {
         separator: ",",
         symbol: currencySymbol,
-      }).format()
+      }).format();
     } else {
-      return currencySymbol + new Intl.NumberFormat().format(parseFloat(float))
+      return currencySymbol + new Intl.NumberFormat().format(parseFloat(float));
     }
-  }
+  };
 
   private isString = (x: any) => {
-    return Object.prototype.toString.call(x) === "[object String]"
-  }
+    return Object.prototype.toString.call(x) === "[object String]";
+  };
 
   public searchArray = (arr: any[], searchKey: string) => {
     return arr.filter((obj) => {
       return Object.keys(obj).some((key) => {
-        return this.isString(obj[key]) ? obj[key].includes(searchKey) : false
-      })
-    })
-  }
+        return this.isString(obj[key]) ? obj[key].includes(searchKey) : false;
+      });
+    });
+  };
 
   public debounce = (
     method = () => {
       //
     },
-    delay = 500
+    delay = 500,
   ) => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
     if (typeof window.LIT !== "undefined") {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-expect-error
-      clearTimeout(window.LIT)
+      clearTimeout(window.LIT);
     }
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
     window.LIT = setTimeout(() => {
-      method()
-    }, delay)
-  }
+      method();
+    }, delay);
+  };
 
   public watchProperty = (objectToWatch: string, objectToUpdate: any) => {
-    let upatedValue = (this as any)[`${objectToWatch}`]
+    let upatedValue = (this as any)[`${objectToWatch}`];
     const watchAction = () => {
-      upatedValue = (this as any)[`${objectToWatch}`]
+      upatedValue = (this as any)[`${objectToWatch}`];
       if (objectToUpdate) {
-        objectToUpdate.value = upatedValue
+        objectToUpdate.value = upatedValue;
       }
-      this.watchInterval = window.requestAnimationFrame(watchAction)
-    }
+      this.watchInterval = window.requestAnimationFrame(watchAction);
+    };
 
-    watchAction()
-  }
+    watchAction();
+  };
 
   public stopWatchAction = () => {
     if (this.watchInterval != undefined) {
-      window.cancelAnimationFrame(this.watchInterval)
+      window.cancelAnimationFrame(this.watchInterval);
     }
-  }
+  };
 
   private fetchFile = (url: string) => {
     return new Promise(function (resolve, reject) {
       // Get file name from url.
-      const xhr = new XMLHttpRequest()
-      xhr.responseType = "blob"
+      const xhr = new XMLHttpRequest();
+      xhr.responseType = "blob";
       xhr.onload = function () {
-        resolve(xhr)
-      }
-      xhr.onerror = reject
-      xhr.open("GET", url)
-      xhr.send()
+        resolve(xhr);
+      };
+      xhr.onerror = reject;
+      xhr.open("GET", url);
+      xhr.send();
     }).then(function (xhr: any) {
-      const filename = url.substring(url.lastIndexOf("/") + 1).split("?")[0]
-      const a = document.createElement("a")
-      a.href = window.URL.createObjectURL(xhr.response) // xhr.response is a blob
-      a.download = filename // Set the file name.
-      a.style.display = "none"
-      document.body.appendChild(a)
-      a.click()
-      return xhr
-    })
-  }
+      const filename = url.substring(url.lastIndexOf("/") + 1).split("?")[0];
+      const a = document.createElement("a");
+      a.href = window.URL.createObjectURL(xhr.response); // xhr.response is a blob
+      a.download = filename; // Set the file name.
+      a.style.display = "none";
+      document.body.appendChild(a);
+      a.click();
+      return xhr;
+    });
+  };
 
   public downloadFiles = (urls = []) => {
-    return Promise.all(urls.map(this.fetchFile))
-  }
+    return Promise.all(urls.map(this.fetchFile));
+  };
 
   public fomartDate = (date: string, format: string) => {
-    return moment(date).format(format)
-  }
+    return moment(date).format(format);
+  };
 
   public countDownTime = (endTime: string) => {
-    return moment(moment(endTime).diff(moment.now())).format("mm:ss")
-  }
+    return moment(moment(endTime).diff(moment.now())).format("mm:ss");
+  };
 
   public timeFromNow = (time: string) => {
-    return moment(time).fromNow()
-  }
+    return moment(time).fromNow();
+  };
 
   public updatedData = (oldData: any, newData: any) => {
     if (oldData != undefined && newData != undefined) {
-      return { ...oldData, ...newData }
+      return { ...oldData, ...newData };
     }
-    return oldData
-  }
+    return oldData;
+  };
 
   public preFetchRouteData = (
     routeTo: RouteLocationNormalized,
     next: NavigationGuardNext,
-    routeFrom: RouteLocationNormalized
+    routeFrom: RouteLocationNormalized,
   ) => {
-    const allActions: Promise<any>[] = []
+    const allActions: Promise<any>[] = [];
+
     if (this.loaderSetup.loading) {
-      return
+      return;
     }
 
-    const routeMiddlewares: any = routeTo.meta.middlewares
+    const routeMiddlewares: any = routeTo.meta.middlewares;
 
     // handle fetchRules
 
-    const fetchRules: FetchRule[] = routeMiddlewares.fetchRules || []
+    const fetchRules: FetchRule[] = routeMiddlewares.fetchRules || [];
 
-    let BreakException = {}
+    let BreakException = {};
 
     // Check for transparency settings
-    const transparencySettings = routeMiddlewares.enforceTransparency
+    const transparencySettings = routeMiddlewares.enforceTransparency;
 
     if (transparencySettings) {
-      this.forcePageTransparency = true
+      this.forcePageTransparency = true;
     } else {
-      this.forcePageTransparency = false
+      this.forcePageTransparency = false;
     }
 
     // Hide modal
-    this.showModal({ show: false })
+    this.showModal({ show: false });
 
     try {
       for (let index = 0; index < fetchRules.length; index++) {
-        const rule: FetchRule = JSON.parse(JSON.stringify(fetchRules[index]))
+        const rule: FetchRule = JSON.parse(JSON.stringify(fetchRules[index]));
 
         if (rule.requireAuth) {
           if (!Logic.Auth.AuthUser) {
-            window.location.href = "/auth/login"
+            window.location.href = "/auth/login";
 
-            throw BreakException
+            throw BreakException;
           }
         }
 
-        let addRuleToRequest = true
+        let addRuleToRequest = true;
 
         if (rule.condition) {
           switch (rule.condition.routeSearchItem) {
             case "fullPath":
               addRuleToRequest = routeTo["fullPath"].includes(
-                rule.condition.searchQuery
-              )
-              break
+                rule.condition.searchQuery,
+              );
+              break;
             case "params":
               addRuleToRequest = routeTo["params"][rule.condition.searchQuery]
                 ? true
-                : false
-              break
+                : false;
+              break;
             case "query":
               addRuleToRequest = routeTo["query"][rule.condition.searchQuery]
                 ? true
-                : false
-              break
+                : false;
+              break;
             default:
-              break
+              break;
           }
         }
 
         if (addRuleToRequest) {
           // @ts-ignore
-          const domain = Logic[rule.domain]
+          const domain = Logic[rule.domain];
 
-          let fetchData = false
+          let fetchData = false;
 
           if (domain[rule.property] == undefined) {
-            fetchData = true
+            fetchData = true;
           }
 
           if (
             typeof rule.ignoreProperty == "function" &&
             rule.ignoreProperty()
           ) {
-            fetchData = true
+            fetchData = true;
           }
 
           if (rule.ignoreProperty) {
-            fetchData = true
+            fetchData = true;
           }
 
           if (routeFrom && routeFrom.query.force_load) {
-            fetchData = true
+            fetchData = true;
           }
 
           if (rule.subProperty) {
             if (domain[rule.property][rule.subProperty] == undefined) {
-              fetchData = true
+              fetchData = true;
             }
           }
 
           if (fetchData) {
             allActions.push(
               new Promise((resolve) => {
-                const routeId = []
+                const routeId = [];
                 if (rule.useRouteId) {
-                  routeId.push(routeTo.params.id.toString())
+                  routeId.push(routeTo.params.id.toString());
                 }
 
                 if (rule.useRouteQuery) {
-                  const allQueries: any[] = []
+                  const allQueries: any[] = [];
                   const catenation_type = rule.query_concatenation_type
                     ? rule.query_concatenation_type
-                    : "prehend"
+                    : "prehend";
                   rule.queries?.forEach((item) => {
                     if (catenation_type == "prehend") {
-                      allQueries.unshift(routeTo.query[item])
+                      allQueries.unshift(routeTo.query[item]);
                     } else {
-                      allQueries.push(routeTo.query[item])
+                      allQueries.push(routeTo.query[item]);
                     }
-                  })
+                  });
                   if (catenation_type == "append") {
-                    rule.params.push(...allQueries)
+                    rule.params.push(...allQueries);
                   } else {
-                    rule.params.unshift(...allQueries)
+                    rule.params.unshift(...allQueries);
                   }
                 }
 
@@ -432,66 +438,67 @@ export default class Common {
                     if (param.where) {
                       param.where.forEach((item: any) => {
                         if (item.field == "user.id" || item.field == "userId") {
-                          item.value = Logic.Auth.AuthUser?.uuid
+                          item.value = Logic.Auth.AuthUser?.uuid;
                         }
-                      })
+                      });
                     }
                   }
-                })
+                });
 
-                const allParameter = rule.params
+                const allParameter = rule.params;
 
                 if (routeId.length) {
-                  allParameter.unshift(...routeId)
+                  allParameter.unshift(...routeId);
                 }
 
-                const request = domain[rule.method](...allParameter)
+                const request = domain[rule.method](...allParameter);
 
                 request?.then((value: any) => {
-                  resolve(value)
-                })
-              })
-            )
+                  resolve(value);
+                });
+              }),
+            );
           } else {
             if (rule.silentUpdate) {
               // run in silence
               if (rule.useRouteId) {
-                rule.params.unshift(routeTo.params.id.toString())
+                rule.params.unshift(routeTo.params.id.toString());
               }
               if (rule.useRouteQuery) {
-                const allQueries: any[] = []
+                const allQueries: any[] = [];
                 const catenation_type = rule.query_concatenation_type
                   ? rule.query_concatenation_type
-                  : "prehend"
+                  : "prehend";
                 rule.queries?.forEach((item) => {
                   if (catenation_type == "prehend") {
-                    allQueries.unshift(routeTo.query[item])
+                    allQueries.unshift(routeTo.query[item]);
                   } else {
-                    allQueries.push(routeTo.query[item])
+                    allQueries.push(routeTo.query[item]);
                   }
-                })
+                });
                 if (catenation_type == "append") {
-                  rule.params.push(...allQueries)
+                  rule.params.push(...allQueries);
                 } else {
-                  rule.params.unshift(...allQueries)
+                  rule.params.unshift(...allQueries);
                 }
               }
-              rule.params = [...new Set(rule.params)]
+              rule.params = [...new Set(rule.params)];
               setTimeout(() => {
-                domain[rule.method](...rule.params)
-              }, 1000)
+                domain[rule.method](...rule.params);
+              }, 1000);
             }
           }
         }
       }
     } catch (error) {
-      if (error !== BreakException) throw error
+      console.log(error);
+      if (error !== BreakException) throw error;
     }
 
     // save user activities
 
     if (routeMiddlewares.tracking_data) {
-      const trackingData: any = routeMiddlewares.tracking_data
+      const trackingData: any = routeMiddlewares.tracking_data;
       // Logic.User.SaveUserActivity(
       //   trackingData.lable,
       //   'page_view',
@@ -502,11 +509,11 @@ export default class Common {
 
     const showBottomNav = () => {
       // page layout
-      const layout: any = routeTo.meta?.layout
+      const layout: any = routeTo.meta?.layout;
       if (layout == "Dashboard") {
-        this.showBottomNav = true
+        this.showBottomNav = true;
       } else {
-        this.showBottomNav = false
+        this.showBottomNav = false;
       }
 
       this.currentLayout = {
@@ -516,24 +523,24 @@ export default class Common {
           name: routeFrom.meta.layout as string,
           path: routeFrom.path as string,
         },
-      }
-    }
+      };
+    };
 
     if (allActions.length > 0) {
       this.showLoader({
         loading: true,
         show: true,
-      })
+      });
 
       Promise.all(allActions).then(() => {
-        this.hideLoader()
-        showBottomNav()
-        return next()
-      })
+        this.hideLoader();
+        showBottomNav();
+        return next();
+      });
     } else {
-      this.hideLoader()
-      showBottomNav()
-      return next()
+      this.hideLoader();
+      showBottomNav();
+      return next();
     }
-  }
+  };
 }
