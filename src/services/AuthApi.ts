@@ -125,8 +125,6 @@ export default class AuthApi extends BaseApiService {
    * @response User object containing uuid, email, status, and created_at
    */
   public SignIn = (data: MutationSignInArgs) => {
-    console.log("fata from services", data)
-
     const requestData = `
     mutation SignIn(
       $email: String!,
@@ -154,8 +152,6 @@ export default class AuthApi extends BaseApiService {
 
     const response: Promise<OperationResult<{ SignIn: AuthResponse }>> =
       this.mutation(requestData, data)
-
-    console.log("response from service", response)
 
     return response
   }
@@ -266,34 +262,6 @@ export default class AuthApi extends BaseApiService {
 
     const response: Promise<OperationResult<{ UpdatePassword: boolean }>> =
       this.mutation(requestData, data)
-
-    return response
-  }
-
-  /**
-   * @description Saves a push notification token for the authenticated user
-   * @params device_token, device_type
-   * @response Boolean indicating whether the token was saved successfully
-   */
-  public SavePushNotificationToken = (data: {
-    device_token: string
-    device_type: string
-  }) => {
-    const requestData = `
-      mutation SavePushNotificationToken(
-        $device_token: String!,
-        $device_type: String!
-      ) {
-        SavePushNotificationToken(
-          device_token: $device_token,
-          device_type: $device_type
-        )
-      }
-    `
-
-    const response: Promise<
-      OperationResult<{ SavePushNotificationToken: boolean }>
-    > = this.mutation(requestData, data)
 
     return response
   }

@@ -1,16 +1,18 @@
 import {
-  ExchangeRate,
-  // GlobalExchangeRate,
-  // MutationCreateSavedAccountArgs,
-  // MutationInitiateWithdrawalArgs,
-  PointTransaction,
-  PointTransactionPaginator,
-  SupportedCurrency,
-  Transaction,
-  TransactionPaginator,
+  MutationInitiateTopupArgs,
+  MutationMakePaymentArgs,
+  MutationRedeemGrpTokenArgs,
   ExchangeRate,
   QueryGetExchangeRateArgs,
-  // UserBankPaginator,
+  TransactionPaginator,
+  QueryGetTransactionsArgs,
+  Transaction,
+  QueryGetSingleTransactionArgs,
+  QueryGetSinglePointTransactionArgs,
+  PointTransaction,
+  PointTransactionPaginator,
+  QueryGetPointTransactionsArgs,
+  SupportedCurrency,
 } from "../../gql/graphql"
 import { $api } from "../../services"
 import { CombinedError } from "urql"
@@ -27,16 +29,8 @@ export default class Wallet extends Common {
   public ManyOffRampCurrencies: SupportedCurrency[] | undefined
   public ManyPointTransactions: PointTransactionPaginator | undefined
   public ManyTransactions: TransactionPaginator | undefined
-  // public ManySavedAccounts: UserBankPaginator | undefined;
   public SinglePointTransaction: PointTransaction | undefined
   public SingleTransaction: Transaction | undefined
-  // public CurrentGlobalExchangeRate: GlobalExchangeRate | undefined;
-
-  // Mutation Variables
-  // public CreateSavedAccountForm: MutationCreateSavedAccountArgs | undefined;
-  // public InitiateWithdrawalForm: MutationInitiateWithdrawalArgs | undefined;
-
-  //  Query Parameters
 
   // Queries
   public GetExchangeRate = async (
@@ -48,128 +42,133 @@ export default class Wallet extends Common {
     })
   }
 
-  // public GetGlobalExchangeRate = async (
-  //   base = "USD",
-  //   target = "",
-  // ): Promise<GlobalExchangeRate | undefined> => {
-  //   if (!target) {
-  //     target = Logic.Auth.AuthUser?.profile?.default_currency || "USD";
-  //   }
-  //   return $api.wallet.GetGlobalExchangeRate(base, target).then((response) => {
-  //     this.CurrentGlobalExchangeRate = response.data?.GetGlobalExchangeRate;
-  //     return this.CurrentGlobalExchangeRate;
-  //   });
-  // };
+  public RedeemGRPToken = async (data: MutationRedeemGrpTokenArgs) => {
+    return $api.wallet
+      .RedeemGRPToken(data)
+      .then((response) => {
+        if (response.data?.RedeemGRPToken) {
+          return response.data.RedeemGRPToken
+        }
+      })
+      .catch((error: CombinedError) => {
+        Logic.Common.showError(error, "Oops!", "error-alert")
+        throw new Error(error.message)
+      })
+  }
 
-  // public GetPointTransactions = async (
-  //   page: number,
-  //   count: number,
-  //   orderType: "CREATED_AT",
-  //   order = "DESC" as "DESC" | "ASC",
-  //   whereQuery = "",
-  // ) => {
-  //   return $api.wallet
-  //     .GetPointTransactions(page, count, orderType, order, whereQuery)
-  //     .then((response) => {
-  //       this.ManyPointTransactions = response.data?.GetPointTransactions;
-  //       return this.ManyPointTransactions;
-  //     });
-  // };
+  public MakePayment = async (data: MutationMakePaymentArgs) => {
+    return $api.wallet
+      .MakePayment(data)
+      .then((response) => {
+        if (response.data?.MakePayment) {
+          return response.data.MakePayment
+        }
+      })
+      .catch((error: CombinedError) => {
+        Logic.Common.showError(error, "Oops!", "error-alert")
+        throw new Error(error.message)
+      })
+  }
 
-  // public GetTransactions = async (
-  //   page: number,
-  //   count: number,
-  //   orderType: "CREATED_AT",
-  //   order = "DESC" as "DESC" | "ASC",
-  //   whereQuery = "",
-  // ) => {
-  //   return $api.wallet
-  //     .GetTransactions(page, count, orderType, order, whereQuery)
-  //     .then((response) => {
-  //       this.ManyTransactions = response.data?.GetTransactions;
-  //       return this.ManyTransactions;
-  //     });
-  // };
+  public InitiateTopup = async (data: MutationInitiateTopupArgs) => {
+    return $api.wallet
+      .InitiateTopup(data)
+      .then((response) => {
+        if (response.data?.InitiateTopup) {
+          return response.data.InitiateTopup
+        }
+      })
+      .catch((error: CombinedError) => {
+        Logic.Common.showError(error, "Oops!", "error-alert")
+        throw new Error(error.message)
+      })
+  }
 
-  // public GetSavedAccounts = async (first: number, page: number) => {
-  //   return $api.wallet.GetSavedAccounts(first, page).then((response) => {
-  //     this.ManySavedAccounts = response.data?.GetSavedAccounts;
-  //     return this.ManySavedAccounts;
-  //   });
-  // };
+  public GetOnRampCurrencies = (): Promise<SupportedCurrency[] | undefined> => {
+    return $api.wallet
+      .GetOnRampCurrencies()
+      .then((response) => {
+        return response.data?.GetOnRampCurrencies
+      })
+      .catch((error: CombinedError) => {
+        Logic.Common.showError(
+          error,
+          "Failed to fetch on-ramp currencies",
+          "error-alert"
+        )
+        return undefined
+      })
+  }
 
-  // public GetSinglePointTransaction = async (uuid: string) => {
-  //   return $api.wallet.GetSinglePointTransaction(uuid).then((response) => {
-  //     this.SinglePointTransaction = response.data?.GetSinglePointTransaction;
-  //     return this.SinglePointTransaction;
-  //   });
-  // };
+  public GetPointTransactions = (
+    data: QueryGetPointTransactionsArgs
+  ): Promise<PointTransactionPaginator | undefined> => {
+    return $api.wallet
+      .GetPointTransactions(data)
+      .then((response) => {
+        return response.data?.GetPointTransactions
+      })
+      .catch((error: CombinedError) => {
+        Logic.Common.showError(
+          error,
+          "Failed to fetch point transactions",
+          "error-alert"
+        )
+        return undefined
+      })
+  }
 
-  // public GetSingleTransaction = async (uuid: string) => {
-  //   return $api.wallet.GetSingleTransaction(uuid).then((response) => {
-  //     this.SingleTransaction = response.data?.GetSingleTransaction;
-  //     return this.SingleTransaction;
-  //   });
-  // };
+  public GetSinglePointTransaction = (
+    data: QueryGetSinglePointTransactionArgs
+  ): Promise<PointTransaction | undefined> => {
+    return $api.wallet
+      .GetSinglePointTransaction(data)
+      .then((response) => {
+        return response.data?.GetSinglePointTransaction
+      })
+      .catch((error: CombinedError) => {
+        Logic.Common.showError(
+          error,
+          "Failed to fetch transaction details",
+          "error-alert"
+        )
+        return undefined
+      })
+  }
 
-  // // Mutations
-  // public CreateSavedAccount = async () => {
-  //   if (this.CreateSavedAccountForm) {
-  //     return $api.wallet
-  //       .CreateSavedAccount(this.CreateSavedAccountForm)
-  //       .then((response) => {
-  //         if (response.data?.CreateSavedAccount) {
-  //           return response.data.CreateSavedAccount;
-  //         }
-  //       })
-  //       .catch((error: CombinedError) => {
-  //         Logic.Common.showError(error, "Oops!", "error-alert");
-  //       });
-  //   }
-  // };
+  public GetSingleTransaction = (
+    data: QueryGetSingleTransactionArgs
+  ): Promise<Transaction | undefined> => {
+    return $api.wallet
+      .GetSingleTransaction(data)
+      .then((response) => {
+        return response.data?.GetSingleTransaction
+      })
+      .catch((error: CombinedError) => {
+        Logic.Common.showError(
+          error,
+          "Failed to fetch transaction details",
+          "error-alert"
+        )
+        return undefined
+      })
+  }
 
-  // public InitiateWithdrawal = async () => {
-  //   if (this.InitiateWithdrawalForm) {
-  //     return $api.wallet
-  //       .InitiateWithdrawal(this.InitiateWithdrawalForm)
-  //       .then((response) => {
-  //         if (response.data?.InitiateWithdrawal) {
-  //           return response.data.InitiateWithdrawal;
-  //         }
-  //       })
-  //       .catch((error: CombinedError) => {
-  //         Logic.Common.showError(error, "Oops!", "error-alert");
-  //       });
-  //   }
-  // };
-
-  // public RedeemGRPToken = (grpAmount: number) => {
-  //   if (grpAmount) {
-  //     return $api.wallet
-  //       .RedeemGRPToken(grpAmount)
-  //       .then((response) => {
-  //         if (response.data?.RedeemGRPToken) {
-  //           return response.data.RedeemGRPToken;
-  //         }
-  //       })
-  //       .catch((error: CombinedError) => {
-  //         Logic.Common.showError(error, "Oops!", "error-alert");
-  //       });
-  //   }
-  // };
-
-  // public RemoveSavedAccount = (saved_account_uuid: string) => {
-  //   if (saved_account_uuid) {
-  //     return $api.wallet
-  //       .RemoveSavedAccount(saved_account_uuid)
-  //       .then((response) => {
-  //         if (response.data?.RemoveSavedAccount) {
-  //           return response.data.RemoveSavedAccount;
-  //         }
-  //       })
-  //       .catch((error: CombinedError) => {
-  //         Logic.Common.showError(error, "Oops!", "error-alert");
-  //       });
-  //   }
-  // };
+  public GetTransactions = (
+    data: QueryGetTransactionsArgs
+  ): Promise<TransactionPaginator | undefined> => {
+    return $api.wallet
+      .GetTransactions(data)
+      .then((response) => {
+        return response.data?.GetTransactions
+      })
+      .catch((error: CombinedError) => {
+        Logic.Common.showError(
+          error,
+          "Failed to fetch transactions",
+          "error-alert"
+        )
+        return undefined
+      })
+  }
 }

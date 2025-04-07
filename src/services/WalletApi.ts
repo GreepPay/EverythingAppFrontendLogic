@@ -32,8 +32,7 @@ export default class WalletsApi extends BaseApiService {
             updatedAt
           }
         }
-      }
-
+      } 
 		`
 
     const response: Promise<
@@ -248,7 +247,6 @@ export default class WalletsApi extends BaseApiService {
 
     return response
   }
-
 
   //
   // Mutation

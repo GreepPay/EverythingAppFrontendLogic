@@ -87,31 +87,6 @@ export default class UserApi extends BaseApiService {
     return response
   }
 
-  /**
-   * @description Saves a push notification token for the authenticated user.
-   * @params device_token, device_type
-   * @response Boolean indicating success or failure
-   */
-  public SavePushNotificationToken = (
-    data: MutationSavePushNotificationTokenArgs
-  ) => {
-    const requestData = `
-    mutation SavePushNotificationToken(
-      $device_token: String!,
-      $device_type: String!
-    ) {
-      SavePushNotificationToken(
-        device_token: $device_token,
-        device_type: $device_type
-      )
-    }
-  `
-
-    const response: Promise<
-      OperationResult<{ SavePushNotificationToken: boolean }>
-    > = this.mutation(requestData, data)
-
-    return response
-  }
+  
   // #endregion MUTATIONS
 }

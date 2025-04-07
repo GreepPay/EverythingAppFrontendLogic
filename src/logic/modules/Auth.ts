@@ -47,7 +47,7 @@ export default class Auth extends Common {
   // public ResetPasswordEmailPayload:
   //   | MutationSendResetPasswordEmailArgs
   //   | undefined
-  // public UpdatePasswordPayload: MutationUpdatePasswordArgs | undefined
+  public UpdatePasswordPayload: MutationUpdatePasswordArgs | undefined
 
   // Private methods
   private SetUpAuth = (AuthResponse: any | undefined) => {
@@ -63,32 +63,8 @@ export default class Auth extends Common {
     }
   }
 
-  // public setDefaultAuth = () => {
-  //    if (AuthResponse) {
-  //      this.AccessToken = AuthResponse.token
-  //      this.AuthUser = this.updatedData(this.AuthUser, AuthResponse.user)
-  //      // save to localstorage
-  //      localStorage.setItem(
-  //        "access_token",
-  //        this.AccessToken ? this.AccessToken : ""
-  //      )
-  //      localStorage.setItem("auth_user", JSON.stringify(this.AuthUser))
-  //    }
-
-  //   this.AccessToken = localStorage.getItem("access_token")
-  //   const authUserString = localStorage.getItem("auth_user") // Ensure a valid JSON string
-  //   this.AuthUser =
-  //     authUserString && authUserString !== "undefined"
-  //       ? JSON.parse(authUserString)
-  //       : undefined
-
-  //   console.log("AuthUser", this.AuthUser)
-  // }
-
-  // Queries
   public GetAuthUser = async (): Promise<User | undefined> => {
     return $api.auth.GetAuthUser().then((response) => {
-      console.log("response:", response)
       this.AuthUser = response.data?.GetAuthUser
       localStorage.setItem("auth_user", JSON.stringify(this.AuthUser))
       return this.AuthUser
@@ -96,15 +72,6 @@ export default class Auth extends Common {
   }
 
   // Mutations
-  // private SetUpAuth = (AuthResponse: any | undefined) => {
-  //   if (AuthResponse) {
-  //     this.AccessToken = AuthResponse.token
-  //     this.AuthUser = AuthResponse.user
-  //     localStorage.setItem("access_token", this.AccessToken || "")
-  //     localStorage.setItem("auth_user", JSON.stringify(this.AuthUser))
-  //   }
-  // }
-
   public SignUp = (
     formIsValid: boolean,
     progressCallback: (progress: number) => void
@@ -127,19 +94,16 @@ export default class Auth extends Common {
 
   public SignIn = (formIsValid: boolean) => {
     if (formIsValid && this.SignInPayload) {
-      // Logic.Common.showLoader({ loading: true })
+      Logic.Common.showLoader({ loading: true })
       return $api.auth
         .SignIn(this.SignInPayload)
         .then((response) => {
-          console.log("response from module", response)
           this.SetUpAuth(response.data?.SignIn)
           this.AuthUser = response.data?.SignIn.user
           return response.data?.SignIn
         })
         .catch((error: CombinedError) => {
-          console.error("error dey shha")
-          // console.error("error from module", error)
-          // Logic.Common.showError(error, "Oops!", "error-alert")
+          Logic.Common.showError(error, "Oops!", "error-alert")
         })
     }
   }
@@ -158,50 +122,50 @@ export default class Auth extends Common {
       })
   }
 
-  // public ResendVerifyEmail = () => {
-  //   Logic.Common.showLoader({ loading: true })
-  //   if (this.ResendVerifyEmailPayload) {
-  //     return $api.auth
-  //       .ResendVerifyEmail(this.ResendVerifyEmailPayload)
-  //       .then((response) => {
-  //         Logic.Common.hideLoader()
-  //         return response.data?.ResendVerifyEmail
-  //       })
-  //       .catch((error: CombinedError) => {
-  //         Logic.Common.showError(error, "Oops!", "error-alert")
-  //       })
-  //   }
-  // }
+  public sendResetPasswordOTP = async (
+    data: MutationSendResetPasswordOtpArgs
+  ) => {
+    return $api.auth
+      .sendResetPasswordOTP(data)
+      .then((response) => {
+        if (response.data?.sendResetPasswordOTP) {
+          return response.data.sendResetPasswordOTP
+        }
+      })
+      .catch((error: CombinedError) => {
+        Logic.Common.showError(error, "Oops!", "error-alert")
+        throw new Error(error.message)
+      })
+  }
 
-  // public SendResetPasswordEmail = (formIsValid: boolean) => {
-  //   if (formIsValid && this.ResetPasswordEmailPayload) {
-  //     Logic.Common.showLoader({ loading: true })
-  //     return $api.auth
-  //       .SendResetPasswordEmail(this.ResetPasswordEmailPayload)
-  //       .then((response) => {
-  //         Logic.Common.hideLoader()
-  //         return response.data?.SendResetPasswordEmail
-  //       })
-  //       .catch((error: CombinedError) => {
-  //         Logic.Common.showError(error, "Oops!", "error-alert")
-  //       })
-  //   }
-  // }
+  public ResetPassword = async (data: MutationResetPasswordArgs) => {
+    return $api.auth
+      .ResetPassword(data)
+      .then((response) => {
+        if (response.data?.ResetPassword) {
+          return response.data.ResetPassword
+        }
+      })
+      .catch((error: CombinedError) => {
+        Logic.Common.showError(error, "Oops!", "error-alert")
+        throw new Error(error.message)
+      })
+  }
 
-  // public UpdatePassword = (formIsValid: boolean) => {
-  //   if (formIsValid && this.UpdatePasswordPayload) {
-  //     Logic.Common.showLoader({ loading: true })
-  //     return $api.auth
-  //       .UpdatePassword(this.UpdatePasswordPayload)
-  //       .then((response) => {
-  //         Logic.Common.hideLoader()
-  //         return response.data?.UpdatePassword
-  //       })
-  //       .catch((error: CombinedError) => {
-  //         Logic.Common.showError(error, "Oops!", "error-alert")
-  //       })
-  //   }
-  // }
+  public UpdatePassword = (formIsValid: boolean) => {
+    if (formIsValid && this.UpdatePasswordPayload) {
+      Logic.Common.showLoader({ loading: true })
+      return $api.auth
+        .UpdatePassword(this.UpdatePasswordPayload)
+        .then((response) => {
+          Logic.Common.hideLoader()
+          return response.data?.UpdatePassword
+        })
+        .catch((error: CombinedError) => {
+          Logic.Common.showError(error, "Oops!", "error-alert")
+        })
+    }
+  }
 
   public VerifyUserOTP = () => {
     if (this.VerifyUserOTPayload) {
@@ -238,7 +202,7 @@ export default class Auth extends Common {
   //   $api.auth
   //     .SignOut()
   //     .then(() => {
-  //       localStorage.removeItem("AuthTokens")
+  //       localStorage.removeItem("auth_passcode")
   //       localStorage.removeItem("access_token")
   //       localStorage.removeItem("auth_user")
   //       Logic.Common.hideLoader()
