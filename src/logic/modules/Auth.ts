@@ -83,6 +83,7 @@ export default class Auth extends Common {
         })
         .catch((error: CombinedError) => {
           Logic.Common.showError(error, "Oops!", "error-alert")
+          throw new Error(error.message)
         })
     }
   }
@@ -93,14 +94,13 @@ export default class Auth extends Common {
       return $api.auth
         .SignIn(this.SignInPayload)
         .then((response) => {
-          console.log("ytui")
-
           this.SetUpAuth(response.data?.SignIn)
           this.AuthUser = response.data?.SignIn.user
           return response.data?.SignIn
         })
         .catch((error: CombinedError) => {
           Logic.Common.showError(error, "Oops!", "error-alert")
+          throw new Error(error.message)
         })
     }
   }

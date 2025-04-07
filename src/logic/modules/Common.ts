@@ -69,8 +69,6 @@ export default class Common {
   }
 
   public GoToRoute = (path: string) => {
-    console.log("path", path)
-
     this.router?.push(path)
   }
 
@@ -127,16 +125,21 @@ export default class Common {
     icon: "error-alert" | "error-kite" | "success-kite" | "success-thumb",
     fallbackMsg = ""
   ) => {
-    console.error("error", error)
     const message = error.graphQLErrors[0].message
-    this.showLoader({
+    // this.showLoader({
+    //   show: true,
+    //   useModal: true,
+    //   loading: false,
+    //   hasError: true,
+    //   message: message != "null" ? message : fallbackMsg,
+    //   icon,
+    //   title,
+    // });
+
+    this.showAlert({
       show: true,
-      useModal: true,
-      loading: false,
-      hasError: true,
-      message: message != "null" ? message : fallbackMsg,
-      icon,
-      title,
+      message: message,
+      type: "error",
     })
   }
 
@@ -517,10 +520,10 @@ export default class Common {
     }
 
     if (allActions.length > 0) {
-      // this.showLoader({
-      //   loading: true,
-      //   show: false,
-      // })
+      this.showLoader({
+        loading: true,
+        show: true,
+      })
 
       Promise.all(allActions).then(() => {
         this.hideLoader()
