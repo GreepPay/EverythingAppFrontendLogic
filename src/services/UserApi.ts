@@ -1,11 +1,11 @@
-import { BaseApiService } from "./common/BaseService"
-import { OperationResult } from "urql"
+import { BaseApiService } from "./common/BaseService";
+import { OperationResult } from "urql";
 import {
   MutationUpdateProfileArgs,
   MutationSavePushNotificationTokenArgs,
   User,
   QuerySearchUsersArgs,
-} from "../gql/graphql"
+} from "../gql/graphql";
 
 export default class UserApi extends BaseApiService {
   // #region QUERIES
@@ -21,36 +21,55 @@ export default class UserApi extends BaseApiService {
           uuid
           first_name
           last_name
-          email
-          email_verified_at
-          phone
-          phone_verified_at
           username
-          status
-          created_at
-          updated_at
           profile {
             profile_picture
             verification_status
             default_currency
-          }
-          wallet {
-            cash_per_point
-            cash_point_balance
-            credited_amount
+            user_type
           }
         }
       }
-    `
+    `;
 
     const response: Promise<
       OperationResult<{
-        SearchUsers: User[]
+        SearchUsers: User[];
       }>
-    > = this.query(requestData, data)
+    > = this.query(requestData, data);
 
-    return response
-  }
+    return response;
+  };
+
+  public GetSingleUser = (uuid: string) => {
+    const requestData = `
+      query GetSingleUser($uuid: String!) {
+        GetSingleUser(uuid: $uuid) {
+          uuid
+          first_name
+          last_name
+          username
+          profile {
+            profile_picture
+            user_type
+            business {
+              business_name
+              logo
+              website
+            }
+          }
+        }
+      }
+    `;
+
+    const response: Promise<
+      OperationResult<{
+        GetSingleUser: User;
+      }>
+    > = this.query(requestData, { uuid });
+
+    return response;
+  };
 
   // #endregion QUERIES
 
@@ -79,14 +98,13 @@ export default class UserApi extends BaseApiService {
         state: $state
       )
     }
-  `
+  `;
 
     const response: Promise<OperationResult<{ UpdateProfile: boolean }>> =
-      this.mutation(requestData, data)
+      this.mutation(requestData, data);
 
-    return response
-  }
+    return response;
+  };
 
-  
   // #endregion MUTATIONS
 }

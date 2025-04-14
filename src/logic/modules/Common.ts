@@ -92,6 +92,14 @@ export default class Common {
     return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
   };
 
+  public base64ToBlob = async (url: string) => {
+    return fetch(url)
+      .then((res) => res.blob())
+      .then((data) => {
+        return data;
+      });
+  };
+
   public showAlert = (alertSetup: AlertSetup) => {
     const showAlertHandler = (wait_until_next_alert = false) => {
       this.alertSetup = alertSetup;
@@ -313,7 +321,6 @@ export default class Common {
     routeFrom: RouteLocationNormalized,
   ) => {
     const allActions: Promise<any>[] = [];
-
     if (this.loaderSetup.loading) {
       return;
     }
@@ -491,7 +498,6 @@ export default class Common {
         }
       }
     } catch (error) {
-      console.log(error);
       if (error !== BreakException) throw error;
     }
 

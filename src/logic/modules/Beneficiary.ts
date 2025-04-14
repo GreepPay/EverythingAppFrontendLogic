@@ -4,69 +4,73 @@ import {
   MutationRemoveAsBeneficiaryArgs,
   BeneficiaryPaginator,
   QueryGetBeneficiariesArgs,
-} from "../../gql/graphql"
-import { $api } from "../../services"
-import { CombinedError } from "urql"
-import Common from "./Common"
-import { Logic } from ".."
+} from "../../gql/graphql";
+import { $api } from "../../services";
+import { CombinedError } from "urql";
+import Common from "./Common";
+import { Logic } from "..";
 
 export default class BeneficiaryModule extends Common {
   constructor() {
-    super()
+    super();
   }
 
+  // Base Variables
+  public ManyBeneficiaries: BeneficiaryPaginator | undefined;
+
   //  Query Parameters
-  public GetBeneficiaries = (
-    data: QueryGetBeneficiariesArgs
+  public GetBeneficiaries = async (
+    data: QueryGetBeneficiariesArgs,
   ): Promise<BeneficiaryPaginator | undefined> => {
     return $api.beneficiary
       .GetBeneficiaries(data)
       .then((response) => {
-        return response.data?.GetBeneficiaries
+        this.ManyBeneficiaries = response.data?.GetBeneficiaries;
+        return response.data?.GetBeneficiaries;
       })
       .catch((error: CombinedError) => {
         Logic.Common.showError(
           error,
           "Failed to fetch beneficiaries",
-          "error-alert"
-        )
-        return undefined
-      })
-  }
+          "error-alert",
+        );
+        return undefined;
+      });
+  };
 
-  public AddAsBeneficiary = (
-    data: MutationAddAsBeneficiaryArgs
+  public AddAsBeneficiary = async (
+    data: MutationAddAsBeneficiaryArgs,
   ): Promise<Beneficiary | undefined> => {
     return $api.beneficiary
       .AddAsBeneficiary(data)
       .then((response) => {
-        return response.data?.AddAsBeneficiary
+        return response.data?.AddAsBeneficiary;
       })
       .catch((error: CombinedError) => {
         Logic.Common.showError(
           error,
           "Failed to add beneficiary",
-          "error-alert"
-        )
-        return undefined
-      })
-  }
+          "error-alert",
+        );
+        return undefined;
+      });
+  };
 
-  public RemoveAsBeneficiary = (
-    data: MutationRemoveAsBeneficiaryArgs
+  public RemoveAsBeneficiary = async (
+    data: MutationRemoveAsBeneficiaryArgs,
   ): Promise<boolean> => {
     return $api.beneficiary
       .RemoveAsBeneficiary(data)
       .then((response) => {
-        return response.data?.RemoveAsBeneficiary ?? false
+        return response.data?.RemoveAsBeneficiary ?? false;
       })
       .catch((error: CombinedError) => {
         Logic.Common.showError(
           error,
           "Failed to remove beneficiary",
-          "error-alert"
-        )
-        return false
-      })
-  }
+          "error-alert",
+        );
+        return false;
+      });
+  };
 }

@@ -62,6 +62,7 @@ export default class Auth extends Common {
     return $api.auth.GetAuthUser().then((response) => {
       this.AuthUser = response.data?.GetAuthUser;
       localStorage.setItem("auth_user", JSON.stringify(this.AuthUser));
+      Logic.Wallet.GetOnRampCurrencies();
       return this.AuthUser;
     });
   };
@@ -72,7 +73,6 @@ export default class Auth extends Common {
     progressCallback: (progress: number) => void,
   ) => {
     if (formIsValid && this.SignUpPayload) {
-      Logic.Common.showLoader({ loading: true });
       return $api.auth
         .SignUp(this.SignUpPayload, progressCallback)
         .then((response) => {
@@ -90,7 +90,6 @@ export default class Auth extends Common {
 
   public SignIn = (formIsValid: boolean) => {
     if (formIsValid && this.SignInPayload) {
-      Logic.Common.showLoader({ loading: true });
       return $api.auth
         .SignIn(this.SignInPayload)
         .then((response) => {
@@ -100,6 +99,7 @@ export default class Auth extends Common {
           return response.data?.SignIn;
         })
         .catch((error: CombinedError) => {
+          Logic.Common.hideLoader();
           Logic.Common.showError(error, "Oops!", "error-alert");
           throw new Error(error.message);
         });
@@ -161,6 +161,7 @@ export default class Auth extends Common {
         })
         .catch((error: CombinedError) => {
           Logic.Common.showError(error, "Oops!", "error-alert");
+          throw new Error(error.message);
         });
     }
   };
@@ -176,6 +177,7 @@ export default class Auth extends Common {
         })
         .catch((error: CombinedError) => {
           Logic.Common.showError(error, "Oops!", "error-alert");
+          throw new Error(error.message);
         });
     }
   };
@@ -191,21 +193,22 @@ export default class Auth extends Common {
         })
         .catch((error: CombinedError) => {
           Logic.Common.showError(error, "Verification Failed!", "error-alert");
+          throw new Error(error.message);
         });
     }
   };
 
   public SignOut = () => {
-    Logic.Common.showLoader({ loading: true });
-    // $api.auth
-    //   .SignOut()
-    //   .then(() => {
-    localStorage.clear();
-    Logic.Common.hideLoader();
-    Logic.Common.GoToRoute("/auth/login");
-    // })
-    // .catch((error) => {
-    //   Logic.Common.showError(error, "Oops!", "error-alert")
-    // })
+    Logic.Common.showLoader({ loading: true, show: true });
+    $api.auth
+      .SignOut()
+      .then(() => {
+        localStorage.clear();
+        Logic.Common.hideLoader();
+        Logic.Common.GoToRoute("/auth/login");
+      })
+      .catch((error) => {
+        Logic.Common.showError(error, "Oops!", "error-alert");
+      });
   };
 }

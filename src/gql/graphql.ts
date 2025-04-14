@@ -46,6 +46,13 @@ export type AuthResponse = {
   user: User;
 };
 
+export type BankInfo = {
+  __typename?: 'BankInfo';
+  accountName: Scalars['String'];
+  accountNumber: Scalars['String'];
+  name: Scalars['String'];
+};
+
 /** A single beneficiary */
 export type Beneficiary = {
   __typename?: 'Beneficiary';
@@ -114,16 +121,32 @@ export type ExchangeRateItem = {
   updatedAt: Scalars['String'];
 };
 
+export type GlobalExchangeRate = {
+  __typename?: 'GlobalExchangeRate';
+  /** Base Currency */
+  base: Scalars['String'];
+  /** Mid Rate */
+  mid: Scalars['Float'];
+  /** Target Currency */
+  target: Scalars['String'];
+  /** Timestamp */
+  timestamp: Scalars['DateTime'];
+  /** Unit */
+  unit: Scalars['Int'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   /** Add a user as a beneficiary */
   AddAsBeneficiary: Beneficiary;
   /** Initiate a top-up transaction */
-  InitiateTopup: Scalars['Boolean'];
+  InitiateTopup: PaymentCollectionResponse;
   /** Make a payment to another user */
   MakePayment: Scalars['Boolean'];
   /** Mark specific notifications as read for the authenticated user. */
   MarkNotificationsAsRead?: Maybe<Scalars['Boolean']>;
+  /** Monitor an on-ramp transaction */
+  MonitorTopupStatus: Scalars['Boolean'];
   /** Redeem GRP tokens */
   RedeemGRPToken: Scalars['Boolean'];
   /** Remove a user as a beneficiary */
@@ -174,6 +197,11 @@ export type MutationMakePaymentArgs = {
 
 export type MutationMarkNotificationsAsReadArgs = {
   notification_ids: Array<Scalars['Int']>;
+};
+
+
+export type MutationMonitorTopupStatusArgs = {
+  collection_id: Scalars['String'];
 };
 
 
@@ -242,7 +270,7 @@ export type MutationVerifyUserIdentityArgs = {
   id_country: Scalars['String'];
   id_number: Scalars['String'];
   id_type: Scalars['String'];
-  user_uuid: Scalars['String'];
+  user_uuid?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -339,6 +367,97 @@ export type PaginatorInfo = {
   total: Scalars['Int'];
 };
 
+export type PaymentChannel = {
+  __typename?: 'PaymentChannel';
+  /** API Status */
+  apiStatus: Scalars['String'];
+  /** Channel Type */
+  channelType: Scalars['String'];
+  /** Country */
+  country: Scalars['String'];
+  /** Country Currency */
+  countryCurrency: Scalars['String'];
+  /** Payment Channel Created At */
+  createdAt: Scalars['DateTime'];
+  /** Currency */
+  currency: Scalars['String'];
+  /** Estimated Settlement Time (in seconds) */
+  estimatedSettlementTime: Scalars['Int'];
+  /** Local Fee */
+  feeLocal: Scalars['Float'];
+  /** USD Fee */
+  feeUSD: Scalars['Float'];
+  /** Payment Channel ID */
+  id: Scalars['String'];
+  /** Maximum transaction amount */
+  max: Scalars['Float'];
+  /** Minimum transaction amount */
+  min: Scalars['Float'];
+  /** Ramp Type */
+  rampType: Scalars['String'];
+  /** Settlement Type */
+  settlementType: Scalars['String'];
+  /** Payment Channel Status */
+  status: Scalars['String'];
+  /** Payment Channel Updated At */
+  updatedAt: Scalars['DateTime'];
+  /** Vendor ID */
+  vendorId: Scalars['String'];
+  /** Widget Status */
+  widgetStatus: Scalars['String'];
+};
+
+export type PaymentCollectionResponse = {
+  __typename?: 'PaymentCollectionResponse';
+  amount: Scalars['Float'];
+  bankInfo: BankInfo;
+  channelId: Scalars['String'];
+  convertedAmount: Scalars['Float'];
+  country: Scalars['String'];
+  createdAt: Scalars['String'];
+  currency: Scalars['String'];
+  depositId: Scalars['String'];
+  directSettlement: Scalars['Boolean'];
+  expiresAt: Scalars['String'];
+  forceAccept: Scalars['Boolean'];
+  id: Scalars['String'];
+  partnerFeeAmountLocal: Scalars['Float'];
+  partnerFeeAmountUSD: Scalars['Float'];
+  partnerId: Scalars['String'];
+  rate: Scalars['Float'];
+  reference: Scalars['String'];
+  refundRetry: Scalars['Int'];
+  requestSource: Scalars['String'];
+  sequenceId: Scalars['String'];
+  serviceFeeAmountLocal: Scalars['Float'];
+  serviceFeeAmountUSD: Scalars['Float'];
+  source: Source;
+  status: Scalars['String'];
+  updatedAt: Scalars['String'];
+};
+
+export type PaymentNetwork = {
+  __typename?: 'PaymentNetwork';
+  /** Account Number Type */
+  accountNumberType: Scalars['String'];
+  /** Payment Channel IDs */
+  channelIds: Array<Scalars['String']>;
+  /** Payment Network Code */
+  code: Scalars['String'];
+  /** Country */
+  country: Scalars['String'];
+  /** Country Account Number Type */
+  countryAccountNumberType: Scalars['String'];
+  /** Payment Network ID */
+  id: Scalars['String'];
+  /** Payment Network Name */
+  name: Scalars['String'];
+  /** Payment Network Status */
+  status: Scalars['String'];
+  /** Payment Network Updated At */
+  updatedAt: Scalars['DateTime'];
+};
+
 /** A single point transaction */
 export type PointTransaction = {
   __typename?: 'PointTransaction';
@@ -416,10 +535,16 @@ export type Query = {
   GetBeneficiaries: BeneficiaryPaginator;
   /** Get the current exchange rate between two currencies */
   GetExchangeRate: ExchangeRate;
+  /** Get the global exchange rate between two currencies */
+  GetGlobalExchangeRate: GlobalExchangeRate;
   /** Get a paginated list of notifications for the authenticated user */
   GetNotifications: NotificationPaginator;
+  /** Get the currently supported on-ramp channels for a specific country */
+  GetOnRampChannelsByCountryCode: Array<PaymentChannel>;
   /** Get the currently supported on-ramp currencies */
   GetOnRampCurrencies: Array<SupportedCurrency>;
+  /** Get the currently supported on-ramp networks by country code */
+  GetOnRampNetworkByCountryCode: Array<PaymentNetwork>;
   /** Get many point transactions */
   GetPointTransactions: PointTransactionPaginator;
   /** Get a single point transaction by UUID */
@@ -445,9 +570,25 @@ export type QueryGetExchangeRateArgs = {
 };
 
 
+export type QueryGetGlobalExchangeRateArgs = {
+  base: Scalars['String'];
+  target: Scalars['String'];
+};
+
+
 export type QueryGetNotificationsArgs = {
   first: Scalars['Int'];
   page?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type QueryGetOnRampChannelsByCountryCodeArgs = {
+  country_code: Scalars['String'];
+};
+
+
+export type QueryGetOnRampNetworkByCountryCodeArgs = {
+  country_code: Scalars['String'];
 };
 
 
@@ -622,6 +763,13 @@ export enum SortOrder {
   /** Sort records in descending order. */
   Desc = 'DESC'
 }
+
+export type Source = {
+  __typename?: 'Source';
+  accountNumber: Scalars['String'];
+  accountType: Scalars['String'];
+  networkId: Scalars['String'];
+};
 
 export type SupportedCurrency = {
   __typename?: 'SupportedCurrency';

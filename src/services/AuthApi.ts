@@ -1,5 +1,5 @@
-import { BaseApiService } from "./common/BaseService"
-import { OperationResult } from "urql"
+import { BaseApiService } from "./common/BaseService";
+import { OperationResult } from "urql";
 import {
   MutationSignUpArgs,
   MutationSignInArgs,
@@ -11,7 +11,7 @@ import {
   MutationResendEmailOtpArgs,
   AuthResponse,
   User,
-} from "../gql/graphql"
+} from "../gql/graphql";
 
 export default class AuthApi extends BaseApiService {
   // #region QUERIES
@@ -59,19 +59,20 @@ export default class AuthApi extends BaseApiService {
             locked_balance
             point_balance
             total_balance
+            id
           }
         }
       }
-		`
+		`;
 
     const response: Promise<
       OperationResult<{
-        GetAuthUser: User
+        GetAuthUser: User;
       }>
-    > = this.query(requestData, {})
+    > = this.query(requestData, {});
 
-    return response
-  }
+    return response;
+  };
   // #endregion QUERIES
 
   // #region MUTATIONS
@@ -82,7 +83,7 @@ export default class AuthApi extends BaseApiService {
    */
   public SignUp = (
     data: MutationSignUpArgs,
-    progressCallback: (progress: number) => void
+    progressCallback: (progress: number) => void,
   ) => {
     const requestData = `
     mutation SignUp(
@@ -111,7 +112,7 @@ export default class AuthApi extends BaseApiService {
         created_at
       }
     }
-  `
+  `;
 
     // const response: Promise<OperationResult<{ SignUp: User }>> = this.mutation(
     //   requestData,
@@ -120,12 +121,12 @@ export default class AuthApi extends BaseApiService {
 
     const response: Promise<
       OperationResult<{
-        SignUp: User
+        SignUp: User;
       }>
-    > = this.mutationWithProgress(requestData, data, progressCallback)
+    > = this.mutationWithProgress(requestData, data, progressCallback);
 
-    return response
-  }
+    return response;
+  };
 
   /**
    * @description Logs in a user with their credentials
@@ -152,17 +153,17 @@ export default class AuthApi extends BaseApiService {
 			phone
 			email_verified_at
 			phone_verified_at
-			status  
+			status
 		}
 		}
     }
-  `
+  `;
 
     const response: Promise<OperationResult<{ SignIn: AuthResponse }>> =
-      this.mutation(requestData, data)
+      this.mutation(requestData, data);
 
-    return response
-  }
+    return response;
+  };
 
   /**
    * @description Resends the email OTP to verify a user's email
@@ -174,13 +175,13 @@ export default class AuthApi extends BaseApiService {
     mutation ResendEmailOTP($email: String!) {
       ResendEmailOTP(email: $email)
     }
-  `
+  `;
 
     const response: Promise<OperationResult<{ ResendEmailOTP: boolean }>> =
-      this.mutation(requestData, data)
+      this.mutation(requestData, data);
 
-    return response
-  }
+    return response;
+  };
 
   /**
    * @description Sends a reset password OTP to the user's email
@@ -192,13 +193,13 @@ export default class AuthApi extends BaseApiService {
       mutation sendResetPasswordOTP($email: String!) {
         sendResetPasswordOTP(email: $email)
       }
-    `
+    `;
 
     const response: Promise<
       OperationResult<{ sendResetPasswordOTP: boolean }>
-    > = this.mutation(requestData, data)
-    return response
-  }
+    > = this.mutation(requestData, data);
+    return response;
+  };
 
   /**
    * @description Resets a user's password using OTP verification
@@ -218,13 +219,13 @@ export default class AuthApi extends BaseApiService {
           new_password: $new_password
         )
       }
-    `
+    `;
 
     const response: Promise<OperationResult<{ ResetPassword: boolean }>> =
-      this.mutation(requestData, data)
+      this.mutation(requestData, data);
 
-    return response
-  }
+    return response;
+  };
 
   /**
    * @description Verifies a user's OTP for authentication or account activation
@@ -242,13 +243,13 @@ export default class AuthApi extends BaseApiService {
           otp: $otp
         )
       }
-    `
+    `;
 
     const response: Promise<OperationResult<{ VerifyUserOTP: boolean }>> =
-      this.mutation(requestData, data)
+      this.mutation(requestData, data);
 
-    return response
-  }
+    return response;
+  };
 
   /**
    * @description Updates a user's password after authentication
@@ -266,13 +267,13 @@ export default class AuthApi extends BaseApiService {
           new_password: $new_password
         )
       }
-    `
+    `;
 
     const response: Promise<OperationResult<{ UpdatePassword: boolean }>> =
-      this.mutation(requestData, data)
+      this.mutation(requestData, data);
 
-    return response
-  }
+    return response;
+  };
 
   /**
    * @description Verifies a user's identity.
@@ -294,13 +295,30 @@ export default class AuthApi extends BaseApiService {
         id_country: $id_country
       )
     }
-  `
+  `;
 
     const response: Promise<OperationResult<{ VerifyUserIdentity: boolean }>> =
-      this.mutation(requestData, data)
+      this.mutation(requestData, data);
 
-    return response
-  }
+    return response;
+  };
+
+  /**
+   * @description Logs out a user.
+   * @response Boolean indicating success or failure
+   */
+  public SignOut = () => {
+    const requestData = `
+    mutation SignOut {
+       SignOut
+    }
+  `;
+
+    const response: Promise<OperationResult<{ SignOut: boolean }>> =
+      this.mutation(requestData, {});
+
+    return response;
+  };
 
   // #endregion MUTATIONS
 }

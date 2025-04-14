@@ -1,5 +1,5 @@
-import { BaseApiService } from "./common/BaseService"
-import { OperationResult } from "urql"
+import { BaseApiService } from "./common/BaseService";
+import { OperationResult } from "urql";
 import {
   MutationInitiateTopupArgs,
   MutationMakePaymentArgs,
@@ -15,7 +15,12 @@ import {
   PointTransactionPaginator,
   QueryGetPointTransactionsArgs,
   SupportedCurrency,
-} from "../gql/graphql"
+  GlobalExchangeRate,
+  PaymentChannel,
+  PaymentNetwork,
+  PaymentCollectionResponse,
+  MutationMonitorTopupStatusArgs,
+} from "../gql/graphql";
 
 export default class WalletsApi extends BaseApiService {
   // Query
@@ -32,197 +37,205 @@ export default class WalletsApi extends BaseApiService {
             updatedAt
           }
         }
-      } 
-		`
-
-    const response: Promise<
-      OperationResult<{
-        GetExchangeRate: ExchangeRate
-      }>
-    > = this.query(requestData, data)
-
-    return response
-  }
-
-  /**
-   * @description Retrieves a paginated list of transactions for the authenticated user.
-   * @params data - QueryGetTransactionsArgs containing filtering, sorting, pagination options.
-   * @response A paginated list of transactions with metadata.
-   */
-  public GetTransactions = (data: QueryGetTransactionsArgs) => {
-    const requestData = `
-        query GetTransactions($orderBy: [QueryGetTransactionsOrderByOrderByClause!], $where: QueryGetTransactionsWhereWhereConditions, $first: Int!, $page: Int) {
-          GetTransactions(orderBy: $orderBy, where: $where, first: $first, page: $page) {
-            paginatorInfo {
-              count
-              currentPage
-              firstItem
-              hasMorePages
-              lastItem
-              lastPage
-              perPage
-              total
-            }
-            data {
-              uuid
-              dr_or_cr
-              currency
-              wallet_id
-              user_id
-              amount
-              wallet_balance
-              charge_id
-              chargeable_type
-              description
-              status
-              charges
-              reference
-              state
-              gateway
-              created_at
-              updated_at
-            }
-          }
-        }
-      `
-
-    const response: Promise<
-      OperationResult<{
-        GetTransactions: TransactionPaginator
-      }>
-    > = this.query(requestData, data)
-
-    return response
-  }
-
-  /**
-   * @description Retrieves details of a single transaction by UUID.
-   * @params uuid - The unique identifier of the transaction.
-   * @response A single transaction object with its details.
-   */
-  public GetSingleTransaction = (data: QueryGetSingleTransactionArgs) => {
-    const requestData = `
-      query GetSingleTransaction($uuid: String!) {
-        GetSingleTransaction(uuid: $uuid) {
-          uuid
-          dr_or_cr
-          currency
-          wallet_id
-          user_id
-          amount
-          wallet_balance
-          charge_id
-          chargeable_type
-          description
-          status
-          charges
-          reference
-          state
-          gateway
-          created_at
-          updated_at
-        }
       }
-    `
+		`;
 
     const response: Promise<
       OperationResult<{
-        GetSingleTransaction: Transaction
+        GetExchangeRate: ExchangeRate;
       }>
-    > = this.query(requestData, data)
+    > = this.query(requestData, data);
 
-    return response
-  }
+    return response;
+  };
 
-  /**
-   * @description Retrieves a paginated list of point transactions for the authenticated user.
-   * @params first - Number of transactions per page, page (optional) - Page number for pagination.
-   * @response A paginated list of point transactions with metadata.
-   */
-  public GetPointTransactions = (data: QueryGetPointTransactionsArgs) => {
+  public GetPointTransactions = (
+    page: number,
+    count: number,
+    orderType = "CREATED_AT",
+    order: "ASC" | "DESC",
+    whereQuery = "",
+  ) => {
     const requestData = `
-      query GetPointTransactions($first: Int!, $page: Int) {
-        GetPointTransactions(first: $first, page: $page) {
+      query GetPointTransactions(
+        $page: Int!,
+        $count: Int!
+      ){
+        GetPointTransactions(
+          first: $count,
+          page: $page,
+          orderBy: {
+            column: ${orderType ? orderType : "CREATED_AT"},
+            order: ${order}
+          }
+          ${whereQuery ? `where: ${whereQuery}` : ""}
+        ) {
+          paginatorInfo {
+            total
+            perPage
+            lastPage
+            lastItem
+            hasMorePages
+            firstItem
+            currentPage
+            count
+          }
           data {
             uuid
-            dr_or_cr
-            wallet_id
-            user_id
             amount
-            point_balance
             charge_id
-            state
             chargeable_type
-            description
-            status
-            reference
-            extra_data
-            currency
             created_at
-            updated_at
-          }
-          paginatorInfo {
-            count
-            currentPage
-            firstItem
-            hasMorePages
-            lastItem
-            lastPage
-            perPage
-            total
+            currency
+            description
+            dr_or_cr
+            point_balance
+            reference
+            state
+            status
           }
         }
       }
-    `
-
+    `;
     const response: Promise<
       OperationResult<{
-        GetPointTransactions: PointTransactionPaginator
+        GetPointTransactions: PointTransactionPaginator;
       }>
-    > = this.query(requestData, data)
+    > = this.query(requestData, {
+      page,
+      count,
+    });
 
-    return response
-  }
+    return response;
+  };
 
-  /**
-   * @description Retrieves details of a single point transaction by UUID.
-   * @params uuid - The unique identifier of the point transaction.
-   * @response A single point transaction object with its details.
-   */
-  public GetSinglePointTransaction = (
-    data: QueryGetSinglePointTransactionArgs
+  public GetTransactions = (
+    page: number,
+    count: number,
+    orderType = "CREATED_AT",
+    order: "ASC" | "DESC",
+    whereQuery = "",
   ) => {
+    const requestData = `
+      query GetTransactions(
+        $page: Int!,
+        $count: Int!
+      ){
+        GetTransactions(
+          first: $count,
+          page: $page,
+          orderBy: {
+            column: ${orderType ? orderType : "CREATED_AT"},
+            order: ${order}
+          }
+          ${whereQuery ? `where: ${whereQuery}` : ""}
+        ) {
+          paginatorInfo {
+            total
+            perPage
+            lastPage
+            lastItem
+            hasMorePages
+            firstItem
+            currentPage
+            count
+          }
+          data {
+            amount
+            gateway
+            reference
+            charges
+            chargeable_type
+            currency
+            description
+            dr_or_cr
+            state
+            status
+            wallet_balance
+            uuid
+            created_at
+          }
+        }
+      }
+    `;
+    const response: Promise<
+      OperationResult<{
+        GetTransactions: TransactionPaginator;
+      }>
+    > = this.query(requestData, {
+      page,
+      count,
+    });
+
+    return response;
+  };
+
+  public GetSinglePointTransaction = (uuid: string) => {
     const requestData = `
       query GetSinglePointTransaction($uuid: String!) {
         GetSinglePointTransaction(uuid: $uuid) {
-          uuid
-          dr_or_cr
-          currency
-          wallet_id
-          user_id
           amount
-          point_balance
           charge_id
           chargeable_type
+          created_at
+          currency
           description
-          status
+          dr_or_cr
           extra_data
+          point_balance
           reference
           state
-          created_at
+          status
           updated_at
+          uuid
         }
       }
-    `
+    `;
+    const response: Promise<
+      OperationResult<{
+        GetSinglePointTransaction: PointTransaction;
+      }>
+    > = this.query(requestData, {
+      uuid,
+    });
+
+    return response;
+  };
+
+  public GetSingleTransaction = (uuid: string) => {
+    const requestData = `
+      query GetSingleTransaction($uuid: String!) {
+        GetSingleTransaction(uuid: $uuid) {
+          amount
+          charge_id
+          chargeable_type
+          charges
+          created_at
+          currency
+          description
+          dr_or_cr
+          gateway
+          reference
+          state
+          status
+          updated_at
+          uuid
+          wallet_balance
+        }
+      }
+    `;
 
     const response: Promise<
       OperationResult<{
-        GetSinglePointTransaction: PointTransaction
+        GetSingleTransaction: Transaction;
       }>
-    > = this.query(requestData, data)
+    > = this.query(requestData, {
+      uuid,
+    });
 
-    return response
-  }
+    return response;
+  };
+
   /**
    * @description Retrieves the list of currently supported on-ramp currencies.
    * @response An array of supported currencies with details including country, code, and supported methods.
@@ -237,18 +250,80 @@ export default class WalletsApi extends BaseApiService {
           supported_methods
         }
       }
-    `
+    `;
 
     const response: Promise<
       OperationResult<{
-        GetOnRampCurrencies: SupportedCurrency[]
+        GetOnRampCurrencies: SupportedCurrency[];
       }>
-    > = this.query(requestData, {})
+    > = this.query(requestData, {});
 
-    return response
-  }
+    return response;
+  };
 
-  //
+  /**
+   * @description Retrieves the list of currently supported on-ramp channels for a given country code.
+   * @response An array of supported channels with details including country, code, and supported methods.
+   */
+  public GetOnRampChannelsByCountryCode = (countryCode: string) => {
+    const requestData = `
+      query GetOnRampChannelsByCountryCode($countryCode: String!) {
+        GetOnRampChannelsByCountryCode(country_code: $countryCode) {
+           id
+           max
+           currency
+           countryCurrency
+           country
+           status
+           feeLocal
+           feeUSD
+           min
+           channelType
+           apiStatus
+           vendorId
+           rampType
+        }
+      }
+    `;
+
+    const response: Promise<
+      OperationResult<{
+        GetOnRampChannelsByCountryCode: PaymentChannel[];
+      }>
+    > = this.query(requestData, { countryCode });
+
+    return response;
+  };
+
+  /**
+   * @description Retrieves the list of currently supported on-ramp networks for a given country code.
+   * @response An array of supported networks with details including country, code, and supported methods.
+   */
+  public GetOnRampNetworkByCountryCode = (countryCode: string) => {
+    const requestData = `
+      query GetOnRampNetworkByCountryCode($countryCode: String!) {
+        GetOnRampNetworkByCountryCode(country_code: $countryCode) {
+           id
+           code
+           status
+           channelIds
+           accountNumberType
+           country
+           name
+           countryAccountNumberType
+        }
+      }
+    `;
+
+    const response: Promise<
+      OperationResult<{
+        GetOnRampNetworkByCountryCode: PaymentNetwork[];
+      }>
+    > = this.query(requestData, { countryCode });
+
+    return response;
+  };
+
   // Mutation
   /**
    * @description Initiates a top-up transaction with the specified method, amount, currency, and payment metadata.
@@ -257,26 +332,48 @@ export default class WalletsApi extends BaseApiService {
    */
   public InitiateTopup = (data: MutationInitiateTopupArgs) => {
     const requestData = `
-    mutation InitiateTopup(
-      $method: String!,
-      $amount: Float!,
-      $currency: String!,
-      $payment_metadata: String!
-    ) {
-      InitiateTopup(
-        method: $method,
-        amount: $amount,
-        currency: $currency,
-        payment_metadata: $payment_metadata
-      )
-    }
-  `
+      mutation InitiateTopup(
+           $method: String!,
+           $amount: Float!,
+           $currency: String!,
+           $payment_metadata: String!
+         ) {
+           InitiateTopup(
+             method: $method,
+             amount: $amount,
+             currency: $currency,
+             payment_metadata: $payment_metadata
+           ) {
+            id
+             currency
+             status
+             partnerFeeAmountLocal
+             serviceFeeAmountUSD
+             partnerFeeAmountUSD
+             serviceFeeAmountLocal
+             country
+             reference
+             expiresAt
+             requestSource
+             amount
+             rate
+             bankInfo {
+               name
+               accountNumber
+               accountName
+             }
+             convertedAmount
+             serviceFeeAmountLocal
+           }
+         }
+  `;
 
-    const response: Promise<OperationResult<{ InitiateTopup: boolean }>> =
-      this.mutation(requestData, data)
+    const response: Promise<
+      OperationResult<{ InitiateTopup: PaymentCollectionResponse }>
+    > = this.mutation(requestData, data);
 
-    return response
-  }
+    return response;
+  };
 
   /**
    * @description Initiates a payment to another user with the specified receiver, amount, and currency.
@@ -296,13 +393,37 @@ export default class WalletsApi extends BaseApiService {
         currency: $currency
       )
     }
-  `
+  `;
 
     const response: Promise<OperationResult<{ MakePayment: boolean }>> =
-      this.mutation(requestData, data)
+      this.mutation(requestData, data);
 
-    return response
-  }
+    return response;
+  };
+
+  public GetGlobalExchangeRate = (base: string, target: string) => {
+    const requestData = `
+      query GetGlobalExchangeRate($base: String!, $target: String!) {
+        GetGlobalExchangeRate(base: $base, target: $target) {
+          base
+          target
+          mid
+          unit
+        }
+      }
+		`;
+
+    const response: Promise<
+      OperationResult<{
+        GetGlobalExchangeRate: GlobalExchangeRate;
+      }>
+    > = this.query(requestData, {
+      base,
+      target,
+    });
+
+    return response;
+  };
 
   /**
    * @description Redeems a specified amount of GRP tokens for the authenticated user.
@@ -318,11 +439,28 @@ export default class WalletsApi extends BaseApiService {
         grp_amount: $grp_amount
       )
     }
-  `
+  `;
 
     const response: Promise<OperationResult<{ RedeemGRPToken: boolean }>> =
-      this.mutation(requestData, data)
+      this.mutation(requestData, data);
 
-    return response
-  }
+    return response;
+  };
+
+  public MonitorTopupStatus = (data: MutationMonitorTopupStatusArgs) => {
+    const requestData = `
+    mutation MonitorTopupStatus(
+      $collection_id: String!
+    ) {
+      MonitorTopupStatus(
+        collection_id: $collection_id
+      )
+    }
+  `;
+
+    const response: Promise<OperationResult<{ MonitorTopupStatus: boolean }>> =
+      this.mutation(requestData, data);
+
+    return response;
+  };
 }
