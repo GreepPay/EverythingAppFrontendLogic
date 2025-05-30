@@ -40,6 +40,33 @@ export type Account = {
   uuid: Scalars['String'];
 };
 
+export type Address = {
+  __typename?: 'Address';
+  city?: Maybe<Scalars['String']>;
+  country?: Maybe<Scalars['String']>;
+  phone?: Maybe<Scalars['String']>;
+  postalCode?: Maybe<Scalars['String']>;
+  state?: Maybe<Scalars['String']>;
+  street?: Maybe<Scalars['String']>;
+};
+
+export type AddressInput = {
+  city?: InputMaybe<Scalars['String']>;
+  country?: InputMaybe<Scalars['String']>;
+  phone?: InputMaybe<Scalars['String']>;
+  postalCode?: InputMaybe<Scalars['String']>;
+  state?: InputMaybe<Scalars['String']>;
+  street?: InputMaybe<Scalars['String']>;
+};
+
+export type AppliedDiscount = {
+  __typename?: 'AppliedDiscount';
+  code?: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']>;
+  type?: Maybe<DiscountType>;
+  value?: Maybe<Scalars['Float']>;
+};
+
 export type AuthResponse = {
   __typename?: 'AuthResponse';
   token: Scalars['String'];
@@ -81,6 +108,85 @@ export type BeneficiaryPaginator = {
   paginatorInfo: PaginatorInfo;
 };
 
+export type Billing = {
+  __typename?: 'Billing';
+  gracePeriod: Scalars['Int'];
+  interval: BillingInterval;
+  trialDays: Scalars['Int'];
+};
+
+export enum BillingInterval {
+  Annual = 'ANNUAL',
+  Custom = 'CUSTOM',
+  Monthly = 'MONTHLY'
+}
+
+/** Business profile details. */
+export type Business = {
+  __typename?: 'Business';
+  /** Business banner URL. */
+  banner?: Maybe<Scalars['String']>;
+  /** Business name. */
+  business_name?: Maybe<Scalars['String']>;
+  /** Business description. */
+  description?: Maybe<Scalars['String']>;
+  /** Unique identifier for the business. */
+  id: Scalars['String'];
+  /** Business logo URL. */
+  logo?: Maybe<Scalars['String']>;
+  products?: Maybe<Array<Maybe<Product>>>;
+  /** Business website URL. */
+  website?: Maybe<Scalars['String']>;
+};
+
+/** A paginated list of Business items. */
+export type BusinessPaginator = {
+  __typename?: 'BusinessPaginator';
+  /** A list of Business items. */
+  data: Array<Business>;
+  /** Pagination information about the list of items. */
+  paginatorInfo: PaginatorInfo;
+};
+
+export type Carrier = {
+  __typename?: 'Carrier';
+  name?: Maybe<Scalars['String']>;
+  serviceLevel?: Maybe<Scalars['String']>;
+  trackingUrlTemplate?: Maybe<Scalars['String']>;
+};
+
+export type Category = {
+  __typename?: 'Category';
+  createdAt?: Maybe<Scalars['DateTime']>;
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['Int'];
+  name?: Maybe<Scalars['String']>;
+  parentId?: Maybe<Scalars['Int']>;
+  updatedAt?: Maybe<Scalars['DateTime']>;
+};
+
+/** A paginated list of Category items. */
+export type CategoryPaginator = {
+  __typename?: 'CategoryPaginator';
+  /** A list of Category items. */
+  data: Array<Category>;
+  /** Pagination information about the list of items. */
+  paginatorInfo: PaginatorInfo;
+};
+
+export type Coordinates = {
+  __typename?: 'Coordinates';
+  lat: Scalars['Float'];
+  lng: Scalars['Float'];
+};
+
+export type CreateOrderInput = {
+  billingAddress?: InputMaybe<AddressInput>;
+  items?: InputMaybe<Array<InputMaybe<OrderItemInput>>>;
+  paymentMethod?: InputMaybe<Scalars['String']>;
+  shippingAddress?: InputMaybe<AddressInput>;
+};
+
 /** A single customer profile */
 export type Customer = {
   __typename?: 'Customer';
@@ -106,6 +212,92 @@ export type Customer = {
   updated_at: Scalars['DateTime'];
 };
 
+export type Delivery = {
+  __typename?: 'Delivery';
+  actualDelivery?: Maybe<Scalars['DateTime']>;
+  carrier?: Maybe<Carrier>;
+  deliveryAttempts?: Maybe<Scalars['Int']>;
+  estimatedDelivery?: Maybe<Scalars['DateTime']>;
+  orderId?: Maybe<Scalars['ID']>;
+  recipientSignature?: Maybe<Scalars['String']>;
+  status?: Maybe<DeliveryStatus>;
+  trackingNumber?: Maybe<Scalars['String']>;
+  trackingUpdates?: Maybe<Array<Maybe<TrackingEvent>>>;
+};
+
+/** A paginated list of Delivery items. */
+export type DeliveryPaginator = {
+  __typename?: 'DeliveryPaginator';
+  /** A list of Delivery items. */
+  data: Array<Delivery>;
+  /** Pagination information about the list of items. */
+  paginatorInfo: PaginatorInfo;
+};
+
+export enum DeliveryStatus {
+  Delivered = 'DELIVERED',
+  Failed = 'FAILED',
+  FailedAttempt = 'FAILED_ATTEMPT',
+  InTransit = 'IN_TRANSIT',
+  LabelCreated = 'LABEL_CREATED',
+  OutForDelivery = 'OUT_FOR_DELIVERY',
+  Pending = 'PENDING',
+  Processing = 'PROCESSING',
+  Returned = 'RETURNED',
+  ReturnToSender = 'RETURN_TO_SENDER',
+  Shipped = 'SHIPPED'
+}
+
+export type DigitalProduct = {
+  __typename?: 'DigitalProduct';
+  download: Download;
+  fileInfo: FileInfo;
+  license?: Maybe<License>;
+};
+
+export type Dimensions = {
+  __typename?: 'Dimensions';
+  height: Scalars['Float'];
+  length: Scalars['Float'];
+  width: Scalars['Float'];
+};
+
+export enum DiscountType {
+  FixedAmount = 'fixed_amount',
+  Percentage = 'percentage'
+}
+
+export type Download = {
+  __typename?: 'Download';
+  accessExpiration?: Maybe<Scalars['DateTime']>;
+  downloadLimit?: Maybe<Scalars['Int']>;
+  url: Scalars['String'];
+};
+
+export type EventDetails = {
+  __typename?: 'EventDetails';
+  capacity?: Maybe<Scalars['Int']>;
+  endDate: Scalars['DateTime'];
+  location?: Maybe<Location>;
+  onlineUrl?: Maybe<Scalars['String']>;
+  registeredCount: Scalars['Int'];
+  startDate: Scalars['DateTime'];
+  venueName?: Maybe<Scalars['String']>;
+  waitlistEnabled: Scalars['Boolean'];
+};
+
+export type EventProduct = {
+  __typename?: 'EventProduct';
+  eventDetails: EventDetails;
+  eventType: EventType;
+};
+
+export enum EventType {
+  Hybrid = 'HYBRID',
+  Offline = 'OFFLINE',
+  Online = 'ONLINE'
+}
+
 export type ExchangeRate = {
   __typename?: 'ExchangeRate';
   rates: Array<ExchangeRateItem>;
@@ -119,6 +311,12 @@ export type ExchangeRateItem = {
   rateId: Scalars['String'];
   sell: Scalars['Float'];
   updatedAt: Scalars['String'];
+};
+
+export type FileInfo = {
+  __typename?: 'FileInfo';
+  format: Scalars['String'];
+  size: Scalars['Int'];
 };
 
 export type GlobalExchangeRate = {
@@ -135,10 +333,40 @@ export type GlobalExchangeRate = {
   unit: Scalars['Int'];
 };
 
+export type Inventory = {
+  __typename?: 'Inventory';
+  isBackorderAllowed: Scalars['Boolean'];
+  lowStockThreshold: Scalars['Int'];
+  stock: Scalars['Int'];
+};
+
+export type License = {
+  __typename?: 'License';
+  key: Scalars['String'];
+  type: LicenseType;
+};
+
+export enum LicenseType {
+  Multi = 'MULTI',
+  Perpetual = 'PERPETUAL',
+  Single = 'SINGLE'
+}
+
+export type Location = {
+  __typename?: 'Location';
+  address: Scalars['String'];
+  city: Scalars['String'];
+  coordinates?: Maybe<Coordinates>;
+  country: Scalars['String'];
+  postalCode?: Maybe<Scalars['String']>;
+  state?: Maybe<Scalars['String']>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   /** Add a user as a beneficiary */
   AddAsBeneficiary: Beneficiary;
+  CreateOrder?: Maybe<Order>;
   /** Initiate a top-up transaction */
   InitiateTopup: PaymentCollectionResponse;
   /** Make a payment to another user */
@@ -159,6 +387,8 @@ export type Mutation = {
   SavePushNotificationToken?: Maybe<Scalars['Boolean']>;
   /** Sign in a user */
   SignIn: AuthResponse;
+  /** Sign out a user */
+  SignOut: Scalars['Boolean'];
   /** Sign up a new user */
   SignUp: User;
   /** Update user password */
@@ -177,6 +407,11 @@ export type Mutation = {
 export type MutationAddAsBeneficiaryArgs = {
   metadata: Scalars['String'];
   user_uuid: Scalars['String'];
+};
+
+
+export type MutationCreateOrderArgs = {
+  input: CreateOrderInput;
 };
 
 
@@ -318,6 +553,31 @@ export type NotificationPaginator = {
   paginatorInfo: PaginatorInfo;
 };
 
+export type Order = {
+  __typename?: 'Order';
+  appliedDiscounts?: Maybe<Array<Maybe<AppliedDiscount>>>;
+  billingAddress?: Maybe<Address>;
+  cancellationReason?: Maybe<Scalars['String']>;
+  currency?: Maybe<Scalars['String']>;
+  customerId?: Maybe<Scalars['Int']>;
+  discountAmount?: Maybe<Scalars['Float']>;
+  id?: Maybe<Scalars['Int']>;
+  items?: Maybe<Array<Maybe<OrderItem>>>;
+  paymentDetails?: Maybe<PaymentDetails>;
+  paymentMethod?: Maybe<Scalars['String']>;
+  paymentStatus?: Maybe<PaymentStatus>;
+  refundDetails?: Maybe<RefundDetails>;
+  refundId?: Maybe<Scalars['String']>;
+  saleId?: Maybe<Scalars['Int']>;
+  shippingAddress?: Maybe<Address>;
+  status?: Maybe<OrderStatus>;
+  statusHistory?: Maybe<Array<Maybe<StatusUpdate>>>;
+  subtotalAmount?: Maybe<Scalars['Float']>;
+  taxAmount?: Maybe<Scalars['Float']>;
+  taxDetails?: Maybe<Array<Maybe<TaxDetail>>>;
+  totalAmount?: Maybe<Scalars['Float']>;
+};
+
 /** Allows ordering a list of records. */
 export type OrderByClause = {
   /** The column that is used for ordering. */
@@ -344,6 +604,44 @@ export enum OrderByRelationWithColumnAggregateFunction {
   Min = 'MIN',
   /** Sum. */
   Sum = 'SUM'
+}
+
+export type OrderItem = {
+  __typename?: 'OrderItem';
+  discountAmount?: Maybe<Scalars['Float']>;
+  fulfilledQuantity?: Maybe<Scalars['Int']>;
+  price?: Maybe<Scalars['Float']>;
+  productId?: Maybe<Scalars['String']>;
+  quantity?: Maybe<Scalars['Int']>;
+  sku?: Maybe<Scalars['String']>;
+  taxAmount?: Maybe<Scalars['Float']>;
+  taxRate?: Maybe<Scalars['Float']>;
+  total?: Maybe<Scalars['Float']>;
+};
+
+export type OrderItemInput = {
+  price?: InputMaybe<Scalars['Float']>;
+  productId?: InputMaybe<Scalars['String']>;
+  quantity?: InputMaybe<Scalars['Int']>;
+  sku?: InputMaybe<Scalars['String']>;
+};
+
+/** A paginated list of Order items. */
+export type OrderPaginator = {
+  __typename?: 'OrderPaginator';
+  /** A list of Order items. */
+  data: Array<Order>;
+  /** Pagination information about the list of items. */
+  paginatorInfo: PaginatorInfo;
+};
+
+export enum OrderStatus {
+  Cancelled = 'CANCELLED',
+  Delivered = 'DELIVERED',
+  Pending = 'PENDING',
+  Processing = 'PROCESSING',
+  Returned = 'RETURNED',
+  Shipped = 'SHIPPED'
 }
 
 /** Information about pagination using a fully featured paginator. */
@@ -436,6 +734,17 @@ export type PaymentCollectionResponse = {
   updatedAt: Scalars['String'];
 };
 
+export type PaymentDetails = {
+  __typename?: 'PaymentDetails';
+  amount?: Maybe<Scalars['Float']>;
+  currency?: Maybe<Scalars['String']>;
+  method?: Maybe<Scalars['String']>;
+  provider?: Maybe<Scalars['String']>;
+  status?: Maybe<Scalars['String']>;
+  timestamp?: Maybe<Scalars['String']>;
+  transactionId?: Maybe<Scalars['String']>;
+};
+
 export type PaymentNetwork = {
   __typename?: 'PaymentNetwork';
   /** Account Number Type */
@@ -456,6 +765,21 @@ export type PaymentNetwork = {
   status: Scalars['String'];
   /** Payment Network Updated At */
   updatedAt: Scalars['DateTime'];
+};
+
+export enum PaymentStatus {
+  Completed = 'COMPLETED',
+  Failed = 'FAILED',
+  Pending = 'PENDING',
+  Refunded = 'REFUNDED'
+}
+
+export type PhysicalProduct = {
+  __typename?: 'PhysicalProduct';
+  dimensions: Dimensions;
+  inventory: Inventory;
+  shippingClass: ShippingClass;
+  weight: Scalars['Float'];
 };
 
 /** A single point transaction */
@@ -504,15 +828,79 @@ export type PointTransactionPaginator = {
   paginatorInfo: PaginatorInfo;
 };
 
+export type Product = {
+  __typename?: 'Product';
+  categoryIds: Array<Scalars['String']>;
+  createdAt: Scalars['DateTime'];
+  currency: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  digital?: Maybe<DigitalProduct>;
+  event?: Maybe<EventProduct>;
+  id: Scalars['Int'];
+  images: Array<ProductImage>;
+  name: Scalars['String'];
+  physical?: Maybe<PhysicalProduct>;
+  price: Scalars['Float'];
+  sku: Scalars['String'];
+  status: ProductStatus;
+  subscription?: Maybe<SubscriptionProduct>;
+  tags: Array<Scalars['String']>;
+  taxCode?: Maybe<Scalars['String']>;
+  type: ProductType;
+  updatedAt: Scalars['DateTime'];
+  variants: Array<ProductVariant>;
+};
+
+export type ProductImage = {
+  __typename?: 'ProductImage';
+  altText?: Maybe<Scalars['String']>;
+  isPrimary?: Maybe<Scalars['Boolean']>;
+  url: Scalars['String'];
+};
+
+/** A paginated list of Product items. */
+export type ProductPaginator = {
+  __typename?: 'ProductPaginator';
+  /** A list of Product items. */
+  data: Array<Product>;
+  /** Pagination information about the list of items. */
+  paginatorInfo: PaginatorInfo;
+};
+
+export enum ProductStatus {
+  Active = 'ACTIVE',
+  Archived = 'ARCHIVED',
+  Discontinued = 'DISCONTINUED',
+  Draft = 'DRAFT'
+}
+
+export enum ProductType {
+  Digital = 'digital',
+  Event = 'event',
+  Physical = 'physical',
+  Subscription = 'subscription'
+}
+
+export type ProductVariant = {
+  __typename?: 'ProductVariant';
+  attributes?: Maybe<Array<Maybe<Scalars['String']>>>;
+  id: Scalars['ID'];
+  inventory?: Maybe<Scalars['Int']>;
+  priceAdjustment: Scalars['Float'];
+  sku: Scalars['String'];
+};
+
 /** A user profile on Greep */
 export type Profile = {
   __typename?: 'Profile';
   /** User UUID */
   auth_user_id: Scalars['String'];
+  /** The attached business */
+  business?: Maybe<Business>;
   /** Profile Created At */
   created_at: Scalars['DateTime'];
   /** The attached customer */
-  customer: Customer;
+  customer?: Maybe<Customer>;
   /** Default Currency */
   default_currency: Scalars['String'];
   /** Profile Picture URL (optional) */
@@ -533,10 +921,14 @@ export type Query = {
   GetAuthUser?: Maybe<User>;
   /** Get a paginated list of beneficiaries for the authenticated user */
   GetBeneficiaries: BeneficiaryPaginator;
+  GetCategories: CategoryPaginator;
+  GetDeliveries: DeliveryPaginator;
   /** Get the current exchange rate between two currencies */
   GetExchangeRate: ExchangeRate;
   /** Get the global exchange rate between two currencies */
   GetGlobalExchangeRate: GlobalExchangeRate;
+  GetMarkets: BusinessPaginator;
+  GetMyTickets: TicketPaginator;
   /** Get a paginated list of notifications for the authenticated user */
   GetNotifications: NotificationPaginator;
   /** Get the currently supported on-ramp channels for a specific country */
@@ -545,12 +937,20 @@ export type Query = {
   GetOnRampCurrencies: Array<SupportedCurrency>;
   /** Get the currently supported on-ramp networks by country code */
   GetOnRampNetworkByCountryCode: Array<PaymentNetwork>;
+  GetOrders: OrderPaginator;
   /** Get many point transactions */
   GetPointTransactions: PointTransactionPaginator;
+  GetProducts: ProductPaginator;
+  GetSingleDelivery?: Maybe<Delivery>;
+  GetSingleOrder?: Maybe<Order>;
   /** Get a single point transaction by UUID */
   GetSinglePointTransaction?: Maybe<PointTransaction>;
+  GetSingleProduct?: Maybe<Product>;
+  GetSingleTicket?: Maybe<Ticket>;
   /** Get a single transaction by UUID */
   GetSingleTransaction?: Maybe<Transaction>;
+  /** Get user by UUID */
+  GetSingleUser?: Maybe<User>;
   /** Get many transactions - paginated list of transactions for the authenticated user */
   GetTransactions: TransactionPaginator;
   /** Search users by name */
@@ -564,6 +964,21 @@ export type QueryGetBeneficiariesArgs = {
 };
 
 
+export type QueryGetCategoriesArgs = {
+  first: Scalars['Int'];
+  orderBy?: InputMaybe<Array<QueryGetCategoriesOrderByOrderByClause>>;
+  page?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type QueryGetDeliveriesArgs = {
+  first: Scalars['Int'];
+  orderBy?: InputMaybe<Array<QueryGetDeliveriesOrderByOrderByClause>>;
+  page?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<QueryGetDeliveriesWhereWhereConditions>;
+};
+
+
 export type QueryGetExchangeRateArgs = {
   from_currency: Scalars['String'];
   to_currency: Scalars['String'];
@@ -573,6 +988,20 @@ export type QueryGetExchangeRateArgs = {
 export type QueryGetGlobalExchangeRateArgs = {
   base: Scalars['String'];
   target: Scalars['String'];
+};
+
+
+export type QueryGetMarketsArgs = {
+  first: Scalars['Int'];
+  orderBy?: InputMaybe<Array<QueryGetMarketsOrderByOrderByClause>>;
+  page?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<QueryGetMarketsWhereWhereConditions>;
+};
+
+
+export type QueryGetMyTicketsArgs = {
+  first: Scalars['Int'];
+  page?: InputMaybe<Scalars['Int']>;
 };
 
 
@@ -592,6 +1021,14 @@ export type QueryGetOnRampNetworkByCountryCodeArgs = {
 };
 
 
+export type QueryGetOrdersArgs = {
+  first: Scalars['Int'];
+  orderBy?: InputMaybe<Array<QueryGetOrdersOrderByOrderByClause>>;
+  page?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<QueryGetOrdersWhereWhereConditions>;
+};
+
+
 export type QueryGetPointTransactionsArgs = {
   first: Scalars['Int'];
   orderBy?: InputMaybe<Array<QueryGetPointTransactionsOrderByOrderByClause>>;
@@ -600,12 +1037,45 @@ export type QueryGetPointTransactionsArgs = {
 };
 
 
+export type QueryGetProductsArgs = {
+  first: Scalars['Int'];
+  orderBy?: InputMaybe<Array<QueryGetProductsOrderByOrderByClause>>;
+  page?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<QueryGetProductsWhereWhereConditions>;
+};
+
+
+export type QueryGetSingleDeliveryArgs = {
+  where?: InputMaybe<QueryGetSingleDeliveryWhereWhereConditions>;
+};
+
+
+export type QueryGetSingleOrderArgs = {
+  id: Scalars['ID'];
+};
+
+
 export type QueryGetSinglePointTransactionArgs = {
   uuid: Scalars['String'];
 };
 
 
+export type QueryGetSingleProductArgs = {
+  where?: InputMaybe<QueryGetSingleProductWhereWhereConditions>;
+};
+
+
+export type QueryGetSingleTicketArgs = {
+  where?: InputMaybe<QueryGetSingleTicketWhereWhereConditions>;
+};
+
+
 export type QueryGetSingleTransactionArgs = {
+  uuid: Scalars['String'];
+};
+
+
+export type QueryGetSingleUserArgs = {
   uuid: Scalars['String'];
 };
 
@@ -620,6 +1090,159 @@ export type QueryGetTransactionsArgs = {
 
 export type QuerySearchUsersArgs = {
   query: Scalars['String'];
+};
+
+/** Allowed column names for Query.GetCategories.orderBy. */
+export enum QueryGetCategoriesOrderByColumn {
+  Name = 'NAME'
+}
+
+/** Order by clause for Query.GetCategories.orderBy. */
+export type QueryGetCategoriesOrderByOrderByClause = {
+  /** The column that is used for ordering. */
+  column: QueryGetCategoriesOrderByColumn;
+  /** The direction that is used for ordering. */
+  order: SortOrder;
+};
+
+/** Allowed column names for Query.GetDeliveries.orderBy. */
+export enum QueryGetDeliveriesOrderByColumn {
+  CreatedAt = 'CREATED_AT'
+}
+
+/** Order by clause for Query.GetDeliveries.orderBy. */
+export type QueryGetDeliveriesOrderByOrderByClause = {
+  /** The column that is used for ordering. */
+  column: QueryGetDeliveriesOrderByColumn;
+  /** The direction that is used for ordering. */
+  order: SortOrder;
+};
+
+/** Allowed column names for Query.GetDeliveries.where. */
+export enum QueryGetDeliveriesWhereColumn {
+  OrderId = 'ORDER_ID',
+  Status = 'STATUS'
+}
+
+/** Dynamic WHERE conditions for the `where` argument of the query `GetDeliveries`. */
+export type QueryGetDeliveriesWhereWhereConditions = {
+  /** A set of conditions that requires all conditions to match. */
+  AND?: InputMaybe<Array<QueryGetDeliveriesWhereWhereConditions>>;
+  /** Check whether a relation exists. Extra conditions or a minimum amount can be applied. */
+  HAS?: InputMaybe<QueryGetDeliveriesWhereWhereConditionsRelation>;
+  /** A set of conditions that requires at least one condition to match. */
+  OR?: InputMaybe<Array<QueryGetDeliveriesWhereWhereConditions>>;
+  /** The column that is used for the condition. */
+  column?: InputMaybe<QueryGetDeliveriesWhereColumn>;
+  /** The operator that is used for the condition. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The value that is used for the condition. */
+  value?: InputMaybe<Scalars['Mixed']>;
+};
+
+/** Dynamic HAS conditions for WHERE conditions for the `where` argument of the query `GetDeliveries`. */
+export type QueryGetDeliveriesWhereWhereConditionsRelation = {
+  /** The amount to test. */
+  amount?: InputMaybe<Scalars['Int']>;
+  /** Additional condition logic. */
+  condition?: InputMaybe<QueryGetDeliveriesWhereWhereConditions>;
+  /** The comparison operator to test against the amount. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The relation that is checked. */
+  relation: Scalars['String'];
+};
+
+/** Allowed column names for Query.GetMarkets.orderBy. */
+export enum QueryGetMarketsOrderByColumn {
+  CreatedAt = 'CREATED_AT'
+}
+
+/** Order by clause for Query.GetMarkets.orderBy. */
+export type QueryGetMarketsOrderByOrderByClause = {
+  /** The column that is used for ordering. */
+  column: QueryGetMarketsOrderByColumn;
+  /** The direction that is used for ordering. */
+  order: SortOrder;
+};
+
+/** Allowed column names for Query.GetMarkets.where. */
+export enum QueryGetMarketsWhereColumn {
+  AuthUserId = 'AUTH_USER_ID',
+  BusinessName = 'BUSINESS_NAME'
+}
+
+/** Dynamic WHERE conditions for the `where` argument of the query `GetMarkets`. */
+export type QueryGetMarketsWhereWhereConditions = {
+  /** A set of conditions that requires all conditions to match. */
+  AND?: InputMaybe<Array<QueryGetMarketsWhereWhereConditions>>;
+  /** Check whether a relation exists. Extra conditions or a minimum amount can be applied. */
+  HAS?: InputMaybe<QueryGetMarketsWhereWhereConditionsRelation>;
+  /** A set of conditions that requires at least one condition to match. */
+  OR?: InputMaybe<Array<QueryGetMarketsWhereWhereConditions>>;
+  /** The column that is used for the condition. */
+  column?: InputMaybe<QueryGetMarketsWhereColumn>;
+  /** The operator that is used for the condition. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The value that is used for the condition. */
+  value?: InputMaybe<Scalars['Mixed']>;
+};
+
+/** Dynamic HAS conditions for WHERE conditions for the `where` argument of the query `GetMarkets`. */
+export type QueryGetMarketsWhereWhereConditionsRelation = {
+  /** The amount to test. */
+  amount?: InputMaybe<Scalars['Int']>;
+  /** Additional condition logic. */
+  condition?: InputMaybe<QueryGetMarketsWhereWhereConditions>;
+  /** The comparison operator to test against the amount. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The relation that is checked. */
+  relation: Scalars['String'];
+};
+
+/** Allowed column names for Query.GetOrders.orderBy. */
+export enum QueryGetOrdersOrderByColumn {
+  CreatedAt = 'CREATED_AT'
+}
+
+/** Order by clause for Query.GetOrders.orderBy. */
+export type QueryGetOrdersOrderByOrderByClause = {
+  /** The column that is used for ordering. */
+  column: QueryGetOrdersOrderByColumn;
+  /** The direction that is used for ordering. */
+  order: SortOrder;
+};
+
+/** Allowed column names for Query.GetOrders.where. */
+export enum QueryGetOrdersWhereColumn {
+  Status = 'STATUS'
+}
+
+/** Dynamic WHERE conditions for the `where` argument of the query `GetOrders`. */
+export type QueryGetOrdersWhereWhereConditions = {
+  /** A set of conditions that requires all conditions to match. */
+  AND?: InputMaybe<Array<QueryGetOrdersWhereWhereConditions>>;
+  /** Check whether a relation exists. Extra conditions or a minimum amount can be applied. */
+  HAS?: InputMaybe<QueryGetOrdersWhereWhereConditionsRelation>;
+  /** A set of conditions that requires at least one condition to match. */
+  OR?: InputMaybe<Array<QueryGetOrdersWhereWhereConditions>>;
+  /** The column that is used for the condition. */
+  column?: InputMaybe<QueryGetOrdersWhereColumn>;
+  /** The operator that is used for the condition. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The value that is used for the condition. */
+  value?: InputMaybe<Scalars['Mixed']>;
+};
+
+/** Dynamic HAS conditions for WHERE conditions for the `where` argument of the query `GetOrders`. */
+export type QueryGetOrdersWhereWhereConditionsRelation = {
+  /** The amount to test. */
+  amount?: InputMaybe<Scalars['Int']>;
+  /** Additional condition logic. */
+  condition?: InputMaybe<QueryGetOrdersWhereWhereConditions>;
+  /** The comparison operator to test against the amount. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The relation that is checked. */
+  relation: Scalars['String'];
 };
 
 /** Allowed column names for Query.GetPointTransactions.orderBy. */
@@ -667,6 +1290,151 @@ export type QueryGetPointTransactionsWhereWhereConditionsRelation = {
   amount?: InputMaybe<Scalars['Int']>;
   /** Additional condition logic. */
   condition?: InputMaybe<QueryGetPointTransactionsWhereWhereConditions>;
+  /** The comparison operator to test against the amount. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The relation that is checked. */
+  relation: Scalars['String'];
+};
+
+/** Allowed column names for Query.GetProducts.orderBy. */
+export enum QueryGetProductsOrderByColumn {
+  CreatedAt = 'CREATED_AT'
+}
+
+/** Order by clause for Query.GetProducts.orderBy. */
+export type QueryGetProductsOrderByOrderByClause = {
+  /** The column that is used for ordering. */
+  column: QueryGetProductsOrderByColumn;
+  /** The direction that is used for ordering. */
+  order: SortOrder;
+};
+
+/** Allowed column names for Query.GetProducts.where. */
+export enum QueryGetProductsWhereColumn {
+  Name = 'NAME'
+}
+
+/** Dynamic WHERE conditions for the `where` argument of the query `GetProducts`. */
+export type QueryGetProductsWhereWhereConditions = {
+  /** A set of conditions that requires all conditions to match. */
+  AND?: InputMaybe<Array<QueryGetProductsWhereWhereConditions>>;
+  /** Check whether a relation exists. Extra conditions or a minimum amount can be applied. */
+  HAS?: InputMaybe<QueryGetProductsWhereWhereConditionsRelation>;
+  /** A set of conditions that requires at least one condition to match. */
+  OR?: InputMaybe<Array<QueryGetProductsWhereWhereConditions>>;
+  /** The column that is used for the condition. */
+  column?: InputMaybe<QueryGetProductsWhereColumn>;
+  /** The operator that is used for the condition. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The value that is used for the condition. */
+  value?: InputMaybe<Scalars['Mixed']>;
+};
+
+/** Dynamic HAS conditions for WHERE conditions for the `where` argument of the query `GetProducts`. */
+export type QueryGetProductsWhereWhereConditionsRelation = {
+  /** The amount to test. */
+  amount?: InputMaybe<Scalars['Int']>;
+  /** Additional condition logic. */
+  condition?: InputMaybe<QueryGetProductsWhereWhereConditions>;
+  /** The comparison operator to test against the amount. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The relation that is checked. */
+  relation: Scalars['String'];
+};
+
+/** Allowed column names for Query.GetSingleDelivery.where. */
+export enum QueryGetSingleDeliveryWhereColumn {
+  Id = 'ID'
+}
+
+/** Dynamic WHERE conditions for the `where` argument of the query `GetSingleDelivery`. */
+export type QueryGetSingleDeliveryWhereWhereConditions = {
+  /** A set of conditions that requires all conditions to match. */
+  AND?: InputMaybe<Array<QueryGetSingleDeliveryWhereWhereConditions>>;
+  /** Check whether a relation exists. Extra conditions or a minimum amount can be applied. */
+  HAS?: InputMaybe<QueryGetSingleDeliveryWhereWhereConditionsRelation>;
+  /** A set of conditions that requires at least one condition to match. */
+  OR?: InputMaybe<Array<QueryGetSingleDeliveryWhereWhereConditions>>;
+  /** The column that is used for the condition. */
+  column?: InputMaybe<QueryGetSingleDeliveryWhereColumn>;
+  /** The operator that is used for the condition. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The value that is used for the condition. */
+  value?: InputMaybe<Scalars['Mixed']>;
+};
+
+/** Dynamic HAS conditions for WHERE conditions for the `where` argument of the query `GetSingleDelivery`. */
+export type QueryGetSingleDeliveryWhereWhereConditionsRelation = {
+  /** The amount to test. */
+  amount?: InputMaybe<Scalars['Int']>;
+  /** Additional condition logic. */
+  condition?: InputMaybe<QueryGetSingleDeliveryWhereWhereConditions>;
+  /** The comparison operator to test against the amount. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The relation that is checked. */
+  relation: Scalars['String'];
+};
+
+/** Allowed column names for Query.GetSingleProduct.where. */
+export enum QueryGetSingleProductWhereColumn {
+  Id = 'ID'
+}
+
+/** Dynamic WHERE conditions for the `where` argument of the query `GetSingleProduct`. */
+export type QueryGetSingleProductWhereWhereConditions = {
+  /** A set of conditions that requires all conditions to match. */
+  AND?: InputMaybe<Array<QueryGetSingleProductWhereWhereConditions>>;
+  /** Check whether a relation exists. Extra conditions or a minimum amount can be applied. */
+  HAS?: InputMaybe<QueryGetSingleProductWhereWhereConditionsRelation>;
+  /** A set of conditions that requires at least one condition to match. */
+  OR?: InputMaybe<Array<QueryGetSingleProductWhereWhereConditions>>;
+  /** The column that is used for the condition. */
+  column?: InputMaybe<QueryGetSingleProductWhereColumn>;
+  /** The operator that is used for the condition. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The value that is used for the condition. */
+  value?: InputMaybe<Scalars['Mixed']>;
+};
+
+/** Dynamic HAS conditions for WHERE conditions for the `where` argument of the query `GetSingleProduct`. */
+export type QueryGetSingleProductWhereWhereConditionsRelation = {
+  /** The amount to test. */
+  amount?: InputMaybe<Scalars['Int']>;
+  /** Additional condition logic. */
+  condition?: InputMaybe<QueryGetSingleProductWhereWhereConditions>;
+  /** The comparison operator to test against the amount. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The relation that is checked. */
+  relation: Scalars['String'];
+};
+
+/** Allowed column names for Query.GetSingleTicket.where. */
+export enum QueryGetSingleTicketWhereColumn {
+  Id = 'ID'
+}
+
+/** Dynamic WHERE conditions for the `where` argument of the query `GetSingleTicket`. */
+export type QueryGetSingleTicketWhereWhereConditions = {
+  /** A set of conditions that requires all conditions to match. */
+  AND?: InputMaybe<Array<QueryGetSingleTicketWhereWhereConditions>>;
+  /** Check whether a relation exists. Extra conditions or a minimum amount can be applied. */
+  HAS?: InputMaybe<QueryGetSingleTicketWhereWhereConditionsRelation>;
+  /** A set of conditions that requires at least one condition to match. */
+  OR?: InputMaybe<Array<QueryGetSingleTicketWhereWhereConditions>>;
+  /** The column that is used for the condition. */
+  column?: InputMaybe<QueryGetSingleTicketWhereColumn>;
+  /** The operator that is used for the condition. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The value that is used for the condition. */
+  value?: InputMaybe<Scalars['Mixed']>;
+};
+
+/** Dynamic HAS conditions for WHERE conditions for the `where` argument of the query `GetSingleTicket`. */
+export type QueryGetSingleTicketWhereWhereConditionsRelation = {
+  /** The amount to test. */
+  amount?: InputMaybe<Scalars['Int']>;
+  /** Additional condition logic. */
+  condition?: InputMaybe<QueryGetSingleTicketWhereWhereConditions>;
   /** The comparison operator to test against the amount. */
   operator?: InputMaybe<SqlOperator>;
   /** The relation that is checked. */
@@ -724,6 +1492,21 @@ export type QueryGetTransactionsWhereWhereConditionsRelation = {
   relation: Scalars['String'];
 };
 
+export type RefundDetails = {
+  __typename?: 'RefundDetails';
+  amount?: Maybe<Scalars['Float']>;
+  reason?: Maybe<Scalars['String']>;
+  status?: Maybe<Scalars['String']>;
+  timestamp?: Maybe<Scalars['String']>;
+  transactionId?: Maybe<Scalars['String']>;
+};
+
+export type Renewal = {
+  __typename?: 'Renewal';
+  autoRenew: Scalars['Boolean'];
+  price?: Maybe<Scalars['Float']>;
+};
+
 /** The available SQL operators that are used to filter query results. */
 export enum SqlOperator {
   /** Whether a value is within a range of values (`BETWEEN`) */
@@ -756,6 +1539,12 @@ export enum SqlOperator {
   NotLike = 'NOT_LIKE'
 }
 
+export enum ShippingClass {
+  Express = 'EXPRESS',
+  Oversized = 'OVERSIZED',
+  Standard = 'STANDARD'
+}
+
 /** Directions for ordering a list of records. */
 export enum SortOrder {
   /** Sort records in ascending order. */
@@ -771,12 +1560,74 @@ export type Source = {
   networkId: Scalars['String'];
 };
 
+export type StatusUpdate = {
+  __typename?: 'StatusUpdate';
+  changedBy?: Maybe<Scalars['String']>;
+  note?: Maybe<Scalars['String']>;
+  status?: Maybe<OrderStatus>;
+  timestamp?: Maybe<Scalars['String']>;
+};
+
+export type SubscriptionProduct = {
+  __typename?: 'SubscriptionProduct';
+  billing: Billing;
+  features: Array<Scalars['String']>;
+  renewal: Renewal;
+};
+
 export type SupportedCurrency = {
   __typename?: 'SupportedCurrency';
   code: Scalars['String'];
   country: Scalars['String'];
   currency: Scalars['String'];
   supported_methods: Array<Scalars['String']>;
+};
+
+export type TaxDetail = {
+  __typename?: 'TaxDetail';
+  amount?: Maybe<Scalars['Float']>;
+  description?: Maybe<Scalars['String']>;
+  rate?: Maybe<Scalars['Float']>;
+  type?: Maybe<Scalars['String']>;
+};
+
+export type Ticket = {
+  __typename?: 'Ticket';
+  createdAt: Scalars['DateTime'];
+  id: Scalars['Int'];
+  price: Scalars['Float'];
+  productId: Scalars['Int'];
+  qrCode: Scalars['String'];
+  saleId?: Maybe<Scalars['Int']>;
+  status: TicketStatus;
+  ticketType: Scalars['String'];
+  userId: Scalars['String'];
+  variantId?: Maybe<Scalars['String']>;
+};
+
+/** A paginated list of Ticket items. */
+export type TicketPaginator = {
+  __typename?: 'TicketPaginator';
+  /** A list of Ticket items. */
+  data: Array<Ticket>;
+  /** Pagination information about the list of items. */
+  paginatorInfo: PaginatorInfo;
+};
+
+export enum TicketStatus {
+  Cancelled = 'CANCELLED',
+  Expired = 'EXPIRED',
+  Unused = 'UNUSED',
+  Used = 'USED'
+}
+
+export type TrackingEvent = {
+  __typename?: 'TrackingEvent';
+  carrierCode?: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']>;
+  location?: Maybe<Scalars['String']>;
+  status?: Maybe<DeliveryStatus>;
+  timestamp?: Maybe<Scalars['DateTime']>;
 };
 
 /** A single transaction */
@@ -927,6 +1778,8 @@ export type Wallet = {
   debited_amount: Scalars['Float'];
   /** Debited Point Amount */
   debited_point_amount: Scalars['Float'];
+  /** The Wallet ID */
+  id: Scalars['Int'];
   /** Locked Balance */
   locked_balance: Scalars['Float'];
   /** Point Balance */
