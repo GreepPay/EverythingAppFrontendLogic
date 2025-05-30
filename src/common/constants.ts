@@ -1,1 +1,1 @@
-export const API_URL = "https://api-client-dev.greep.io/graphql"
+export const API_URL = "https://api-market-dev.greep.io/graphql"

@@ -1,13 +1,25 @@
 import AuthApi from "./AuthApi"
-import WalletApi from "./WalletApi"
 import BeneficiaryApi from "./BeneficiaryApi"
-import UserApi from "./UserApi"
+import DeliveryApi from "./DeliveryApi"
+import MarketApi from "./MarketApi"
 import NotificationApi from "./NotificationApi"
+import OrderApi from "./OrderApi"
+import PaymentApi from "./PaymentApi"
+import ProductApi from "./ProductApi"
+import TicketApi from "./TicketApi"
+import TransactionApi from "./TransactionApi"
+import UserApi from "./UserApi"
 
 export const $api = {
   auth: new AuthApi(),
   beneficiary: new BeneficiaryApi(),
-  user: new UserApi(),
-  wallet: new WalletApi(),
+  delivery: new DeliveryApi(),
+  market: new MarketApi(),
   notification: new NotificationApi(),
+  order: new OrderApi(),
+  payment: new PaymentApi(),
+  product: new ProductApi(),
+  ticket: new TicketApi(),
+  transaction: new TransactionApi(),
+  user: new UserApi(),
 }

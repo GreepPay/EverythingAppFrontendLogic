@@ -89,6 +89,5 @@ export default class NotificationApi extends BaseApiService {
 
     return response
   }
-
   // #endregion MUTATIONS
 }

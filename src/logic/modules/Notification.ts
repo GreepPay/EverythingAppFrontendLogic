@@ -7,16 +7,16 @@ import { $api } from "../../services"
 import Common from "./Common"
 import { QueryGetNotificationsArgs } from "../../gql/graphql"
 
-export default class Notification extends Common {
+export default class NotificationModule extends Common {
   constructor() {
     super()
   }
 
-  // Base Variables 
+  // Base Variables
   public ManyNotifications: NotificationPaginator | undefined
   public GetBitificationsPayload: QueryGetNotificationsArgs | undefined
 
-  // Mutation Variables 
+  // Mutation Variables
   public PushNotificationDeviceForm:
     | MutationSavePushNotificationTokenArgs
     | undefined
@@ -25,7 +25,6 @@ export default class Notification extends Common {
     this.ManyNotifications = undefined
   }
 
-  // Queries
   public GetNotifications = async (data: QueryGetNotificationsArgs) => {
     return $api.notification.GetNotifications(data).then((response) => {
       this.ManyNotifications = response.data?.GetNotifications
@@ -33,7 +32,6 @@ export default class Notification extends Common {
     })
   }
 
-  // Mutations
   public SavePushNotificationDevice = () => {
     if (this.PushNotificationDeviceForm) {
       return $api.notification
