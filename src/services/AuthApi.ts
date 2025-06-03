@@ -71,10 +71,7 @@ export default class AuthApi extends BaseApiService {
   //
 
   // #region MUTATIONS
-  public SignUp = (
-    data: MutationSignUpArgs,
-    progressCallback: (progress: number) => void
-  ) => {
+  public SignUp = (data: MutationSignUpArgs) => {
     const requestData = `
     mutation SignUp(
       $first_name: String!,
@@ -93,27 +90,38 @@ export default class AuthApi extends BaseApiService {
         state: $state,
         country: $country,
         default_currency: $default_currency
-      ) {
+      ) { 
         uuid
         first_name
         last_name
+        username
         email
+        phone  
         status
+        profile {
+          auth_user_id
+          user_type
+          profile_picture
+          verification_status  
+          updated_at
+          default_currency
+          created_at
+        } 
         created_at
+        updated_at
       }
     }
   `
 
-    const response: Promise<OperationResult<{ SignUp: AuthResponse }>> =
-      this.mutation(requestData, data)
+    const response: Promise<OperationResult<{ SignUp: User }>> = this.mutation(
+      requestData,
+      data
+    )
 
     return response
   }
 
-  public SignIn = (
-    data: MutationSignInArgs,
-    progressCallback: (progress: number) => void
-  ) => {
+  public SignIn = (data: MutationSignInArgs) => {
     const requestData = `
     mutation SignIn(
       $email: String!,
@@ -122,15 +130,27 @@ export default class AuthApi extends BaseApiService {
       SignIn(
         email: $email,
         password: $password
-      ) {
-        access_token
-        refresh_token
-        user {
+      ) { 
+        token
+        user { 
           uuid
           first_name
           last_name
+          username
           email
+          phone  
           status
+          profile {
+            auth_user_id
+            user_type
+            profile_picture
+            verification_status  
+            updated_at
+            default_currency
+            created_at
+          } 
+          created_at
+          updated_at
         }
       }
     }

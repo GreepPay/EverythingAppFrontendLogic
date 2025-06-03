@@ -57,23 +57,24 @@ export default class AuthModule extends Common {
     return $api.auth.GetAuthUser().then((response) => {
       this.AuthUser = response.data?.GetAuthUser
       localStorage.setItem("auth_user", JSON.stringify(this.AuthUser))
-      Logic.Payment.GetOnRampCurrencies()
+      // Logic.Payment.GetOnRampCurrencies()
       return this.AuthUser
     })
   }
 
   // Mutations
-  public SignUp = (
-    formIsValid: boolean,
-    progressCallback: (progress: number) => void
-  ) => {
+  public SignUp = (formIsValid: boolean) => {
     if (formIsValid && this.SignUpPayload) {
       return $api.auth
-        .SignUp(this.SignUpPayload, progressCallback)
+        .SignUp(this.SignUpPayload)
         .then((response) => {
-          this.AuthUser = response.data?.SignUp.user || undefined
+          console.log("response", response)
+          console.log("response data", response.data)
+
+          this.AuthUser = response.data?.SignUp || undefined
           localStorage.setItem("auth_email", this.SignUpPayload?.email || "")
-          Logic.Common.hideLoader()
+          localStorage.setItem("auth_pass", this.SignUpPayload?.password || "")
+          // Logic.Common.hideLoader()
           return response.data?.SignUp
         })
         .catch((error: CombinedError) => {
@@ -83,17 +84,16 @@ export default class AuthModule extends Common {
     }
   }
 
-  public SignIn = (
-    formIsValid: boolean,
-    progressCallback: (progress: number) => void
-  ) => {
+  public SignIn = (formIsValid: boolean) => {
     if (formIsValid && this.SignInPayload) {
       return $api.auth
-        .SignIn(this.SignInPayload, progressCallback)
+        .SignIn(this.SignInPayload)
         .then((response) => {
-          this.SetUpAuth(response.data?.SignIn)
-          this.AuthUser = response.data?.SignIn.user
-          Logic.Common.hideLoader()
+          console.log("response, response", response)
+
+          // this.SetUpAuth(response.data?.SignIn)
+          // this.AuthUser = response.data?.SignIn.user
+          // Logic.Common.hideLoader()
           return response.data?.SignIn
         })
         .catch((error: CombinedError) => {
