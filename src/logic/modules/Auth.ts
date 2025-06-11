@@ -16,7 +16,6 @@ import { Logic } from ".."
 export default class AuthModule extends Common {
   constructor() {
     super()
-
     this.setDefaultAuth()
   }
 
@@ -38,6 +37,7 @@ export default class AuthModule extends Common {
     if (AuthResponse) {
       this.AccessToken = AuthResponse.token
       this.AuthUser = this.updatedData(this.AuthUser, AuthResponse.user)
+
       // save to localstorage
       localStorage.setItem(
         "access_token",
@@ -48,16 +48,15 @@ export default class AuthModule extends Common {
   }
   private setDefaultAuth = () => {
     this.AccessToken = localStorage.getItem("access_token")
-    this.AuthUser = localStorage.getItem("auth_user")
-      ? JSON.parse(localStorage.getItem("auth_user") || "{}")
-      : undefined
+    const auth_user = localStorage.getItem("auth_user")
+    console.log("auth_user", auth_user)
+    this.AuthUser = auth_user ? JSON.parse(auth_user || "{}") : undefined
   }
 
   public GetAuthUser = async (): Promise<User | undefined> => {
     return $api.auth.GetAuthUser().then((response) => {
       this.AuthUser = response.data?.GetAuthUser
       localStorage.setItem("auth_user", JSON.stringify(this.AuthUser))
-      // Logic.Payment.GetOnRampCurrencies()
       return this.AuthUser
     })
   }
@@ -68,13 +67,11 @@ export default class AuthModule extends Common {
       return $api.auth
         .SignUp(this.SignUpPayload)
         .then((response) => {
-          console.log("response", response)
-          console.log("response data", response.data)
-
           this.AuthUser = response.data?.SignUp || undefined
           localStorage.setItem("auth_email", this.SignUpPayload?.email || "")
           localStorage.setItem("auth_pass", this.SignUpPayload?.password || "")
-          // Logic.Common.hideLoader()
+
+          Logic.Common.hideLoader()
           return response.data?.SignUp
         })
         .catch((error: CombinedError) => {
@@ -89,11 +86,11 @@ export default class AuthModule extends Common {
       return $api.auth
         .SignIn(this.SignInPayload)
         .then((response) => {
-          console.log("response, response", response)
+          console.log("response, dfd", response)
 
-          // this.SetUpAuth(response.data?.SignIn)
+          this.SetUpAuth(response.data?.SignIn)
           // this.AuthUser = response.data?.SignIn.user
-          // Logic.Common.hideLoader()
+          Logic.Common.hideLoader()
           return response.data?.SignIn
         })
         .catch((error: CombinedError) => {

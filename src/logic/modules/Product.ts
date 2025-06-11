@@ -19,21 +19,19 @@ export default class ProductModule extends Common {
   }
 
   // Base Variables
-  public ManyProducts: ProductPaginator | undefined
+  public ProductsPaginator: ProductPaginator | undefined
   public SingleProduct: Product | undefined
   public Categories: Category[] = []
 
   public GetProducts = async (
     first: number,
-    page: number,
-    orderBy?: QueryGetProductsOrderByOrderByClause[],
-    where?: QueryGetProductsWhereWhereConditions
+    page: number
   ): Promise<ProductPaginator | undefined> => {
     return $api.product
-      .GetProducts(first, page, orderBy, where)
+      .GetProducts(first, page)
       .then((response) => {
-        this.ManyProducts = response.data?.GetProducts
-        return this.ManyProducts
+        this.ProductsPaginator = response.data?.GetProducts
+        return this.ProductsPaginator
       })
       .catch((error: CombinedError) => {
         Logic.Common.showError(error, "Failed to fetch products", "error-alert")

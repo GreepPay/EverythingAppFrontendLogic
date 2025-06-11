@@ -15,7 +15,7 @@ export default class TicketModule extends Common {
   }
 
   // Base Variables
-  public ManyTickets: TicketPaginator | undefined
+  public TicketsPaginator: TicketPaginator | undefined
   public SingleTicket: Ticket | undefined
 
   public GetMyTickets = async (
@@ -25,8 +25,8 @@ export default class TicketModule extends Common {
     return $api.ticket
       .GetMyTickets(first, page)
       .then((response) => {
-        this.ManyTickets = response.data?.GetMyTickets
-        return this.ManyTickets
+        this.TicketsPaginator = response.data?.GetMyTickets
+        return this.TicketsPaginator
       })
       .catch((error: CombinedError) => {
         Logic.Common.showError(error, "Failed to fetch tickets", "error-alert")

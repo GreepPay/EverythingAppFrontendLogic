@@ -102,15 +102,10 @@ export default class OrderApi extends BaseApiService {
   // MUTATIONS
 
   // #region QUERIES
-  public GetOrders = (
-    first: number,
-    page: number,
-    orderBy?: QueryGetOrdersOrderByOrderByClause[],
-    where?: QueryGetOrdersWhereWhereConditions
-  ) => {
+  public GetOrders = (first: number, page: number) => {
     const requestData = `
-    query GetOrders($first: Int!, $page: Int, $orderBy: [QueryGetOrdersOrderByOrderByClause!], $where: QueryGetOrdersWhereWhereConditions) {
-      GetOrders(first: $first, page: $page, orderBy: $orderBy, where: $where) {
+    query GetOrders($first: Int!, $page: Int) {
+      GetOrders(first: $first, page: $page) {
         paginatorInfo {
           firstItem
           lastItem
@@ -133,31 +128,7 @@ export default class OrderApi extends BaseApiService {
           taxAmount
           discountAmount
           totalAmount
-          currency
-          shippingAddress {
-            # Add relevant fields here
-          }
-          billingAddress {
-            # Add relevant fields here
-          }
-          statusHistory {
-            # Add relevant fields here
-          }
-          items {
-            # Add relevant fields here
-          }
-          paymentDetails {
-            # Add relevant fields here
-          }
-          refundDetails {
-            # Add relevant fields here
-          }
-          appliedDiscounts {
-            # Add relevant fields here
-          }
-          taxDetails {
-            # Add relevant fields here
-          }
+          currency 
         }
       }
     }
@@ -167,7 +138,7 @@ export default class OrderApi extends BaseApiService {
       OperationResult<{
         GetOrders: OrderPaginator
       }>
-    > = this.query(requestData, { first, page, orderBy, where })
+    > = this.query(requestData, { first, page })
 
     return response
   }

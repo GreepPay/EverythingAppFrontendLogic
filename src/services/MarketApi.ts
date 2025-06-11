@@ -26,43 +26,26 @@ export default class MarketApi extends BaseApiService {
           website
           products {
             id
-            sku
             name
-            description
-            type
-            status
             price
-            currency
-            taxCode
-            categoryIds
-            tags
-            createdAt
-            updatedAt
-            physical {
-              // Include relevant fields if needed
-            }
-            digital {
-              // Include relevant fields if needed
-            }
-            subscription {
-              // Include relevant fields if needed
-            }
-            event {
-              // Include relevant fields if needed
-            }
+            type
+            description 
             variants {
               id
-              name
-              price
-              sku
-              // Add more fields if necessary
+              attributes
+              priceAdjustment
             }
             images {
               url
-              alt
-              // Add more fields if necessary
             }
-          }
+            event {
+              eventType
+              eventDetails {
+                startDate
+                endDate
+              }
+            }
+          } 
         }
       }
     }

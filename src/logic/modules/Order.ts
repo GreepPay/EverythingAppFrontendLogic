@@ -15,7 +15,7 @@ export default class OrderModule extends Common {
     super()
   }
 
-  public ManyOrders: OrderPaginator | undefined
+  public OrdersPaginator: OrderPaginator | undefined
   public SingleOrder: Order | undefined
 
   public CreateOrder = async (
@@ -34,15 +34,15 @@ export default class OrderModule extends Common {
 
   public GetOrders = async (
     first: number,
-    page: number,
-    orderBy?: QueryGetOrdersOrderByOrderByClause[],
-    where?: QueryGetOrdersWhereWhereConditions
+    page: number
   ): Promise<OrderPaginator | undefined> => {
     return $api.order
-      .GetOrders(first, page, orderBy, where)
+      .GetOrders(first, page)
       .then((response) => {
-        this.ManyOrders = response.data?.GetOrders
-        return this.ManyOrders
+        console.log("response", response)
+
+        this.OrdersPaginator = response.data?.GetOrders
+        return this.OrdersPaginator
       })
       .catch((error: CombinedError) => {
         Logic.Common.showError(error, "Failed to fetch orders", "error-alert")

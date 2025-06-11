@@ -10,7 +10,7 @@ export default class MarketModule extends Common {
   }
 
   // Base Variable
-  public Markets: BusinessPaginator | undefined
+  public BusinessesPaginator: BusinessPaginator | undefined
 
   // Get paginated markets
   public GetMarkets = async (
@@ -20,8 +20,8 @@ export default class MarketModule extends Common {
     return $api.market
       .GetMarkets(first, page)
       .then((response) => {
-        this.Markets = response.data?.GetMarkets
-        return this.Markets
+        this.BusinessesPaginator = response.data?.GetMarkets
+        return this.BusinessesPaginator
       })
       .catch((error: CombinedError) => {
         Logic.Common.showError(error, "Failed to fetch markets", "error-alert")

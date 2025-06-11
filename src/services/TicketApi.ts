@@ -24,14 +24,6 @@ export default class TicketApi extends BaseApiService {
         data {
           id
           productId
-          variantId
-          saleId
-          userId
-          ticketType
-          price
-          qrCode
-          status
-          createdAt
         }
       }
     }

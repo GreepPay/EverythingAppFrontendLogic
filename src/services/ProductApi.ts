@@ -5,21 +5,14 @@ import {
   PaginatorInfo,
   Product,
   ProductPaginator,
-  QueryGetProductsOrderByOrderByClause,
-  QueryGetProductsWhereWhereConditions,
 } from "../gql/graphql"
 
 export default class ProductApi extends BaseApiService {
   // #region QUERIES
-  public GetProducts = (
-    first: number,
-    page: number,
-    orderBy?: QueryGetProductsOrderByOrderByClause[],
-    where?: QueryGetProductsWhereWhereConditions
-  ) => {
+  public GetProducts = (first: number, page: number) => {
     const requestData = `
-    query GetProducts($first: Int!, $page: Int, $orderBy: [QueryGetProductsOrderByOrderByClause!], $where: QueryGetProductsWhereWhereConditions) {
-      GetProducts(first: $first, page: $page, orderBy: $orderBy, where: $where) {
+    query GetProducts($first: Int!, $page: Int) {
+      GetProducts(first: $first, page: $page) {
         paginatorInfo {
           firstItem
           lastItem
@@ -29,39 +22,28 @@ export default class ProductApi extends BaseApiService {
           total
           hasMorePages
         }
-        data {
+        data {  
           id
-          sku
           name
-          description
-          type
-          status
           price
-          currency
-          taxCode
-          categoryIds
-          tags
-          createdAt
-          updatedAt
-          physical {
-            # Add relevant fields if needed
-          }
-          digital {
-            # Add relevant fields if needed
-          }
-          subscription {
-            # Add relevant fields if needed
-          }
-          event {
-            # Add relevant fields if needed
-          }
+          type
+          description
           variants {
-            # Add relevant fields if needed
+            id
+            attributes
+            priceAdjustment
           }
           images {
-            # Add relevant fields if needed
+            url
           }
-        }
+          event {
+            eventType
+            eventDetails {
+              startDate
+              endDate
+            }
+          }
+        } 
       }
     }
   `
@@ -70,7 +52,7 @@ export default class ProductApi extends BaseApiService {
       OperationResult<{
         GetProducts: ProductPaginator
       }>
-    > = this.query(requestData, { first, page, orderBy, where })
+    > = this.query(requestData, { first, page })
 
     return response
   }
