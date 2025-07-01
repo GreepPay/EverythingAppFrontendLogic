@@ -1,7 +1,7 @@
 import type { CodegenConfig } from "@graphql-codegen/cli"
 
 const config: CodegenConfig = {
-  schema: "https://api-market-dev.greep.io/graphql",
+  schema: "https://api-client-dev.greep.io/graphql",
   documents: ["src/**/*.vue"],
   ignoreNoDocuments: true, // for better experience with the watcher
   generates: {

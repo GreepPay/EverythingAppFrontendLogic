@@ -1,6 +1,6 @@
 import { BaseApiService } from "./common/BaseService"
 import { OperationResult } from "urql"
-import { 
+import {
   QueryGetSingleTicketWhereWhereConditions,
   Ticket,
   TicketPaginator,
@@ -24,6 +24,13 @@ export default class TicketApi extends BaseApiService {
         data {
           id
           productId
+          variantId
+          saleId
+          userId
+          ticketType
+          price 
+          status
+          createdAt
         }
       }
     }

@@ -11,6 +11,7 @@ import {
 import { Logic } from ".."
 import { AlertSetup, FetchRule, LoaderSetup, ModalSetup } from "../types/common"
 import CryptoJS from "crypto-js"
+import { Haptics, ImpactStyle } from "@capacitor/haptics"
 
 export default class Common {
   public router: Router | undefined = undefined
@@ -187,6 +188,18 @@ export default class Common {
   })
 
   public momentInstance = moment
+
+  public makeTouchSensation = async (style: "HEAVY" | "MEDIUM" | "LIGHT") => {
+    let currentStyle = ImpactStyle.Light
+
+    if (style == "MEDIUM") {
+      currentStyle = ImpactStyle.Medium
+    } else if (style == "HEAVY") {
+      currentStyle = ImpactStyle.Heavy
+    }
+    await Haptics.impact({ style: currentStyle })
+  }
+
 
   public makeid = (length: number) => {
     let result = ""
@@ -446,6 +459,9 @@ export default class Common {
 
                 // update userid
                 rule.params.forEach((param) => {
+                  console.log("typeof param", typeof param)
+                  console.log("typeof param", rule.params)
+
                   if (typeof param === "object") {
                     if (param.where) {
                       param.where.forEach((item: any) => {

@@ -17,7 +17,8 @@ export default class AuthApi extends BaseApiService {
   public GetAuthUser = () => {
     const requestData = `
         query GetAuthUser {
-          GetAuthUser {
+          GetAuthUser { 
+            id
             uuid
             first_name
             last_name
@@ -43,7 +44,7 @@ export default class AuthApi extends BaseApiService {
               }
             }
             wallet {
-              currency
+              currency 
               credited_point_amount
               credited_amount
               created_at
@@ -91,6 +92,7 @@ export default class AuthApi extends BaseApiService {
         country: $country,
         default_currency: $default_currency
       ) { 
+        id
         uuid
         first_name
         last_name
@@ -133,6 +135,7 @@ export default class AuthApi extends BaseApiService {
       ) { 
         token
         user { 
+          id
           uuid
           first_name
           last_name

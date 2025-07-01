@@ -18,12 +18,20 @@ export default class OrderModule extends Common {
   public OrdersPaginator: OrderPaginator | undefined
   public SingleOrder: Order | undefined
 
-  public CreateOrder = async (
-    input: CreateOrderInput
-  ): Promise<Order | undefined> => {
+  // mutation payloads
+  public CreateOrderPayload: CreateOrderInput | undefined
+
+  public CreateOrder = async (): Promise<Order | undefined> => {
+    if (!this.CreateOrderPayload) return
+
+    console.log("this.CreateOrderPayload", this.CreateOrderPayload)
+    console.log("this.CreateOrderPayload", typeof this.CreateOrderPayload)
+
     return $api.order
-      .CreateOrder(input)
+      .CreateOrder(this.CreateOrderPayload)
       .then((response) => {
+        console.log("response", response)
+
         return response.data?.CreateOrder
       })
       .catch((error: CombinedError) => {

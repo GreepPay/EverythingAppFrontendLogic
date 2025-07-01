@@ -11,6 +11,7 @@ import ProductModule from "./Product"
 import TicketModule from "./Ticket"
 import TransactionModule from "./Transaction"
 import UserModule from "./User"
+import WalletModule from "./Wallet"
 
 export const Logic = {
   Common: new CommonModule(),
@@ -26,4 +27,5 @@ export const Logic = {
   Ticket: new TicketModule(),
   Transaction: new TransactionModule(),
   User: new UserModule(),
+  Wallet: new WalletModule(),
 }

@@ -6,6 +6,7 @@ import {
   Product,
   ProductPaginator,
   Category,
+  CategoryPaginator,
 } from "../../gql/graphql"
 
 import { $api } from "../../services"
@@ -21,12 +22,14 @@ export default class ProductModule extends Common {
   // Base Variables
   public ProductsPaginator: ProductPaginator | undefined
   public SingleProduct: Product | undefined
-  public Categories: Category[] = []
+  public ProductCategoriesPagination: CategoryPaginator | undefined
 
   public GetProducts = async (
     first: number,
     page: number
   ): Promise<ProductPaginator | undefined> => {
+    console.log("weere", first, page)
+
     return $api.product
       .GetProducts(first, page)
       .then((response) => {
@@ -40,8 +43,13 @@ export default class ProductModule extends Common {
   }
 
   public GetSingleProduct = async (
-    where: QueryGetSingleProductWhereWhereConditions
+    product_id: string | number
   ): Promise<Product | undefined> => {
+    const where = {
+      column: "ID",
+      operator: "EQ",
+      value: String(product_id),
+    }
     return $api.product
       .GetSingleProduct(where)
       .then((response) => {
@@ -62,12 +70,12 @@ export default class ProductModule extends Common {
     first: number,
     page: number,
     orderBy?: QueryGetCategoriesOrderByOrderByClause[]
-  ): Promise<Category[] | undefined> => {
+  ): Promise<CategoryPaginator | undefined> => {
     return $api.product
-      .GetCategories(orderBy ?? [], first, page)
+      .GetCategories(first, page, orderBy ?? [])
       .then((response) => {
-        this.Categories = response.data?.GetCategories?.data ?? []
-        return this.Categories
+        this.ProductCategoriesPagination = response.data?.GetCategories
+        return this.ProductCategoriesPagination
       })
       .catch((error: CombinedError) => {
         Logic.Common.showError(

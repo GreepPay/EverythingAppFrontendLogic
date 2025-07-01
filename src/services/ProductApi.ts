@@ -22,20 +22,16 @@ export default class ProductApi extends BaseApiService {
           total
           hasMorePages
         }
-        data {  
+        data {
           id
+          businessId
+          sku
           name
-          price
-          type
           description
-          variants {
-            id
-            attributes
-            priceAdjustment
-          }
-          images {
-            url
-          }
+          type 
+          price
+          currency
+          taxCode   
           event {
             eventType
             eventDetails {
@@ -43,6 +39,18 @@ export default class ProductApi extends BaseApiService {
               endDate
             }
           }
+          variants {
+            id
+            sku
+            attributes
+            priceAdjustment
+            inventory
+          }
+          images {
+            url
+            altText
+            isPrimary
+          } 
         } 
       }
     }
@@ -58,6 +66,8 @@ export default class ProductApi extends BaseApiService {
   }
 
   public GetSingleProduct = (where: Record<string, any>) => {
+  
+
     const requestData = `
     query GetSingleProduct($where: QueryGetSingleProductWhereWhereConditions) {
       GetSingleProduct(where: $where) {
@@ -65,15 +75,10 @@ export default class ProductApi extends BaseApiService {
         sku
         name
         description
-        type
-        status
+        type 
         price
         currency
-        taxCode
-        categoryIds
-        tags
-        createdAt
-        updatedAt
+        taxCode   
         physical {
           weight
           dimensions {
@@ -81,25 +86,15 @@ export default class ProductApi extends BaseApiService {
             width
             height
           }
-          shippingClass
-          inventory {
-            quantity
-            isAvailable
-          }
-        }
-        digital {
-          // Add fields here if any exist for your use case
-        }
+          shippingClass 
+        } 
         subscription {
           billing {
             interval
             trialDays
             gracePeriod
           }
-          features
-          renewal {
-            // Add renewal fields if needed
-          }
+          features 
         }
         event {
           eventType
@@ -107,13 +102,7 @@ export default class ProductApi extends BaseApiService {
             startDate
             endDate
             venueName
-            onlineUrl
-            location {
-              latitude
-              longitude
-              address
-              // Add more if necessary
-            }
+            onlineUrl 
             capacity
             registeredCount
             waitlistEnabled
@@ -121,16 +110,16 @@ export default class ProductApi extends BaseApiService {
         }
         variants {
           id
-          name
-          price
           sku
-          // Add more fields if needed
+          attributes
+          priceAdjustment
+          inventory
         }
         images {
           url
-          alt
-          // Add more if needed
-        }
+          altText
+          isPrimary
+        }  
       }
     }
   `
@@ -145,15 +134,15 @@ export default class ProductApi extends BaseApiService {
   }
 
   public GetCategories = (
-    orderBy: { column: "NAME"; order: "ASC" | "DESC" }[],
     first: number,
-    page?: number
+    page: number,
+    orderBy: { column: "NAME"; order: "ASC" | "DESC" }[]
   ) => {
     const requestData = `
     query GetCategories(
-      $orderBy: [QueryGetCategoriesOrderByOrderByClause!]
       $first: Int!
       $page: Int
+      $orderBy: [QueryGetCategoriesOrderByOrderByClause!]
     ) {
       GetCategories(orderBy: $orderBy, first: $first, page: $page) {
         paginatorInfo {
@@ -170,8 +159,6 @@ export default class ProductApi extends BaseApiService {
           name
           description
           parentId
-          createdAt
-          updatedAt
         }
       }
     }

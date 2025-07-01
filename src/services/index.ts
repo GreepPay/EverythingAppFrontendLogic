@@ -9,6 +9,7 @@ import ProductApi from "./ProductApi"
 import TicketApi from "./TicketApi"
 import TransactionApi from "./TransactionApi"
 import UserApi from "./UserApi"
+import WalletApi from "./WalletApi"
 
 export const $api = {
   auth: new AuthApi(),
@@ -22,4 +23,5 @@ export const $api = {
   ticket: new TicketApi(),
   transaction: new TransactionApi(),
   user: new UserApi(),
+  wallet: new WalletApi(),
 }

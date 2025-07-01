@@ -130,6 +130,7 @@ export type Business = {
   business_name?: Maybe<Scalars['String']>;
   /** Business description. */
   description?: Maybe<Scalars['String']>;
+  eventProducts?: Maybe<Array<Maybe<Product>>>;
   /** Unique identifier for the business. */
   id: Scalars['String'];
   /** Business logo URL. */
@@ -182,6 +183,7 @@ export type Coordinates = {
 
 export type CreateOrderInput = {
   billingAddress?: InputMaybe<AddressInput>;
+  customerId?: InputMaybe<Scalars['Int']>;
   items?: InputMaybe<Array<InputMaybe<OrderItemInput>>>;
   paymentMethod?: InputMaybe<Scalars['String']>;
   shippingAddress?: InputMaybe<AddressInput>;
@@ -565,12 +567,12 @@ export type Order = {
   items?: Maybe<Array<Maybe<OrderItem>>>;
   paymentDetails?: Maybe<PaymentDetails>;
   paymentMethod?: Maybe<Scalars['String']>;
-  paymentStatus?: Maybe<PaymentStatus>;
+  paymentStatus?: Maybe<Scalars['String']>;
   refundDetails?: Maybe<RefundDetails>;
   refundId?: Maybe<Scalars['String']>;
   saleId?: Maybe<Scalars['Int']>;
   shippingAddress?: Maybe<Address>;
-  status?: Maybe<OrderStatus>;
+  status?: Maybe<Scalars['String']>;
   statusHistory?: Maybe<Array<Maybe<StatusUpdate>>>;
   subtotalAmount?: Maybe<Scalars['Float']>;
   taxAmount?: Maybe<Scalars['Float']>;
@@ -624,6 +626,7 @@ export type OrderItemInput = {
   productId?: InputMaybe<Scalars['String']>;
   quantity?: InputMaybe<Scalars['Int']>;
   sku?: InputMaybe<Scalars['String']>;
+  variantId?: InputMaybe<Scalars['String']>;
 };
 
 /** A paginated list of Order items. */
@@ -830,6 +833,7 @@ export type PointTransactionPaginator = {
 
 export type Product = {
   __typename?: 'Product';
+  businessId: Scalars['Int'];
   categoryIds: Array<Scalars['String']>;
   createdAt: Scalars['DateTime'];
   currency: Scalars['String'];
@@ -1311,7 +1315,10 @@ export type QueryGetProductsOrderByOrderByClause = {
 
 /** Allowed column names for Query.GetProducts.where. */
 export enum QueryGetProductsWhereColumn {
-  Name = 'NAME'
+  BusinessId = 'BUSINESS_ID',
+  Id = 'ID',
+  Name = 'NAME',
+  Type = 'TYPE'
 }
 
 /** Dynamic WHERE conditions for the `where` argument of the query `GetProducts`. */
@@ -1599,9 +1606,10 @@ export type Ticket = {
   productId: Scalars['Int'];
   qrCode: Scalars['String'];
   saleId?: Maybe<Scalars['Int']>;
-  status: TicketStatus;
+  status: Scalars['String'];
   ticketType: Scalars['String'];
-  userId: Scalars['String'];
+  updatedAt: Scalars['DateTime'];
+  userId: Scalars['Int'];
   variantId?: Maybe<Scalars['String']>;
 };
 
@@ -1718,6 +1726,7 @@ export type User = {
   email_verified_at?: Maybe<Scalars['DateTime']>;
   /** The user first name */
   first_name: Scalars['String'];
+  id?: Maybe<Scalars['Int']>;
   /** The user last name */
   last_name: Scalars['String'];
   /** The user phone */

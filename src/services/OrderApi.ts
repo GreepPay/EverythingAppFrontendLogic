@@ -13,89 +13,16 @@ export default class OrderApi extends BaseApiService {
   public CreateOrder = (input: CreateOrderInput) => {
     const requestData = `
     mutation CreateOrder($input: CreateOrderInput!) {
-      CreateOrder(input: $input) {
+      CreateOrder(input: $input) { 
         id
-        customerId
-        saleId
-        items {
-          productId
-          sku
-          quantity
-          fulfilledQuantity
-          price
-          taxRate
-          taxAmount
-          discountAmount
-          total
-        }
-        shippingAddress {
-          street
-          city
-          state
-          postalCode
-          country
-          phone
-        }
-        billingAddress {
-          street
-          city
-          state
-          postalCode
-          country
-          phone
-        }
         status
-        statusHistory {
-          status
-          timestamp
-          changedBy
-          note
-        }
-        paymentMethod
-        paymentStatus
-        paymentDetails {
-          transactionId
-          provider
-          method
-          amount
-          currency
-          status
-          timestamp
-        }
-        refundDetails {
-          transactionId
-          amount
-          reason
-          status
-          timestamp
-        }
-        cancellationReason
-        refundId
-        subtotalAmount
-        taxAmount
-        discountAmount
-        totalAmount
-        currency
-        appliedDiscounts {
-          code
-          type
-          value
-          description
-        }
-        taxDetails {
-          name
-          rate
-          amount
-        }
+        paymentStatus 
       }
     }
   `
 
-    const response: Promise<
-      OperationResult<{
-        CreateOrder: Order
-      }>
-    > = this.mutation(requestData, { input })
+    const response: Promise<OperationResult<{ CreateOrder: Order }>> =
+      this.mutation(requestData, { input })
 
     return response
   }
