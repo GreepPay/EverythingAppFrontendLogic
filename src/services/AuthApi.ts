@@ -17,8 +17,7 @@ export default class AuthApi extends BaseApiService {
   public GetAuthUser = () => {
     const requestData = `
         query GetAuthUser {
-          GetAuthUser { 
-            id
+          GetAuthUser {  
             uuid
             first_name
             last_name
@@ -134,8 +133,7 @@ export default class AuthApi extends BaseApiService {
         password: $password
       ) { 
         token
-        user { 
-          id
+        user {  
           uuid
           first_name
           last_name

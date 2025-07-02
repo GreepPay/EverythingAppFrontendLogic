@@ -9,84 +9,193 @@ import {
 
 export default class ProductApi extends BaseApiService {
   // #region QUERIES
-  public GetProducts = (first: number, page: number) => {
+  public GetProducts = (
+    page: number,
+    count: number,
+    orderType = "CREATED_AT",
+    order: "ASC" | "DESC",
+    whereQuery = ""
+  ) => {
     const requestData = `
-    query GetProducts($first: Int!, $page: Int) {
-      GetProducts(first: $first, page: $page) {
-        paginatorInfo {
-          firstItem
-          lastItem
-          currentPage
-          lastPage
-          perPage
-          total
-          hasMorePages
-        }
-        data {
-          id
-          businessId
-          sku
-          name
-          description
-          type 
-          price
-          currency
-          taxCode   
-          event {
-            eventType
-            eventDetails {
-              startDate
-              endDate
+      query GetProducts(
+        $page: Int!,
+        $count: Int!
+      ){
+        GetProducts(
+          first: $count,
+          page: $page,
+          orderBy: {
+            column: ${orderType ? orderType : "CREATED_AT"},
+            order: ${order}
+          }
+          ${whereQuery ? `where: ${whereQuery}` : ""}
+        ) {
+          paginatorInfo {
+            total
+            perPage
+            lastPage
+            lastItem
+            hasMorePages
+            firstItem
+            currentPage
+            count
+          }
+          data { 
+            id
+            businessId
+            sku
+            name
+            description
+            type 
+            price
+            currency
+            taxCode   
+            physical {
+              dimensions {
+                length
+                width
+                height
+              }
+              inventory {
+                stock
+                lowStockThreshold
+                isBackorderAllowed
+              }
+              shippingClass
+              weight
+            } 
+            variants {
+              id
+              sku 
+              priceAdjustment
+              inventory
+            } 
+            images {
+              url
+              altText
+              isPrimary
+            }
+            event {
+              eventDetails {
+                startDate
+                endDate
+                venueName
+                onlineUrl
+                capacity
+                registeredCount
+                waitlistEnabled 
+              }
             }
           }
-          variants {
-            id
-            sku
-            attributes
-            priceAdjustment
-            inventory
-          }
-          images {
-            url
-            altText
-            isPrimary
-          } 
-        } 
+        }
       }
-    }
-  `
-
+    `
     const response: Promise<
       OperationResult<{
         GetProducts: ProductPaginator
       }>
-    > = this.query(requestData, { first, page })
+    > = this.query(requestData, {
+      page,
+      count,
+    })
+
+    return response
+  }
+
+  public GetProduct = (uuid: string) => {
+    const requestData = `
+      query GetProduct($uuid: String!) {
+        GetProduct(uuid: $uuid) {
+        uuid
+        id
+        businessId
+        business {
+          id
+        }
+        sku
+        name
+        slug
+        description
+        price
+        currency
+        taxCode
+        type
+        status
+        variants
+        inventoryCount
+        stockThreshold
+        isBackorderAllowed
+        downloadUrl
+        downloadLimit
+        license
+        fileInfo
+        dimensions
+        weight
+        billingInterval
+        trialPeriodDays
+        gracePeriod
+        renewal
+        features
+        eventType
+        eventStartDate
+        eventEndDate
+        venueName
+        eventOnlineUrl
+        eventLocation
+        eventCapacity
+        eventRegisteredCount
+        eventWaitlistEnabled
+        metaTitle
+        metaDescription
+        isVisible
+        images
+        createdAt
+        updatedAt
+        }
+      }
+    `
+    const response: Promise<
+      OperationResult<{
+        GetProduct: Product
+      }>
+    > = this.query(requestData, {
+      uuid,
+    })
 
     return response
   }
 
   public GetSingleProduct = (where: Record<string, any>) => {
-  
-
     const requestData = `
     query GetSingleProduct($where: QueryGetSingleProductWhereWhereConditions) {
       GetSingleProduct(where: $where) {
         id
+        businessId
         sku
         name
         description
-        type 
+        type
+        status
         price
         currency
-        taxCode   
+        taxCode
+        categoryIds
+        tags
+        createdAt
+        updatedAt 
         physical {
-          weight
           dimensions {
             length
             width
             height
           }
-          shippingClass 
+          inventory {
+            stock
+            lowStockThreshold
+            isBackorderAllowed
+          }
+          shippingClass
+          weight
         } 
         subscription {
           billing {
@@ -94,18 +203,33 @@ export default class ProductApi extends BaseApiService {
             trialDays
             gracePeriod
           }
-          features 
+          features
+          renewal {
+            price
+            autoRenew
+          }
         }
         event {
           eventType
-          eventDetails {
+          eventDetails { 
             startDate
             endDate
             venueName
-            onlineUrl 
+            onlineUrl
             capacity
             registeredCount
             waitlistEnabled
+            location {
+              address
+              city
+              state
+              country
+              postalCode
+              coordinates {
+                lat
+                lng
+              }
+            }
           }
         }
         variants {

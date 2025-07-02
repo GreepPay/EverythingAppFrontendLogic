@@ -130,12 +130,10 @@ export type Business = {
   business_name?: Maybe<Scalars['String']>;
   /** Business description. */
   description?: Maybe<Scalars['String']>;
-  eventProducts?: Maybe<Array<Maybe<Product>>>;
   /** Unique identifier for the business. */
   id: Scalars['String'];
   /** Business logo URL. */
   logo?: Maybe<Scalars['String']>;
-  products?: Maybe<Array<Maybe<Product>>>;
   /** Business website URL. */
   website?: Maybe<Scalars['String']>;
 };
@@ -173,6 +171,33 @@ export type CategoryPaginator = {
   data: Array<Category>;
   /** Pagination information about the list of items. */
   paginatorInfo: PaginatorInfo;
+};
+
+/** A conversation */
+export type Conversation = {
+  __typename?: 'Conversation';
+  /** Conversation Created At */
+  created_at: Scalars['DateTime'];
+  /** Entity Type */
+  entity_type?: Maybe<Scalars['String']>;
+  /** Unique ID */
+  id: Scalars['Int'];
+  /** Messages */
+  messages: Array<Message>;
+  /** Conversation Name */
+  name: Scalars['String'];
+  /** Owner ID */
+  owner_id: Scalars['Int'];
+  /** Participants */
+  participants: Array<Participant>;
+  /** Stage */
+  stage?: Maybe<Scalars['String']>;
+  /** State */
+  state: Scalars['String'];
+  /** Conversation Type */
+  type: Scalars['String'];
+  /** Conversation Updated At */
+  updated_at: Scalars['DateTime'];
 };
 
 export type Coordinates = {
@@ -362,6 +387,35 @@ export type Location = {
   country: Scalars['String'];
   postalCode?: Maybe<Scalars['String']>;
   state?: Maybe<Scalars['String']>;
+};
+
+/** A message */
+export type Message = {
+  __typename?: 'Message';
+  /** Message Content */
+  content: Scalars['String'];
+  /** Conversation */
+  conversation: Conversation;
+  /** Conversation ID */
+  conversation_id: Scalars['Int'];
+  /** Message Created At */
+  created_at: Scalars['DateTime'];
+  /** Unique ID */
+  id: Scalars['Int'];
+  /** Sender */
+  participant: Participant;
+  /** Replied Message */
+  replied_message: Message;
+  /** Sender ID */
+  sender_id: Scalars['Int'];
+  /** Message State */
+  state: Scalars['String'];
+  /** Message Status */
+  status: Scalars['String'];
+  /** Message Updated At */
+  updated_at: Scalars['DateTime'];
+  /** Unique UUID */
+  uuid: Scalars['String'];
 };
 
 export type Mutation = {
@@ -666,6 +720,25 @@ export type PaginatorInfo = {
   perPage: Scalars['Int'];
   /** Number of total available items. */
   total: Scalars['Int'];
+};
+
+/** A participant */
+export type Participant = {
+  __typename?: 'Participant';
+  /** Conversation */
+  conversation: Conversation;
+  /** Participant Created At */
+  created_at: Scalars['DateTime'];
+  /** Unique ID */
+  id: Scalars['Int'];
+  /** Messages */
+  messages: Array<Message>;
+  /** Participant State */
+  state: Scalars['String'];
+  /** Participant Updated At */
+  updated_at: Scalars['DateTime'];
+  /** Attached user */
+  user: User;
 };
 
 export type PaymentChannel = {
@@ -1659,6 +1732,8 @@ export type Transaction = {
   dr_or_cr: Scalars['String'];
   /** Gateway (default: 'Greep-wallet') */
   gateway: Scalars['String'];
+  /** The associated point transaction */
+  point_transaction?: Maybe<PointTransaction>;
   /** Transaction Reference */
   reference: Scalars['String'];
   /** State of the transaction ('active' or 'archived') */
@@ -1726,7 +1801,6 @@ export type User = {
   email_verified_at?: Maybe<Scalars['DateTime']>;
   /** The user first name */
   first_name: Scalars['String'];
-  id?: Maybe<Scalars['Int']>;
   /** The user last name */
   last_name: Scalars['String'];
   /** The user phone */
