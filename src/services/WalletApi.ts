@@ -1,5 +1,5 @@
-import { BaseApiService } from "./common/BaseService";
-import { OperationResult } from "urql";
+import { BaseApiService } from "./common/BaseService"
+import { OperationResult } from "urql"
 import {
   MutationInitiateTopupArgs,
   MutationMakePaymentArgs,
@@ -20,7 +20,16 @@ import {
   PaymentNetwork,
   PaymentCollectionResponse,
   MutationMonitorTopupStatusArgs,
-} from "../gql/graphql";
+  OffRamp,
+  WithdrawInfo,
+  UserBankPaginator,
+  MutationInitiateWithdrawalArgs,
+  UserBank,
+  MutationCreateSavedAccountArgs,
+  YellowcardNetwork,
+  FinancialSummaryResponse,
+  FinancialSummaryInput,
+} from "../gql/graphql"
 
 export default class WalletsApi extends BaseApiService {
   // Query
@@ -38,23 +47,23 @@ export default class WalletsApi extends BaseApiService {
           }
         }
       }
-		`;
+		`
 
     const response: Promise<
       OperationResult<{
-        GetExchangeRate: ExchangeRate;
+        GetExchangeRate: ExchangeRate
       }>
-    > = this.query(requestData, data);
+    > = this.query(requestData, data)
 
-    return response;
-  };
+    return response
+  }
 
   public GetPointTransactions = (
     page: number,
     count: number,
     orderType = "CREATED_AT",
     order: "ASC" | "DESC",
-    whereQuery = "",
+    whereQuery = ""
   ) => {
     const requestData = `
       query GetPointTransactions(
@@ -96,25 +105,25 @@ export default class WalletsApi extends BaseApiService {
           }
         }
       }
-    `;
+    `
     const response: Promise<
       OperationResult<{
-        GetPointTransactions: PointTransactionPaginator;
+        GetPointTransactions: PointTransactionPaginator
       }>
     > = this.query(requestData, {
       page,
       count,
-    });
+    })
 
-    return response;
-  };
+    return response
+  }
 
   public GetTransactions = (
     page: number,
     count: number,
     orderType = "CREATED_AT",
     order: "ASC" | "DESC",
-    whereQuery = "",
+    whereQuery = ""
   ) => {
     const requestData = `
       query GetTransactions(
@@ -157,18 +166,18 @@ export default class WalletsApi extends BaseApiService {
           }
         }
       }
-    `;
+    `
     const response: Promise<
       OperationResult<{
-        GetTransactions: TransactionPaginator;
+        GetTransactions: TransactionPaginator
       }>
     > = this.query(requestData, {
       page,
       count,
-    });
+    })
 
-    return response;
-  };
+    return response
+  }
 
   public GetSinglePointTransaction = (uuid: string) => {
     const requestData = `
@@ -190,17 +199,17 @@ export default class WalletsApi extends BaseApiService {
           uuid
         }
       }
-    `;
+    `
     const response: Promise<
       OperationResult<{
-        GetSinglePointTransaction: PointTransaction;
+        GetSinglePointTransaction: PointTransaction
       }>
     > = this.query(requestData, {
       uuid,
-    });
+    })
 
-    return response;
-  };
+    return response
+  }
 
   public GetSingleTransaction = (uuid: string) => {
     const requestData = `
@@ -223,23 +232,152 @@ export default class WalletsApi extends BaseApiService {
           wallet_balance
         }
       }
-    `;
+    `
 
     const response: Promise<
       OperationResult<{
-        GetSingleTransaction: Transaction;
+        GetSingleTransaction: Transaction
       }>
     > = this.query(requestData, {
       uuid,
-    });
+    })
 
-    return response;
-  };
+    return response
+  }
 
-  /**
-   * @description Retrieves the list of currently supported on-ramp currencies.
-   * @response An array of supported currencies with details including country, code, and supported methods.
-   */
+  public GetSavedAccounts = (first: number, page: number) => {
+    const requestData = `
+      query GetSavedAccounts($first: Int!, $page: Int) {
+        GetSavedAccounts(first: $first, page: $page) {
+          paginatorInfo {
+            count
+            currentPage
+            firstItem
+            hasMorePages
+            lastItem
+            lastPage
+            perPage
+            total
+          }
+          data {
+            account_no
+            bank_code
+            bank_name
+            currency
+            is_verified
+            meta_data
+            state
+            uuid
+          }
+        }
+      }
+    `
+    const response: Promise<
+      OperationResult<{
+        GetSavedAccounts: UserBankPaginator
+      }>
+    > = this.query(requestData, {
+      first,
+      page,
+    })
+
+    return response
+  }
+
+  public GetYellowCardNetwork = (country_code: string) => {
+    const requestData = `
+        query GetYellowCardNetwork($country_code: String!) {
+          GetYellowCardNetwork(country_code: $country_code) {
+            id
+            code
+            hasBranch
+            name
+            country
+            accountNumberType
+            countryAccountNumberType
+            status
+            channelIds
+          }
+        }
+    `
+
+    const response: Promise<
+      OperationResult<{
+        GetYellowCardNetwork: YellowcardNetwork[]
+      }>
+    > = this.query(requestData, {
+      country_code,
+    })
+
+    return response
+  }
+
+  public GetBankAccountDetails = (accountNumber: string, networkId: string) => {
+    const requestData = `
+        query GetBankAccountDetails($accountNumber: String!, $networkId: String!) {
+          GetBankAccountDetails(accountNumber: $accountNumber, networkId: $networkId)
+        }
+    `
+
+    const response: Promise<
+      OperationResult<{
+        GetBankAccountDetails: string
+      }>
+    > = this.query(requestData, {
+      accountNumber,
+      networkId,
+    })
+
+    return response
+  }
+
+  public GetFinancialSummary = (input: FinancialSummaryInput) => {
+    const requestData = `
+      query GetFinancialSummary($input: FinancialSummaryInput!) {
+        GetFinancialSummary(input: $input) {
+         credit
+         debit
+        }
+      }
+    `
+    const response: Promise<
+      OperationResult<{ GetFinancialSummary: FinancialSummaryResponse }>
+    > = this.query(requestData, {
+      input,
+    })
+
+    return response
+  }
+
+  public GetWithdrawInfo = (amount: number, currency: string) => {
+    const requestData = `
+      query GetWithdrawInfo($amount: Float!, $currency: String!) {
+        GetWithdrawInfo(amount: $amount, currency: $currency) {
+          currency
+          methods {
+            name
+            description
+            fee
+            min_amount
+            max_amount
+            unique_id
+          }
+        }
+      }
+		`
+
+    const response: Promise<
+      OperationResult<{
+        GetWithdrawInfo: WithdrawInfo
+      }>
+    > = this.query(requestData, {
+      amount,
+      currency,
+    })
+
+    return response
+  }
+
   public GetOnRampCurrencies = () => {
     const requestData = `
       query GetOnRampCurrencies {
@@ -250,21 +388,17 @@ export default class WalletsApi extends BaseApiService {
           supported_methods
         }
       }
-    `;
+    `
 
     const response: Promise<
       OperationResult<{
-        GetOnRampCurrencies: SupportedCurrency[];
+        GetOnRampCurrencies: SupportedCurrency[]
       }>
-    > = this.query(requestData, {});
+    > = this.query(requestData, {})
 
-    return response;
-  };
+    return response
+  }
 
-  /**
-   * @description Retrieves the list of currently supported on-ramp channels for a given country code.
-   * @response An array of supported channels with details including country, code, and supported methods.
-   */
   public GetOnRampChannelsByCountryCode = (countryCode: string) => {
     const requestData = `
       query GetOnRampChannelsByCountryCode($countryCode: String!) {
@@ -284,21 +418,17 @@ export default class WalletsApi extends BaseApiService {
            rampType
         }
       }
-    `;
+    `
 
     const response: Promise<
       OperationResult<{
-        GetOnRampChannelsByCountryCode: PaymentChannel[];
+        GetOnRampChannelsByCountryCode: PaymentChannel[]
       }>
-    > = this.query(requestData, { countryCode });
+    > = this.query(requestData, { countryCode })
 
-    return response;
-  };
+    return response
+  }
 
-  /**
-   * @description Retrieves the list of currently supported on-ramp networks for a given country code.
-   * @response An array of supported networks with details including country, code, and supported methods.
-   */
   public GetOnRampNetworkByCountryCode = (countryCode: string) => {
     const requestData = `
       query GetOnRampNetworkByCountryCode($countryCode: String!) {
@@ -313,23 +443,92 @@ export default class WalletsApi extends BaseApiService {
            countryAccountNumberType
         }
       }
-    `;
+    `
 
     const response: Promise<
       OperationResult<{
-        GetOnRampNetworkByCountryCode: PaymentNetwork[];
+        GetOnRampNetworkByCountryCode: PaymentNetwork[]
       }>
-    > = this.query(requestData, { countryCode });
+    > = this.query(requestData, { countryCode })
 
-    return response;
-  };
+    return response
+  }
+
+  public GetOfframp = (uuid: string) => {
+    const requestData = `
+      query GetOfframp($uuid: String!) {
+        GetOfframp(uuid: $uuid) {
+        id
+        uuid
+        amount
+        payment_reference
+        yellow_card_payment {
+          currency
+          amount
+          convertedAmount
+          status
+          rate
+          destination {
+            accountName
+            accountNumber
+            accountType
+          }
+          expiresAt
+        }
+        state
+        payment_channel
+        description
+        status
+        currency
+        extra_data
+        senderName
+        senderCountry
+        senderPhone
+        senderAddress
+        senderBusinessName
+        created_at
+        updated_at
+        }
+      }
+    `
+
+    const response: Promise<
+      OperationResult<{
+        GetOfframp: OffRamp
+      }>
+    > = this.query(requestData, {
+      uuid,
+    })
+
+    return response
+  }
 
   // Mutation
-  /**
-   * @description Initiates a top-up transaction with the specified method, amount, currency, and payment metadata.
-   * @params method, amount, currency, payment_metadata
-   * @response Boolean indicating success or failure
-   */
+  public CreateSavedAccount = (data: MutationCreateSavedAccountArgs) => {
+    const requestData = `
+        mutation CreateSavedAccount($type: String!, $unique_id: String!, $metadata: String!, $uploads: [Upload!]) {
+          CreateSavedAccount(type: $type, unique_id: $unique_id, metadata: $metadata, uploads: $uploads) {
+            account_no
+            bank_code
+            bank_name
+            currency
+            is_verified
+            meta_data
+            state
+            uuid
+          }
+        }
+      `
+
+    const response: Promise<
+      OperationResult<{
+        CreateSavedAccount: UserBank
+      }>
+    > = this.mutation(requestData, data)
+
+    return response
+  }
+
   public InitiateTopup = (data: MutationInitiateTopupArgs) => {
     const requestData = `
       mutation InitiateTopup(
@@ -366,20 +565,15 @@ export default class WalletsApi extends BaseApiService {
              serviceFeeAmountLocal
            }
          }
-  `;
+  `
 
     const response: Promise<
       OperationResult<{ InitiateTopup: PaymentCollectionResponse }>
-    > = this.mutation(requestData, data);
+    > = this.mutation(requestData, data)
 
-    return response;
-  };
+    return response
+  }
 
-  /**
-   * @description Initiates a payment to another user with the specified receiver, amount, and currency.
-   * @params receiver_uuid, amount, currency
-   * @response Boolean indicating success or failure
-   */
   public MakePayment = (data: MutationMakePaymentArgs) => {
     const requestData = `
     mutation MakePayment(
@@ -393,13 +587,13 @@ export default class WalletsApi extends BaseApiService {
         currency: $currency
       )
     }
-  `;
+  `
 
     const response: Promise<OperationResult<{ MakePayment: boolean }>> =
-      this.mutation(requestData, data);
+      this.mutation(requestData, data)
 
-    return response;
-  };
+    return response
+  }
 
   public GetGlobalExchangeRate = (base: string, target: string) => {
     const requestData = `
@@ -411,25 +605,41 @@ export default class WalletsApi extends BaseApiService {
           unit
         }
       }
-		`;
+		`
 
     const response: Promise<
       OperationResult<{
-        GetGlobalExchangeRate: GlobalExchangeRate;
+        GetGlobalExchangeRate: GlobalExchangeRate
       }>
     > = this.query(requestData, {
       base,
       target,
-    });
+    })
 
-    return response;
-  };
+    return response
+  }
 
-  /**
-   * @description Redeems a specified amount of GRP tokens for the authenticated user.
-   * @params grp_amount
-   * @response Boolean indicating success or failure
-   */
+  public GetOffRampCurrencies = () => {
+    const requestData = `
+        query GetOffRampCurrencies {
+          GetOffRampCurrencies {
+            code
+            country
+            currency
+            supported_methods
+          }
+        }
+    `
+
+    const response: Promise<
+      OperationResult<{
+        GetOffRampCurrencies: SupportedCurrency[]
+      }>
+    > = this.query(requestData, {})
+
+    return response
+  }
+
   public RedeemGRPToken = (data: MutationRedeemGrpTokenArgs) => {
     const requestData = `
     mutation RedeemGRPToken(
@@ -439,13 +649,13 @@ export default class WalletsApi extends BaseApiService {
         grp_amount: $grp_amount
       )
     }
-  `;
+  `
 
     const response: Promise<OperationResult<{ RedeemGRPToken: boolean }>> =
-      this.mutation(requestData, data);
+      this.mutation(requestData, data)
 
-    return response;
-  };
+    return response
+  }
 
   public MonitorTopupStatus = (data: MutationMonitorTopupStatusArgs) => {
     const requestData = `
@@ -456,11 +666,151 @@ export default class WalletsApi extends BaseApiService {
         collection_id: $collection_id
       )
     }
-  `;
+  `
 
     const response: Promise<OperationResult<{ MonitorTopupStatus: boolean }>> =
-      this.mutation(requestData, data);
+      this.mutation(requestData, data)
 
-    return response;
-  };
+    return response
+  }
+
+  public InitiateWalletKYC = (currency: string) => {
+    const requestData = `
+        mutation InitiateWalletKYC($currency: String!) {
+          InitiateWalletKYC(currency: $currency)
+        }
+      `
+
+    const response: Promise<
+      OperationResult<{
+        InitiateWalletKYC: string
+      }>
+    > = this.mutation(requestData, {
+      currency,
+    })
+
+    return response
+  }
+
+  public ConfirmWithdrawal = (
+    uuid: string,
+    currency: string,
+    amount: number,
+    metadata = ""
+  ) => {
+    const requestData = `
+        mutation ConfirmWithdrawal(
+          $uuid: String!
+          $currency: String!
+          $amount: Float!
+          $metadata: String
+        ) {
+          ConfirmWithdrawal(
+            uuid: $uuid
+            currency: $currency
+            amount: $amount
+            metadata: $metadata
+          ) {
+             id
+             uuid
+             amount
+             payment_reference
+             yellow_card_payment {
+               currency
+               amount
+               convertedAmount
+               status
+               rate
+               destination {
+                 accountName
+                 accountNumber
+                 accountType
+               }
+               expiresAt
+             }
+             state
+             payment_channel
+             description
+             status
+             currency
+             extra_data
+             senderName
+             senderCountry
+             senderPhone
+             senderAddress
+             senderBusinessName
+             created_at
+             updated_at
+          }
+        }
+      `
+
+    const response: Promise<
+      OperationResult<{
+        ConfirmWithdrawal: OffRamp
+      }>
+    > = this.mutation(requestData, {
+      uuid,
+      currency,
+      amount,
+      metadata,
+    })
+
+    return response
+  }
+
+  public InitiateWithdrawal = (data: MutationInitiateWithdrawalArgs) => {
+    const requestData = `
+        mutation InitiateWithdrawal(
+          $saved_account_uuid: String!
+          $amount: Float!
+          $withdrawal_currency: String!
+        ) {
+          InitiateWithdrawal(
+            saved_account_uuid: $saved_account_uuid
+            amount: $amount
+            withdrawal_currency: $withdrawal_currency
+          ) {
+             id
+             uuid
+             amount
+             payment_reference
+             yellow_card_payment {
+               currency
+               amount
+               convertedAmount
+               status
+               rate
+               destination {
+                 accountName
+                 accountNumber
+                 accountType
+               }
+               expiresAt
+             }
+             state
+             payment_channel
+             description
+             status
+             currency
+             extra_data
+             senderName
+             senderCountry
+             senderPhone
+             senderAddress
+             senderBusinessName
+             created_at
+             updated_at
+          }
+        }
+      `
+
+    const response: Promise<
+      OperationResult<{
+        InitiateWithdrawal: OffRamp
+      }>
+    > = this.mutation(requestData, data)
+
+    return response
+  }
 }

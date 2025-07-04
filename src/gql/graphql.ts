@@ -275,6 +275,19 @@ export enum DeliveryStatus {
   Shipped = 'SHIPPED'
 }
 
+/** Destination Details */
+export type Destination = {
+  __typename?: 'Destination';
+  /** Account Name */
+  accountName: Scalars['String'];
+  /** Account Number */
+  accountNumber: Scalars['String'];
+  /** Account Type */
+  accountType: Scalars['String'];
+  /** Network ID */
+  networkId: Scalars['String'];
+};
+
 export type DigitalProduct = {
   __typename?: 'DigitalProduct';
   download: Download;
@@ -344,6 +357,18 @@ export type FileInfo = {
   __typename?: 'FileInfo';
   format: Scalars['String'];
   size: Scalars['Int'];
+};
+
+export type FinancialSummaryInput = {
+  from?: InputMaybe<Scalars['String']>;
+  to?: InputMaybe<Scalars['String']>;
+  type: Scalars['String'];
+};
+
+export type FinancialSummaryResponse = {
+  __typename?: 'FinancialSummaryResponse';
+  credit: Scalars['Float'];
+  debit: Scalars['Float'];
 };
 
 export type GlobalExchangeRate = {
@@ -422,9 +447,15 @@ export type Mutation = {
   __typename?: 'Mutation';
   /** Add a user as a beneficiary */
   AddAsBeneficiary: Beneficiary;
+  /** Confirm withdrawal */
+  ConfirmWithdrawal?: Maybe<OffRamp>;
   CreateOrder?: Maybe<Order>;
+  /** Create a saved account */
+  CreateSavedAccount: UserBank;
   /** Initiate a top-up transaction */
   InitiateTopup: PaymentCollectionResponse;
+  /** Initiate withdrawal */
+  InitiateWithdrawal?: Maybe<OffRamp>;
   /** Make a payment to another user */
   MakePayment: Scalars['Boolean'];
   /** Mark specific notifications as read for the authenticated user. */
@@ -435,6 +466,8 @@ export type Mutation = {
   RedeemGRPToken: Scalars['Boolean'];
   /** Remove a user as a beneficiary */
   RemoveAsBeneficiary: Scalars['Boolean'];
+  /** Remove a saved account */
+  RemoveSavedAccount: Scalars['Boolean'];
   /** Resend email OTP */
   ResendEmailOTP: Scalars['Boolean'];
   /** Reset password for user */
@@ -466,8 +499,24 @@ export type MutationAddAsBeneficiaryArgs = {
 };
 
 
+export type MutationConfirmWithdrawalArgs = {
+  amount: Scalars['Float'];
+  currency: Scalars['String'];
+  metadata?: InputMaybe<Scalars['String']>;
+  uuid: Scalars['String'];
+};
+
+
 export type MutationCreateOrderArgs = {
   input: CreateOrderInput;
+};
+
+
+export type MutationCreateSavedAccountArgs = {
+  metadata: Scalars['String'];
+  type: Scalars['String'];
+  unique_id: Scalars['String'];
+  uploads?: InputMaybe<Array<Scalars['Upload']>>;
 };
 
 
@@ -476,6 +525,13 @@ export type MutationInitiateTopupArgs = {
   currency: Scalars['String'];
   method: Scalars['String'];
   payment_metadata: Scalars['String'];
+};
+
+
+export type MutationInitiateWithdrawalArgs = {
+  amount: Scalars['Float'];
+  saved_account_uuid: Scalars['String'];
+  withdrawal_currency: Scalars['String'];
 };
 
 
@@ -503,6 +559,11 @@ export type MutationRedeemGrpTokenArgs = {
 
 export type MutationRemoveAsBeneficiaryArgs = {
   beneficiary_uuid: Scalars['String'];
+};
+
+
+export type MutationRemoveSavedAccountArgs = {
+  saved_account_uuid: Scalars['String'];
 };
 
 
@@ -607,6 +668,59 @@ export type NotificationPaginator = {
   data: Array<Notification>;
   /** Pagination information about the list of items. */
   paginatorInfo: PaginatorInfo;
+};
+
+/** Offramp Transaction */
+export type OffRamp = {
+  __typename?: 'OffRamp';
+  /** Withdrawal Amount */
+  amount: Scalars['String'];
+  /** Offramp Created At */
+  created_at: Scalars['String'];
+  /** Currency of Withdrawal */
+  currency: Scalars['String'];
+  /** Withdrawal Description */
+  description: Scalars['String'];
+  /** Additional Data */
+  extra_data?: Maybe<Scalars['String']>;
+  /** Unique ID */
+  id: Scalars['Int'];
+  /** Payment Channel */
+  payment_channel: Scalars['String'];
+  /** Payment Reference */
+  payment_reference: Scalars['String'];
+  /** Additional ID Number (if applicable) */
+  senderAdditionalIdNumber?: Maybe<Scalars['String']>;
+  /** Additional ID Type (if applicable) */
+  senderAdditionalIdType?: Maybe<Scalars['String']>;
+  /** Sender's Address */
+  senderAddress?: Maybe<Scalars['String']>;
+  /** Sender's Business ID (if institution) */
+  senderBusinessId?: Maybe<Scalars['String']>;
+  /** Sender's Business Name (if institution) */
+  senderBusinessName?: Maybe<Scalars['String']>;
+  /** Sender's Country */
+  senderCountry?: Maybe<Scalars['String']>;
+  /** Sender's Date of Birth */
+  senderDob?: Maybe<Scalars['String']>;
+  /** Sender's Email Address */
+  senderEmail?: Maybe<Scalars['String']>;
+  /** Type of Sender's ID */
+  senderIdType?: Maybe<Scalars['String']>;
+  /** Sender's Full Name */
+  senderName?: Maybe<Scalars['String']>;
+  /** Sender's Phone Number */
+  senderPhone?: Maybe<Scalars['String']>;
+  /** Transaction State ('active' or 'archived') */
+  state: Scalars['String'];
+  /** Transaction Status */
+  status: Scalars['String'];
+  /** Offramp Updated At */
+  updated_at: Scalars['String'];
+  /** Unique UUID */
+  uuid: Scalars['String'];
+  /** Yellow card payment */
+  yellow_card_payment?: Maybe<PaymentRequestResponse>;
 };
 
 export type Order = {
@@ -843,6 +957,41 @@ export type PaymentNetwork = {
   updatedAt: Scalars['DateTime'];
 };
 
+/** Payment Request Response */
+export type PaymentRequestResponse = {
+  __typename?: 'PaymentRequestResponse';
+  /** Amount */
+  amount: Scalars['Float'];
+  /** Channel ID */
+  channelId: Scalars['String'];
+  /** Converted Amount */
+  convertedAmount: Scalars['Float'];
+  /** Country */
+  country: Scalars['String'];
+  /** Created At */
+  createdAt: Scalars['String'];
+  /** Currency */
+  currency: Scalars['String'];
+  /** Destination Information */
+  destination: Destination;
+  /** Expiration Time */
+  expiresAt: Scalars['String'];
+  /** Unique ID */
+  id: Scalars['String'];
+  /** Rate */
+  rate: Scalars['Float'];
+  /** Reason */
+  reason: Scalars['String'];
+  /** Sender Information */
+  sender: Sender;
+  /** Sequence ID */
+  sequenceId: Scalars['String'];
+  /** Status */
+  status: Scalars['String'];
+  /** Updated At */
+  updatedAt: Scalars['String'];
+};
+
 export enum PaymentStatus {
   Completed = 'COMPLETED',
   Failed = 'FAILED',
@@ -996,12 +1145,16 @@ export type Query = {
   __typename?: 'Query';
   /** Get the authenticated user */
   GetAuthUser?: Maybe<User>;
+  /** Get bank account details */
+  GetBankAccountDetails: Scalars['String'];
   /** Get a paginated list of beneficiaries for the authenticated user */
   GetBeneficiaries: BeneficiaryPaginator;
   GetCategories: CategoryPaginator;
   GetDeliveries: DeliveryPaginator;
   /** Get the current exchange rate between two currencies */
   GetExchangeRate: ExchangeRate;
+  /** Get financial summary */
+  GetFinancialSummary: FinancialSummaryResponse;
   /** Get the global exchange rate between two currencies */
   GetGlobalExchangeRate: GlobalExchangeRate;
   GetMarkets: BusinessPaginator;
@@ -1018,6 +1171,8 @@ export type Query = {
   /** Get many point transactions */
   GetPointTransactions: PointTransactionPaginator;
   GetProducts: ProductPaginator;
+  /** Get a paginated list of saved accounts for the authenticated user */
+  GetSavedAccounts: UserBankPaginator;
   GetSingleDelivery?: Maybe<Delivery>;
   GetSingleOrder?: Maybe<Order>;
   /** Get a single point transaction by UUID */
@@ -1030,8 +1185,18 @@ export type Query = {
   GetSingleUser?: Maybe<User>;
   /** Get many transactions - paginated list of transactions for the authenticated user */
   GetTransactions: TransactionPaginator;
+  /** Get withdrawal info */
+  GetWithdrawInfo: WithdrawInfo;
+  /** Get yellow card networks */
+  GetYellowCardNetwork: Array<YellowcardNetwork>;
   /** Search users by name */
   SearchUsers: Array<User>;
+};
+
+
+export type QueryGetBankAccountDetailsArgs = {
+  accountNumber: Scalars['String'];
+  networkId: Scalars['String'];
 };
 
 
@@ -1059,6 +1224,11 @@ export type QueryGetDeliveriesArgs = {
 export type QueryGetExchangeRateArgs = {
   from_currency: Scalars['String'];
   to_currency: Scalars['String'];
+};
+
+
+export type QueryGetFinancialSummaryArgs = {
+  input: FinancialSummaryInput;
 };
 
 
@@ -1122,6 +1292,12 @@ export type QueryGetProductsArgs = {
 };
 
 
+export type QueryGetSavedAccountsArgs = {
+  first: Scalars['Int'];
+  page?: InputMaybe<Scalars['Int']>;
+};
+
+
 export type QueryGetSingleDeliveryArgs = {
   where?: InputMaybe<QueryGetSingleDeliveryWhereWhereConditions>;
 };
@@ -1162,6 +1338,17 @@ export type QueryGetTransactionsArgs = {
   orderBy?: InputMaybe<Array<QueryGetTransactionsOrderByOrderByClause>>;
   page?: InputMaybe<Scalars['Int']>;
   where?: InputMaybe<QueryGetTransactionsWhereWhereConditions>;
+};
+
+
+export type QueryGetWithdrawInfoArgs = {
+  amount: Scalars['Float'];
+  currency?: InputMaybe<Scalars['String']>;
+};
+
+
+export type QueryGetYellowCardNetworkArgs = {
+  country_code: Scalars['String'];
 };
 
 
@@ -1619,6 +1806,27 @@ export enum SqlOperator {
   NotLike = 'NOT_LIKE'
 }
 
+/** Sender Details */
+export type Sender = {
+  __typename?: 'Sender';
+  /** Sender's Address */
+  address: Scalars['String'];
+  /** Sender's Country */
+  country: Scalars['String'];
+  /** Sender's Date of Birth */
+  dob: Scalars['String'];
+  /** Sender's Email */
+  email: Scalars['String'];
+  /** Sender's ID Number */
+  idNumber: Scalars['String'];
+  /** Sender's ID Type */
+  idType: Scalars['String'];
+  /** Sender's Name */
+  name: Scalars['String'];
+  /** Sender's Phone Number */
+  phone: Scalars['String'];
+};
+
 export enum ShippingClass {
   Express = 'EXPRESS',
   Oversized = 'OVERSIZED',
@@ -1821,6 +2029,38 @@ export type User = {
   wallet: Wallet;
 };
 
+/** A single beneficiary */
+export type UserBank = {
+  __typename?: 'UserBank';
+  /** Account Number */
+  account_no: Scalars['String'];
+  /** Bank Code */
+  bank_code: Scalars['String'];
+  /** Bank Name */
+  bank_name: Scalars['String'];
+  /** Currency (default: 'USDC') */
+  currency: Scalars['String'];
+  /** Is Verified */
+  is_verified: Scalars['Boolean'];
+  /** Metadata associated with the beneficiary */
+  meta_data?: Maybe<Scalars['String']>;
+  /** State of the beneficiary (active or archived) */
+  state: Scalars['String'];
+  /** Unique UUID */
+  uuid: Scalars['String'];
+  /** Wallet ID */
+  wallet_id: Scalars['Int'];
+};
+
+/** A paginated list of UserBank items. */
+export type UserBankPaginator = {
+  __typename?: 'UserBankPaginator';
+  /** A list of UserBank items. */
+  data: Array<UserBank>;
+  /** Pagination information about the list of items. */
+  paginatorInfo: PaginatorInfo;
+};
+
 /** A single verification */
 export type Verification = {
   __typename?: 'Verification';
@@ -1903,4 +2143,43 @@ export type WhereConditionsRelation = {
   operator?: InputMaybe<SqlOperator>;
   /** The relation that is checked. */
   relation: Scalars['String'];
+};
+
+export type WithdrawInfo = {
+  __typename?: 'WithdrawInfo';
+  currency?: Maybe<Scalars['String']>;
+  methods: Array<WithdrawMethod>;
+};
+
+export type WithdrawMethod = {
+  __typename?: 'WithdrawMethod';
+  description?: Maybe<Scalars['String']>;
+  fee?: Maybe<Scalars['String']>;
+  max_amount?: Maybe<Scalars['Float']>;
+  min_amount?: Maybe<Scalars['Float']>;
+  name: Scalars['String'];
+  unique_id?: Maybe<Scalars['String']>;
+};
+
+/** Yellowcard Network */
+export type YellowcardNetwork = {
+  __typename?: 'YellowcardNetwork';
+  /** Account Number Type */
+  accountNumberType?: Maybe<Scalars['String']>;
+  /** Channel IDs */
+  channelIds?: Maybe<Array<Maybe<Scalars['String']>>>;
+  /** Network Code */
+  code?: Maybe<Scalars['String']>;
+  /** Country Code */
+  country?: Maybe<Scalars['String']>;
+  /** Country Account Number Type */
+  countryAccountNumberType?: Maybe<Scalars['String']>;
+  /** Has branch */
+  hasBranch?: Maybe<Scalars['Boolean']>;
+  /** Unique ID */
+  id: Scalars['String'];
+  /** Network Name */
+  name?: Maybe<Scalars['String']>;
+  /** Status */
+  status?: Maybe<Scalars['String']>;
 };

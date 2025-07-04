@@ -12,6 +12,14 @@ import {
   GlobalExchangeRate,
   PaymentChannel,
   PaymentNetwork,
+  OffRamp,
+  WithdrawInfo,
+  UserBankPaginator,
+  MutationInitiateWithdrawalArgs,
+  YellowcardNetwork,
+  FinancialSummaryInput,
+  FinancialSummaryResponse,
+  MutationCreateSavedAccountArgs,
 } from "../../gql/graphql"
 import { $api } from "../../services"
 import { CombinedError } from "urql"
@@ -20,28 +28,51 @@ import { Logic } from ".."
 import { reactive } from "vue"
 
 export default class Wallet extends Common {
-  constructor() {
-    super()
-  }
-
   // Base Variables
   public CurrentExchangeRate: ExchangeRate | undefined
   public ManyOffRampCurrencies: SupportedCurrency[] | undefined
+  public ManySavedAccounts: UserBankPaginator | undefined
   public ManyPointTransactions: PointTransactionPaginator | undefined
   public ManyTransactions: TransactionPaginator | undefined
   public SinglePointTransaction: PointTransaction | undefined
   public SingleTransaction: Transaction | undefined
   public CurrentGlobalExchangeRate: GlobalExchangeRate | undefined
+  public CurrentOfframp: OffRamp | undefined
+  public CurrentWithdrawalInfo: WithdrawInfo | undefined
+  public CurrentYellowCardNetworks: YellowcardNetwork[] | undefined
   public OnRampChannels: PaymentChannel[] | undefined
   public OnRampNetwork: PaymentNetwork[] | undefined
+  public PointFinancialSummary: FinancialSummaryResponse | undefined
   public CheckStatusState = reactive({
     active: false,
   })
 
   // Mutation Variables
+  public CreateSavedAccountForm: MutationCreateSavedAccountArgs | undefined
   public InitiateTopupForm: MutationInitiateTopupArgs | undefined
+  public InitiateWithdrawalForm: MutationInitiateWithdrawalArgs | undefined
   public MakePaymentForm: MutationMakePaymentArgs | undefined
   public RedeemGRPTokenForm: MutationRedeemGrpTokenArgs | undefined
+
+  constructor() {
+    super()
+
+    this.defineReactiveProperty("CurrentExchangeRate", undefined)
+    this.defineReactiveProperty("ManyOffRampCurrencies", undefined)
+    this.defineReactiveProperty("ManyPointTransactions", undefined)
+    this.defineReactiveProperty("ManyTransactions", undefined)
+    this.defineReactiveProperty("ManySavedAccounts", undefined)
+    this.defineReactiveProperty("SinglePointTransaction", undefined)
+    this.defineReactiveProperty("SingleTransaction", undefined)
+    this.defineReactiveProperty("CurrentGlobalExchangeRate", undefined)
+    this.defineReactiveProperty("NormalFinancialSummary", undefined)
+    this.defineReactiveProperty("PointFinancialSummary", undefined)
+    this.defineReactiveProperty("CurrentWithdrawalInfo", undefined)
+    this.defineReactiveProperty("CurrentYellowCardNetworks", undefined)
+    this.defineReactiveProperty("CurrentOfframp", undefined)
+    this.defineReactiveProperty("ManyExchangeAds", undefined)
+    this.defineReactiveProperty("SingleExchangeAd", undefined)
+  }
 
   // Queries
   public GetExchangeRate = async (
@@ -64,6 +95,15 @@ export default class Wallet extends Common {
       })
   }
 
+  public GetYellowCardNetwork = async (
+    country_code: string
+  ): Promise<YellowcardNetwork[] | undefined> => {
+    return $api.wallet.GetYellowCardNetwork(country_code).then((response) => {
+      this.CurrentYellowCardNetworks = response.data?.GetYellowCardNetwork
+      return this.CurrentYellowCardNetworks
+    })
+  }
+
   public GetOnRampNetwork = async (
     countryCode: string
   ): Promise<PaymentNetwork[] | undefined> => {
@@ -73,6 +113,30 @@ export default class Wallet extends Common {
         this.OnRampNetwork = response.data?.GetOnRampNetworkByCountryCode
         return this.OnRampNetwork
       })
+  }
+  public GetWithdrawInfo = async (
+    amount: number,
+    currency: string
+  ): Promise<WithdrawInfo | undefined> => {
+    return $api.wallet.GetWithdrawInfo(amount, currency).then((response) => {
+      this.CurrentWithdrawalInfo = response.data?.GetWithdrawInfo
+      return this.CurrentWithdrawalInfo
+    })
+  }
+
+  public GetSavedAccounts = async (first: number, page: number) => {
+    return $api.wallet.GetSavedAccounts(first, page).then((response) => {
+      this.ManySavedAccounts = response.data?.GetSavedAccounts
+      return this.ManySavedAccounts
+    })
+  }
+
+  public GetPointFinancialSummary = async (from = "", to = "") => {
+    const input: FinancialSummaryInput = { type: "point", from, to }
+    return $api.wallet.GetFinancialSummary(input).then((response) => {
+      this.PointFinancialSummary = response.data?.GetFinancialSummary
+      return this.PointFinancialSummary
+    })
   }
 
   public GetGlobalExchangeRate = async (
@@ -149,7 +213,45 @@ export default class Wallet extends Common {
     })
   }
 
+  public GetOfframp = async (uuid: string) => {
+    if (!uuid) {
+      this.CurrentOfframp = undefined
+      return Promise.resolve(true)
+    }
+    return $api.wallet.GetOfframp(uuid).then((response) => {
+      this.CurrentOfframp = response.data?.GetOfframp
+      return this.CurrentOfframp
+    })
+  }
+
+  public GetBankAccountDetails = async (
+    accountNumber: string,
+    networkId: string
+  ) => {
+    return $api.wallet
+      .GetBankAccountDetails(accountNumber, networkId)
+      .then((response) => {
+        return response.data?.GetBankAccountDetails
+      })
+  }
+
   // Mutations
+  public CreateSavedAccount = async () => {
+    if (this.CreateSavedAccountForm) {
+      return $api.wallet
+        .CreateSavedAccount(this.CreateSavedAccountForm)
+        .then((response) => {
+          if (response.data?.CreateSavedAccount) {
+            return response.data.CreateSavedAccount
+          }
+        })
+        .catch((error: CombinedError) => {
+          Logic.Common.showError(error, "Oops!", "error-alert")
+          throw error
+        })
+    }
+  }
+
   public RedeemGRPToken = async () => {
     if (this.RedeemGRPTokenForm) {
       return $api.wallet
@@ -182,6 +284,24 @@ export default class Wallet extends Common {
     }
   }
 
+  public InitiateWalletKYC = (currency: string) => {
+    if (currency) {
+      return $api.wallet
+        .InitiateWalletKYC(currency)
+        .then((response) => {
+          if (response.data?.InitiateWalletKYC) {
+            Logic.Common.hideLoader()
+            return response.data.InitiateWalletKYC
+          }
+        })
+        .catch((error: CombinedError) => {
+          Logic.Common.hideLoader()
+          Logic.Common.showError(error, "Oops!", "error-alert")
+          throw error
+        })
+    }
+  }
+
   public InitiateTopup = async () => {
     if (this.InitiateTopupForm) {
       return $api.wallet
@@ -198,12 +318,48 @@ export default class Wallet extends Common {
     }
   }
 
+  public InitiateWithdrawal = async () => {
+    if (this.InitiateWithdrawalForm) {
+      return $api.wallet
+        .InitiateWithdrawal(this.InitiateWithdrawalForm)
+        .then((response) => {
+          if (response.data?.InitiateWithdrawal) {
+            this.CurrentOfframp = response.data.InitiateWithdrawal
+            return response.data.InitiateWithdrawal
+          }
+        })
+        .catch((error: CombinedError) => {
+          Logic.Common.showError(error, "Oops!", "error-alert")
+          throw error
+        })
+    }
+  }
+
+  public ConfirmWithdrawal = async (
+    uuid: string,
+    currency: string,
+    amount: number,
+    metadata = ""
+  ) => {
+    if (uuid) {
+      return $api.wallet
+        .ConfirmWithdrawal(uuid, currency, amount, metadata)
+        .then((response) => {
+          if (response.data?.ConfirmWithdrawal) {
+            this.CurrentOfframp = response.data.ConfirmWithdrawal
+            return response.data.ConfirmWithdrawal
+          }
+        })
+        .catch((error: CombinedError) => {
+          Logic.Common.showError(error, "Oops!", "error-alert")
+          throw error
+        })
+    }
+  }
   public MonitorTopupStatus = (collectionId: string, cd_action: Function) => {
     this.CheckStatusState.active = true
     $api.wallet
-      .MonitorTopupStatus({
-        collection_id: collectionId,
-      })
+      .MonitorTopupStatus({ collection_id: collectionId })
       .then((response) => {
         if (response.data?.MonitorTopupStatus) {
           this.CheckStatusState.active = false

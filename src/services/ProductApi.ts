@@ -174,15 +174,9 @@ export default class ProductApi extends BaseApiService {
         sku
         name
         description
-        type
-        status
-        price
+        type  
         currency
-        taxCode
-        categoryIds
-        tags
-        createdAt
-        updatedAt 
+        taxCode   
         physical {
           dimensions {
             length
@@ -197,53 +191,28 @@ export default class ProductApi extends BaseApiService {
           shippingClass
           weight
         } 
-        subscription {
-          billing {
-            interval
-            trialDays
-            gracePeriod
-          }
-          features
-          renewal {
-            price
-            autoRenew
-          }
+        variants {
+          id
+          sku 
+          priceAdjustment
+          inventory
+        } 
+        images {
+          url
+          altText
+          isPrimary
         }
         event {
-          eventType
-          eventDetails { 
+          eventDetails {
             startDate
             endDate
             venueName
             onlineUrl
             capacity
             registeredCount
-            waitlistEnabled
-            location {
-              address
-              city
-              state
-              country
-              postalCode
-              coordinates {
-                lat
-                lng
-              }
-            }
+            waitlistEnabled 
           }
         }
-        variants {
-          id
-          sku
-          attributes
-          priceAdjustment
-          inventory
-        }
-        images {
-          url
-          altText
-          isPrimary
-        }  
       }
     }
   `

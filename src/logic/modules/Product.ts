@@ -114,13 +114,15 @@ export default class ProductModule extends Common {
       .GetProducts(page, count, orderType, order, whereQuery)
       .then((response) => {
         if (!isSearch) {
-          this.ManyEventProducts = response.data?.GetProducts 
+          this.ManyEventProducts = response.data?.GetProducts
         }
         return response.data?.GetProducts
       })
   }
 
   public GetProduct = async (uuid: string) => {
+    console.log("uuid", uuid)
+
     return $api.product.GetProduct(uuid).then((response) => {
       this.SingleProduct = response.data?.GetProduct
       return response.data?.GetProduct
@@ -142,6 +144,8 @@ export default class ProductModule extends Common {
         return this.SingleProduct
       })
       .catch((error: CombinedError) => {
+        console.log("errorwewewew", error)
+
         Logic.Common.showError(
           error,
           "Failed to fetch product details",
