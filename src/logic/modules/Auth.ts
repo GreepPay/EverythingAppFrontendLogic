@@ -49,7 +49,6 @@ export default class AuthModule extends Common {
   private setDefaultAuth = () => {
     this.AccessToken = localStorage.getItem("access_token")
     const auth_user = localStorage.getItem("auth_user")
-    console.log("auth_user", auth_user)
     this.AuthUser = auth_user ? JSON.parse(auth_user || "{}") : undefined
   }
 
