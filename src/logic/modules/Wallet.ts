@@ -39,6 +39,7 @@ export default class Wallet extends Common {
   public CurrentGlobalExchangeRate: GlobalExchangeRate | undefined
   public CurrentOfframp: OffRamp | undefined
   public CurrentWithdrawalInfo: WithdrawInfo | undefined
+  public NormalFinancialSummary: FinancialSummaryResponse | undefined
   public CurrentYellowCardNetworks: YellowcardNetwork[] | undefined
   public OnRampChannels: PaymentChannel[] | undefined
   public OnRampNetwork: PaymentNetwork[] | undefined
@@ -203,6 +204,18 @@ export default class Wallet extends Common {
     return $api.wallet.GetSinglePointTransaction(uuid).then((response) => {
       this.SinglePointTransaction = response.data?.GetSinglePointTransaction
       return this.SinglePointTransaction
+    })
+  }
+
+  public GetNormalFinancialSummary = async (from = "", to = "") => {
+    const input: FinancialSummaryInput = {
+      type: "normal",
+      from,
+      to,
+    }
+    return $api.wallet.GetFinancialSummary(input).then((response) => {
+      this.NormalFinancialSummary = response.data?.GetFinancialSummary
+      return this.NormalFinancialSummary
     })
   }
 

@@ -121,8 +121,7 @@ export default class ProductModule extends Common {
   }
 
   public GetProduct = async (uuid: string) => {
-    console.log("uuid", uuid)
-
+ 
     return $api.product.GetProduct(uuid).then((response) => {
       this.SingleProduct = response.data?.GetProduct
       return response.data?.GetProduct
@@ -143,8 +142,7 @@ export default class ProductModule extends Common {
         this.SingleProduct = response.data?.GetSingleProduct
         return this.SingleProduct
       })
-      .catch((error: CombinedError) => {
-        console.log("errorwewewew", error)
+      .catch((error: CombinedError) => { 
 
         Logic.Common.showError(
           error,

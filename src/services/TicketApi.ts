@@ -1,10 +1,6 @@
 import { BaseApiService } from "./common/BaseService"
 import { OperationResult } from "urql"
-import {
-  QueryGetSingleTicketWhereWhereConditions,
-  Ticket,
-  TicketPaginator,
-} from "../gql/graphql"
+import { Ticket, TicketPaginator } from "../gql/graphql"
 
 export default class TicketApi extends BaseApiService {
   // #region QUERIES
@@ -23,14 +19,39 @@ export default class TicketApi extends BaseApiService {
         }
         data {
           id
-          productId
+          uuid
+          product {
+            id
+            uuid 
+            sku
+            name
+            slug
+            description
+            price
+            currency
+            taxCode
+            type
+            status
+            variants
+            inventoryCount
+            stockThreshold
+            isBackorderAllowed
+            downloadUrl
+            downloadLimit
+            license
+            fileInfo
+            dimensions
+            weight 
+          }
           variantId
-          saleId
+          saleId  
           userId
           ticketType
-          price 
+          price
+          qrCode
           status
           createdAt
+          updatedAt
         }
       }
     }
@@ -45,22 +66,44 @@ export default class TicketApi extends BaseApiService {
     return response
   }
 
-  public GetSingleTicket = (
-    where: QueryGetSingleTicketWhereWhereConditions
-  ) => {
+  public GetSingleTicket = (uuid: string) => {
     const requestData = `
-    query GetSingleTicket($where: QueryGetSingleTicketWhereWhereConditions) {
-      GetSingleTicket(where: $where) {
+    query GetSingleTicket($uuid: String!) {
+      GetSingleTicket(uuid: $uuid) {
         id
-        productId
+        uuid
+        product {
+          id
+          uuid 
+          sku
+          name
+          slug
+          description
+          price
+          currency
+          taxCode
+          type
+          status
+          variants
+          inventoryCount
+          stockThreshold
+          isBackorderAllowed
+          downloadUrl
+          downloadLimit
+          license
+          fileInfo
+          dimensions
+          weight 
+        }
         variantId
-        saleId
+        saleId  
         userId
         ticketType
         price
         qrCode
         status
         createdAt
+        updatedAt
       }
     }
   `
@@ -69,7 +112,7 @@ export default class TicketApi extends BaseApiService {
       OperationResult<{
         GetSingleTicket: Ticket
       }>
-    > = this.query(requestData, { where })
+    > = this.query(requestData, { uuid })
 
     return response
   }

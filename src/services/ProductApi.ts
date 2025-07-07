@@ -41,51 +41,51 @@ export default class ProductApi extends BaseApiService {
             count
           }
           data { 
+            uuid
             id
             businessId
+            business {
+              id
+            }
             sku
             name
+            slug
             description
-            type 
             price
             currency
-            taxCode   
-            physical {
-              dimensions {
-                length
-                width
-                height
-              }
-              inventory {
-                stock
-                lowStockThreshold
-                isBackorderAllowed
-              }
-              shippingClass
-              weight
-            } 
-            variants {
-              id
-              sku 
-              priceAdjustment
-              inventory
-            } 
-            images {
-              url
-              altText
-              isPrimary
-            }
-            event {
-              eventDetails {
-                startDate
-                endDate
-                venueName
-                onlineUrl
-                capacity
-                registeredCount
-                waitlistEnabled 
-              }
-            }
+            taxCode
+            type
+            status
+            variants
+            inventoryCount
+            stockThreshold
+            isBackorderAllowed
+            downloadUrl
+            downloadLimit
+            license
+            fileInfo
+            dimensions
+            weight
+            billingInterval
+            trialPeriodDays
+            gracePeriod
+            renewal
+            features
+            eventType
+            eventStartDate
+            eventEndDate
+            venueName
+            eventOnlineUrl
+            eventLocation
+            eventCapacity
+            eventRegisteredCount
+            eventWaitlistEnabled
+            metaTitle
+            metaDescription
+            isVisible
+            images
+            createdAt
+            updatedAt
           }
         }
       }
@@ -105,52 +105,52 @@ export default class ProductApi extends BaseApiService {
   public GetProduct = (uuid: string) => {
     const requestData = `
       query GetProduct($uuid: String!) {
-        GetProduct(uuid: $uuid) {
-        uuid
-        id
-        businessId
-        business {
+        GetProduct(uuid: $uuid) { 
+          uuid
           id
-        }
-        sku
-        name
-        slug
-        description
-        price
-        currency
-        taxCode
-        type
-        status
-        variants
-        inventoryCount
-        stockThreshold
-        isBackorderAllowed
-        downloadUrl
-        downloadLimit
-        license
-        fileInfo
-        dimensions
-        weight
-        billingInterval
-        trialPeriodDays
-        gracePeriod
-        renewal
-        features
-        eventType
-        eventStartDate
-        eventEndDate
-        venueName
-        eventOnlineUrl
-        eventLocation
-        eventCapacity
-        eventRegisteredCount
-        eventWaitlistEnabled
-        metaTitle
-        metaDescription
-        isVisible
-        images
-        createdAt
-        updatedAt
+          businessId
+          business {
+            id
+          }
+          sku
+          name
+          slug
+          description
+          price
+          currency
+          taxCode
+          type
+          status
+          variants
+          inventoryCount
+          stockThreshold
+          isBackorderAllowed
+          downloadUrl
+          downloadLimit
+          license
+          fileInfo
+          dimensions
+          weight
+          billingInterval
+          trialPeriodDays
+          gracePeriod
+          renewal
+          features
+          eventType
+          eventStartDate
+          eventEndDate
+          venueName
+          eventOnlineUrl
+          eventLocation
+          eventCapacity
+          eventRegisteredCount
+          eventWaitlistEnabled
+          metaTitle
+          metaDescription
+          isVisible 
+          images
+          createdAt
+          updatedAt
         }
       }
     `
