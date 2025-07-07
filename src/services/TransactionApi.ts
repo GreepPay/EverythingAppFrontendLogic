@@ -119,8 +119,7 @@ export default class TransactionApi extends BaseApiService {
       }>
     > = this.query(requestData, { transaction_uuid })
 
-    console.log("response", response)
-
+    
     return response
   }
 

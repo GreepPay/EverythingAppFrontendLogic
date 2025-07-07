@@ -72,7 +72,7 @@ export default class Common {
   }
 
   public GoToRoute = (path: string) => {
-    console.log(path)
+ 
     
     this.router?.push(path)
   }
@@ -493,9 +493,7 @@ export default class Common {
 
                 // update userid
                 rule.params.forEach((param) => {
-                  console.log("typeof param", typeof param)
-                  console.log("typeof param", rule.params)
-
+                 
                   if (typeof param === "object") {
                     if (param.where) {
                       param.where.forEach((item: any) => {

@@ -84,8 +84,7 @@ export default class AuthModule extends Common {
     if (formIsValid && this.SignInPayload) {
       return $api.auth
         .SignIn(this.SignInPayload)
-        .then((response) => {
-          console.log("response, dfd", response)
+        .then((response) => { 
 
           this.SetUpAuth(response.data?.SignIn)
           // this.AuthUser = response.data?.SignIn.user

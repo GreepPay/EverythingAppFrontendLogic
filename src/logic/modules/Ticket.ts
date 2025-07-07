@@ -32,15 +32,13 @@ export default class TicketModule extends Common {
   }
   public GetSingleTicket = async (
     uuid: string
-  ): Promise<Ticket | undefined> => {
-    console.log("uuid", uuid)
+  ): Promise<Ticket | undefined> => { 
 
     return $api.ticket
       .GetSingleTicket(uuid)
       .then((response) => {
         this.SingleTicket = response.data?.GetSingleTicket
-        console.log("this.SingleTicket", this.SingleTicket)
-
+        
         return this.SingleTicket
       })
       .catch((error: CombinedError) => {

@@ -24,14 +24,10 @@ export default class OrderModule extends Common {
   public CreateOrder = async (): Promise<Order | undefined> => {
     if (!this.CreateOrderPayload) return
 
-    console.log("this.CreateOrderPayload", this.CreateOrderPayload)
-    console.log("this.CreateOrderPayload", typeof this.CreateOrderPayload)
-
+    
     return $api.order
       .CreateOrder(this.CreateOrderPayload)
-      .then((response) => {
-        console.log("response", response)
-
+      .then((response) => { 
         return response.data?.CreateOrder
       })
       .catch((error: CombinedError) => {
@@ -46,8 +42,7 @@ export default class OrderModule extends Common {
   ): Promise<OrderPaginator | undefined> => {
     return $api.order
       .GetOrders(first, page)
-      .then((response) => {
-        console.log("response", response)
+      .then((response) => { 
 
         this.OrdersPaginator = response.data?.GetOrders
         return this.OrdersPaginator

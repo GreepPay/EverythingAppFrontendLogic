@@ -107,7 +107,7 @@ export default class ProductApi extends BaseApiService {
       query GetProduct($uuid: String!) {
         GetProduct(uuid: $uuid) { 
           uuid
-          id
+          id 
           businessId
           business {
             id

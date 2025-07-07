@@ -21,8 +21,12 @@ export default class TicketApi extends BaseApiService {
           id
           uuid
           product {
+            uuid
             id
-            uuid 
+            businessId
+            business {
+              id
+            }
             sku
             name
             slug
@@ -41,7 +45,27 @@ export default class TicketApi extends BaseApiService {
             license
             fileInfo
             dimensions
-            weight 
+            weight
+            billingInterval
+            trialPeriodDays
+            gracePeriod
+            renewal
+            features
+            eventType
+            eventStartDate
+            eventEndDate
+            venueName
+            eventOnlineUrl
+            eventLocation
+            eventCapacity
+            eventRegisteredCount
+            eventWaitlistEnabled
+            metaTitle
+            metaDescription
+            isVisible 
+            images
+            createdAt
+            updatedAt
           }
           variantId
           saleId  
@@ -73,8 +97,12 @@ export default class TicketApi extends BaseApiService {
         id
         uuid
         product {
+          uuid
           id
-          uuid 
+          businessId
+          business {
+            id
+          }
           sku
           name
           slug
@@ -93,7 +121,27 @@ export default class TicketApi extends BaseApiService {
           license
           fileInfo
           dimensions
-          weight 
+          weight
+          billingInterval
+          trialPeriodDays
+          gracePeriod
+          renewal
+          features
+          eventType
+          eventStartDate
+          eventEndDate
+          venueName
+          eventOnlineUrl
+          eventLocation
+          eventCapacity
+          eventRegisteredCount
+          eventWaitlistEnabled
+          metaTitle
+          metaDescription
+          isVisible 
+          images
+          createdAt
+          updatedAt
         }
         variantId
         saleId  
