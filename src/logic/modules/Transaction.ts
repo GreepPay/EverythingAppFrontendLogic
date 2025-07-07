@@ -3,21 +3,25 @@ import {
   Transaction,
   PointTransaction,
   PointTransactionPaginator,
-} from "../../gql/graphql"
-import { $api } from "../../services"
-import { CombinedError } from "urql"
-import Common from "./Common"
+} from "../../gql/graphql";
+import { $api } from "../../services";
+import { CombinedError } from "urql";
+import Common from "./Common";
 
 export default class TransactionModule extends Common {
   constructor() {
-    super()
+    super();
+    this.defineReactiveProperty("ManyPointTransactions", undefined);
+    this.defineReactiveProperty("ManyTransactions", undefined);
+    this.defineReactiveProperty("SinglePointTransaction", undefined);
+    this.defineReactiveProperty("SingleTransaction", undefined);
   }
 
   // Base Variables
-  public ManyPointTransactions: PointTransactionPaginator | undefined
-  public ManyTransactions: TransactionPaginator | undefined
-  public SinglePointTransaction: PointTransaction | undefined
-  public SingleTransaction: Transaction | undefined
+  public ManyPointTransactions: PointTransactionPaginator | undefined;
+  public ManyTransactions: TransactionPaginator | undefined;
+  public SinglePointTransaction: PointTransaction | undefined;
+  public SingleTransaction: Transaction | undefined;
 
   // Queries
   public GetPointTransactions = async (
@@ -30,10 +34,10 @@ export default class TransactionModule extends Common {
     return $api.transaction
       .GetPointTransactions(page, count, orderType, order, whereQuery)
       .then((response) => {
-        this.ManyPointTransactions = response.data?.GetPointTransactions
-        return this.ManyPointTransactions
-      })
-  }
+        this.ManyPointTransactions = response.data?.GetPointTransactions;
+        return this.ManyPointTransactions;
+      });
+  };
 
   public GetTransactions = async (
     page: number,
@@ -45,22 +49,22 @@ export default class TransactionModule extends Common {
     return $api.transaction
       .GetTransactions(page, count, whereUser, orderBy, where)
       .then((response) => {
-        this.ManyTransactions = response.data?.GetTransactions
-        return this.ManyTransactions
-      })
-  }
+        this.ManyTransactions = response.data?.GetTransactions;
+        return this.ManyTransactions;
+      });
+  };
 
   public GetSinglePointTransaction = async (uuid: string) => {
     return $api.transaction.GetSinglePointTransaction(uuid).then((response) => {
-      this.SinglePointTransaction = response.data?.GetSinglePointTransaction
-      return this.SinglePointTransaction
-    })
-  }
+      this.SinglePointTransaction = response.data?.GetSinglePointTransaction;
+      return this.SinglePointTransaction;
+    });
+  };
 
   public GetSingleTransaction = async (uuid: string) => {
     return $api.transaction.GetSingleTransaction(uuid).then((response) => {
-      this.SingleTransaction = response.data?.GetSingleTransaction
-      return this.SingleTransaction
-    })
-  }
+      this.SingleTransaction = response.data?.GetSingleTransaction;
+      return this.SingleTransaction;
+    });
+  };
 }

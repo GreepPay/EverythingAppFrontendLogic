@@ -10,6 +10,8 @@ import { Logic } from "..";
 export default class User extends Common {
   constructor() {
     super();
+    this.defineReactiveProperty("SearchedUsers", undefined);
+    this.defineReactiveProperty("SingleUser", undefined);
   }
 
   // Base variables
@@ -29,7 +31,7 @@ export default class User extends Common {
   };
 
   public GetSingleUser = async (
-    uuid: string,
+    uuid: string
   ): Promise<UserModel | undefined> => {
     return $api.user.GetSingleUser(uuid).then((response) => {
       this.SingleUser = response.data?.GetSingleUser;

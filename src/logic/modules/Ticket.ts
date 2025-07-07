@@ -1,24 +1,23 @@
-import {
-  Ticket,
-  TicketPaginator,
-  QueryGetSingleTicketWhereWhereConditions,
-  ProductVariant,
-} from "../../gql/graphql"
+import { Ticket, TicketPaginator, ProductVariant } from "../../gql/graphql";
 
-import { $api } from "../../services"
-import { CombinedError } from "urql"
-import Common from "./Common"
-import { Logic } from ".."
+import { $api } from "../../services";
+import { CombinedError } from "urql";
+import Common from "./Common";
+import { Logic } from "..";
 
 export default class TicketModule extends Common {
   constructor() {
-    super()
+    super();
+
+    this.defineReactiveProperty("TicketsPaginator", undefined);
+    this.defineReactiveProperty("SingleTicket", undefined);
+    this.defineReactiveProperty("EventTickets", undefined);
   }
 
   // Base Variables
-  public EventTickets: ProductVariant[] | undefined
-  public TicketsPaginator: TicketPaginator | undefined
-  public SingleTicket: Ticket | undefined
+  public EventTickets: ProductVariant[] | undefined;
+  public TicketsPaginator: TicketPaginator | undefined;
+  public SingleTicket: Ticket | undefined;
 
   public GetMyTickets = async (
     first: number,
@@ -27,16 +26,16 @@ export default class TicketModule extends Common {
     return $api.ticket
       .GetMyTickets(first, page)
       .then((response) => {
-        console.log("response", response)
+        console.log("response", response);
 
-        this.TicketsPaginator = response.data?.GetMyTickets
-        return this.TicketsPaginator
+        this.TicketsPaginator = response.data?.GetMyTickets;
+        return this.TicketsPaginator;
       })
       .catch((error: CombinedError) => {
-        Logic.Common.showError(error, "Failed to fetch tickets", "error-alert")
-        return undefined
-      })
-  }
+        Logic.Common.showError(error, "Failed to fetch tickets", "error-alert");
+        return undefined;
+      });
+  };
 
   // public GetEventTickets = async (
   //   product_id: string | number
@@ -74,22 +73,20 @@ export default class TicketModule extends Common {
   //   //   })
   // }
 
-  public GetSingleTicket = async (
-    where: QueryGetSingleTicketWhereWhereConditions
-  ): Promise<Ticket | undefined> => {
+  public GetSingleTicket = async (where: any): Promise<Ticket | undefined> => {
     return $api.ticket
       .GetSingleTicket(where)
       .then((response) => {
-        this.SingleTicket = response.data?.GetSingleTicket
-        return this.SingleTicket
+        this.SingleTicket = response.data?.GetSingleTicket;
+        return this.SingleTicket;
       })
       .catch((error: CombinedError) => {
         Logic.Common.showError(
           error,
           "Failed to fetch ticket details",
           "error-alert"
-        )
-        return undefined
-      })
-  }
+        );
+        return undefined;
+      });
+  };
 }

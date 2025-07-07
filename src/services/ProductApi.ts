@@ -1,11 +1,11 @@
-import { BaseApiService } from "./common/BaseService"
-import { OperationResult } from "urql"
+import { BaseApiService } from "./common/BaseService";
+import { OperationResult } from "urql";
 import {
   Category,
   PaginatorInfo,
   Product,
   ProductPaginator,
-} from "../gql/graphql"
+} from "../gql/graphql";
 
 export default class ProductApi extends BaseApiService {
   // #region QUERIES
@@ -40,73 +40,138 @@ export default class ProductApi extends BaseApiService {
             currentPage
             count
           }
-          data { 
+          data {
+          uuid
+          id
+          businessId
+          business {
             id
-            businessId
-            sku
-            name
-            description
-            type 
-            price
-            currency
-            taxCode   
-            physical {
-              dimensions {
-                length
-                width
-                height
-              }
-              inventory {
-                stock
-                lowStockThreshold
-                isBackorderAllowed
-              }
-              shippingClass
-              weight
-            } 
-            variants {
-              id
-              sku 
-              priceAdjustment
-              inventory
-            } 
-            images {
-              url
-              altText
-              isPrimary
-            }
-            event {
-              eventDetails {
-                startDate
-                endDate
-                venueName
-                onlineUrl
-                capacity
-                registeredCount
-                waitlistEnabled 
-              }
-            }
+          }
+          sku
+          name
+          slug
+          description
+          price
+          currency
+          taxCode
+          type
+          status
+          variants
+          inventoryCount
+          stockThreshold
+          isBackorderAllowed
+          downloadUrl
+          downloadLimit
+          license
+          fileInfo
+          dimensions
+          weight
+          billingInterval
+          trialPeriodDays
+          gracePeriod
+          renewal
+          features
+          eventType
+          eventStartDate
+          eventEndDate
+          venueName
+          eventOnlineUrl
+          eventLocation
+          eventCapacity
+          eventRegisteredCount
+          eventWaitlistEnabled
+          metaTitle
+          metaDescription
+          isVisible
+          images
+          createdAt
+          updatedAt
           }
         }
       }
-    `
+    `;
     const response: Promise<
       OperationResult<{
-        GetProducts: ProductPaginator
+        GetProducts: ProductPaginator;
       }>
     > = this.query(requestData, {
       page,
       count,
-    })
+    });
 
-    return response
-  }
+    return response;
+  };
 
   public GetProduct = (uuid: string) => {
     const requestData = `
       query GetProduct($uuid: String!) {
         GetProduct(uuid: $uuid) {
         uuid
+        id
+        businessId
+        business {
+          id
+          business_name
+          logo
+        }
+        sku
+        name
+        slug
+        description
+        price
+        currency
+        taxCode
+        type
+        status
+        variants
+        inventoryCount
+        stockThreshold
+        isBackorderAllowed
+        downloadUrl
+        downloadLimit
+        license
+        fileInfo
+        dimensions
+        weight
+        billingInterval
+        trialPeriodDays
+        gracePeriod
+        renewal
+        features
+        eventType
+        eventStartDate
+        eventEndDate
+        venueName
+        eventOnlineUrl
+        eventLocation
+        eventCapacity
+        eventRegisteredCount
+        eventWaitlistEnabled
+        metaTitle
+        metaDescription
+        isVisible
+        images
+        createdAt
+        updatedAt
+        }
+      }
+    `;
+    const response: Promise<
+      OperationResult<{
+        GetProduct: Product;
+      }>
+    > = this.query(requestData, {
+      uuid,
+    });
+
+    return response;
+  };
+
+  public GetSingleProduct = (where: Record<string, any>) => {
+    const requestData = `
+    query GetSingleProduct($where: QueryGetSingleProductWhereWhereConditions) {
+      GetSingleProduct(where: $where) {
+         uuid
         id
         businessId
         business {
@@ -151,80 +216,18 @@ export default class ProductApi extends BaseApiService {
         images
         createdAt
         updatedAt
-        }
-      }
-    `
-    const response: Promise<
-      OperationResult<{
-        GetProduct: Product
-      }>
-    > = this.query(requestData, {
-      uuid,
-    })
-
-    return response
-  }
-
-  public GetSingleProduct = (where: Record<string, any>) => {
-    const requestData = `
-    query GetSingleProduct($where: QueryGetSingleProductWhereWhereConditions) {
-      GetSingleProduct(where: $where) {
-        id
-        businessId
-        sku
-        name
-        description
-        type  
-        currency
-        taxCode   
-        physical {
-          dimensions {
-            length
-            width
-            height
-          }
-          inventory {
-            stock
-            lowStockThreshold
-            isBackorderAllowed
-          }
-          shippingClass
-          weight
-        } 
-        variants {
-          id
-          sku 
-          priceAdjustment
-          inventory
-        } 
-        images {
-          url
-          altText
-          isPrimary
-        }
-        event {
-          eventDetails {
-            startDate
-            endDate
-            venueName
-            onlineUrl
-            capacity
-            registeredCount
-            waitlistEnabled 
-          }
-        }
       }
     }
-  `
+  `;
 
     const response: Promise<
       OperationResult<{
-        GetSingleProduct: Product
+        GetSingleProduct: Product;
       }>
-    > = this.query(requestData, { where })
+    > = this.query(requestData, { where });
 
-    return response
-  }
+    return response;
+  };
 
   public GetCategories = (
     first: number,
@@ -255,18 +258,18 @@ export default class ProductApi extends BaseApiService {
         }
       }
     }
-  `
+  `;
 
     const response: Promise<
       OperationResult<{
         GetCategories: {
-          paginatorInfo: PaginatorInfo
-          data: Category[]
-        }
+          paginatorInfo: PaginatorInfo;
+          data: Category[];
+        };
       }>
-    > = this.query(requestData, { orderBy, first, page })
+    > = this.query(requestData, { orderBy, first, page });
 
-    return response
-  }
+    return response;
+  };
   // #endregion QUERIES
 }
