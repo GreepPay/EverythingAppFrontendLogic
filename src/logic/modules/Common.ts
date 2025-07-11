@@ -76,8 +76,12 @@ export default class Common {
     this.apiUrl = apiUrl;
   };
 
-  public GoToRoute = (path: string) => {
-    this.router?.push(path);
+  public GoToRoute = (path: string, forceReload = false) => {
+    if (forceReload) {
+      window.location.pathname = path;
+    } else {
+      this.router?.push(path);
+    }
   };
 
   public alertSetup = reactive<AlertSetup>({
@@ -170,7 +174,7 @@ export default class Common {
     error: CombinedError,
     title: string,
     icon: "error-alert" | "error-kite" | "success-kite" | "success-thumb",
-    fallbackMsg = ""
+    fallbackMsg = "",
   ) => {
     const message = error.graphQLErrors[0].message;
     // this.showLoader({
@@ -207,7 +211,23 @@ export default class Common {
   };
 
   public goBack = () => {
-    window.history.length > 1 ? this.router?.go(-1) : this.router?.push("/");
+    const ignoreBackRoute = this.route?.query.ignoreBackRoute
+      ? this.route.query.ignoreBackRoute.toString()
+      : null;
+    const routeMiddlewares: any = this.route?.meta.middlewares;
+    const goBackRoute = routeMiddlewares?.goBackRoute;
+
+    const backRouteFromQuery = this.route?.query.backRoute?.toString();
+
+    if (backRouteFromQuery) {
+      this.GoToRoute(backRouteFromQuery);
+    } else if (typeof goBackRoute == "function" && !ignoreBackRoute) {
+      this.GoToRoute(goBackRoute());
+    } else if (typeof goBackRoute == "string" && !ignoreBackRoute) {
+      this.GoToRoute(goBackRoute);
+    } else {
+      window.history.length > 1 ? this.router?.go(-1) : this.router?.push("/");
+    }
   };
 
   public hideLoader = () => {
@@ -252,7 +272,7 @@ export default class Common {
     float: any,
     withZeros = true,
     currencyType = "ngn",
-    withSymbol = true
+    withSymbol = true,
   ) => {
     let currencySymbol = "";
     if (currencyType == "usd") {
@@ -289,7 +309,7 @@ export default class Common {
     method = () => {
       //
     },
-    delay = 500
+    delay = 500,
   ) => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
@@ -373,7 +393,7 @@ export default class Common {
   public preFetchRouteData = (
     routeTo: RouteLocationNormalized,
     next: NavigationGuardNext,
-    routeFrom: RouteLocationNormalized
+    routeFrom: RouteLocationNormalized,
   ) => {
     const allActions: Promise<any>[] = [];
     if (this.loaderSetup.loading) {
@@ -418,7 +438,7 @@ export default class Common {
           switch (rule.condition.routeSearchItem) {
             case "fullPath":
               addRuleToRequest = routeTo["fullPath"].includes(
-                rule.condition.searchQuery
+                rule.condition.searchQuery,
               );
               break;
             case "params":
@@ -496,7 +516,7 @@ export default class Common {
 
                 // update userid
                 rule.params.forEach((param) => {
-                  if (typeof param === "object") {
+                  if (typeof param === "object" && param) {
                     if (param.where) {
                       param.where.forEach((item: any) => {
                         if (item.field == "user.id" || item.field == "userId") {
@@ -518,7 +538,7 @@ export default class Common {
                 request?.then((value: any) => {
                   resolve(value);
                 });
-              })
+              }),
             );
           } else {
             if (rule.silentUpdate) {

@@ -583,6 +583,7 @@ export type MutationSignUpArgs = {
   first_name: Scalars['String'];
   last_name: Scalars['String'];
   password: Scalars['String'];
+  profile_picture?: InputMaybe<Scalars['Upload']>;
   state: Scalars['String'];
 };
 
@@ -594,6 +595,7 @@ export type MutationUpdatePasswordArgs = {
 
 
 export type MutationUpdateProfileArgs = {
+  auth_passcode?: InputMaybe<Scalars['String']>;
   country?: InputMaybe<Scalars['String']>;
   default_currency?: InputMaybe<Scalars['String']>;
   first_name?: InputMaybe<Scalars['String']>;
@@ -1973,6 +1975,8 @@ export type User = {
   email_verified_at?: Maybe<Scalars['DateTime']>;
   /** The user first name */
   first_name: Scalars['String'];
+  /** The user unique ID */
+  id: Scalars['ID'];
   /** The user last name */
   last_name: Scalars['String'];
   /** The user phone */
@@ -1983,6 +1987,8 @@ export type User = {
   profile: Profile;
   /** The user status */
   status: Scalars['String'];
+  /** The auth passcode */
+  transaction_pin?: Maybe<Scalars['String']>;
   /** The user updated at */
   updated_at: Scalars['DateTime'];
   /** The user username */

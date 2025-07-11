@@ -1,11 +1,11 @@
-import { BaseApiService } from "./common/BaseService"
-import { OperationResult } from "urql"
+import { BaseApiService } from "./common/BaseService";
+import { OperationResult } from "urql";
 import {
   TransactionPaginator,
   Transaction,
   PointTransaction,
   PointTransactionPaginator,
-} from "../gql/graphql"
+} from "../gql/graphql";
 
 export default class TransactionApi extends BaseApiService {
   public GetTransactions = (
@@ -72,15 +72,15 @@ export default class TransactionApi extends BaseApiService {
         }
       }
     }
-  `
+  `;
     const response: Promise<
       OperationResult<{
-        GetTransactions: TransactionPaginator
+        GetTransactions: TransactionPaginator;
       }>
-    > = this.query(requestData, { first, page, whereUser, orderBy, where })
+    > = this.query(requestData, { first, page, whereUser, orderBy, where });
 
-    return response
-  }
+    return response;
+  };
 
   public GetSingleTransaction = (transaction_uuid: string) => {
     const requestData = `
@@ -112,17 +112,15 @@ export default class TransactionApi extends BaseApiService {
         }
       }
     }
-  `
+  `;
     const response: Promise<
       OperationResult<{
-        GetSingleTransaction: Transaction
+        GetSingleTransaction: Transaction;
       }>
-    > = this.query(requestData, { transaction_uuid })
+    > = this.query(requestData, { transaction_uuid });
 
-    console.log("response", response)
-
-    return response
-  }
+    return response;
+  };
 
   public GetPointTransactions = (
     page: number,
@@ -171,18 +169,18 @@ export default class TransactionApi extends BaseApiService {
           }
         }
       }
-    `
+    `;
     const response: Promise<
       OperationResult<{
-        GetPointTransactions: PointTransactionPaginator
+        GetPointTransactions: PointTransactionPaginator;
       }>
     > = this.query(requestData, {
       page,
       count,
-    })
+    });
 
-    return response
-  }
+    return response;
+  };
 
   public GetSinglePointTransaction = (uuid: string) => {
     const requestData = `
@@ -204,15 +202,15 @@ export default class TransactionApi extends BaseApiService {
           uuid
         }
       }
-    `
+    `;
     const response: Promise<
       OperationResult<{
-        GetSinglePointTransaction: PointTransaction
+        GetSinglePointTransaction: PointTransaction;
       }>
     > = this.query(requestData, {
       uuid,
-    })
+    });
 
-    return response
-  }
+    return response;
+  };
 }

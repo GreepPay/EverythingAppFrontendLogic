@@ -1,10 +1,6 @@
-import { BaseApiService } from "./common/BaseService"
-import { OperationResult } from "urql"
-import {
-  QueryGetSingleTicketWhereWhereConditions,
-  Ticket,
-  TicketPaginator,
-} from "../gql/graphql"
+import { BaseApiService } from "./common/BaseService";
+import { OperationResult } from "urql";
+import { Ticket, TicketPaginator } from "../gql/graphql";
 
 export default class TicketApi extends BaseApiService {
   // #region QUERIES
@@ -23,55 +19,154 @@ export default class TicketApi extends BaseApiService {
         }
         data {
           id
-          productId
+          uuid
+          product {
+            uuid
+            id
+            businessId
+            business {
+              id
+              business_name
+              logo
+            }
+            sku
+            name
+            slug
+            description
+            price
+            currency
+            taxCode
+            type
+            status
+            variants
+            inventoryCount
+            stockThreshold
+            isBackorderAllowed
+            downloadUrl
+            downloadLimit
+            license
+            fileInfo
+            dimensions
+            weight
+            billingInterval
+            trialPeriodDays
+            gracePeriod
+            renewal
+            features
+            eventType
+            eventStartDate
+            eventEndDate
+            venueName
+            eventOnlineUrl
+            eventLocation
+            eventCapacity
+            eventRegisteredCount
+            eventWaitlistEnabled
+            metaTitle
+            metaDescription
+            isVisible 
+            images
+            createdAt
+            updatedAt
+          }
           variantId
-          saleId
+          saleId  
           userId
           ticketType
-          price 
+          price
+          qrCode
           status
           createdAt
+          updatedAt
         }
       }
     }
-  `
+  `;
 
     const response: Promise<
       OperationResult<{
-        GetMyTickets: TicketPaginator
+        GetMyTickets: TicketPaginator;
       }>
-    > = this.query(requestData, { first, page })
+    > = this.query(requestData, { first, page });
 
-    return response
-  }
+    return response;
+  };
 
-  public GetSingleTicket = (
-    where: QueryGetSingleTicketWhereWhereConditions
-  ) => {
+  public GetSingleTicket = (uuid: string) => {
     const requestData = `
-    query GetSingleTicket($where: QueryGetSingleTicketWhereWhereConditions) {
-      GetSingleTicket(where: $where) {
+    query GetSingleTicket($uuid: String!) {
+      GetSingleTicket(uuid: $uuid) {
         id
-        productId
+        uuid
+        product {
+          uuid
+          id
+          businessId
+          business {
+            id
+            business_name
+            logo
+          }
+          sku
+          name
+          slug
+          description
+          price
+          currency
+          taxCode
+          type
+          status
+          variants
+          inventoryCount
+          stockThreshold
+          isBackorderAllowed
+          downloadUrl
+          downloadLimit
+          license
+          fileInfo
+          dimensions
+          weight
+          billingInterval
+          trialPeriodDays
+          gracePeriod
+          renewal
+          features
+          eventType
+          eventStartDate
+          eventEndDate
+          venueName
+          eventOnlineUrl
+          eventLocation
+          eventCapacity
+          eventRegisteredCount
+          eventWaitlistEnabled
+          metaTitle
+          metaDescription
+          isVisible 
+          images
+          createdAt
+          updatedAt
+        }
         variantId
-        saleId
+        saleId  
         userId
         ticketType
         price
         qrCode
         status
         createdAt
+        updatedAt
       }
     }
-  `
+  `;
 
     const response: Promise<
       OperationResult<{
-        GetSingleTicket: Ticket
+        GetSingleTicket: Ticket;
       }>
-    > = this.query(requestData, { where })
+    > = this.query(requestData, { uuid });
 
-    return response
-  }
+    return response;
+  };
   // #endregion QUERIES
 }

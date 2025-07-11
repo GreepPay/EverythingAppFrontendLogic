@@ -59,6 +59,13 @@ export default class AuthModule extends Common {
     return $api.auth.GetAuthUser().then((response) => {
       this.AuthUser = response.data?.GetAuthUser;
       localStorage.setItem("auth_user", JSON.stringify(this.AuthUser));
+
+      if (this.AuthUser?.profile.default_currency) {
+        localStorage.setItem(
+          "default_currency",
+          this.AuthUser.profile.default_currency
+        );
+      }
       return this.AuthUser;
     });
   };
@@ -184,7 +191,7 @@ export default class AuthModule extends Common {
       .then(() => {
         localStorage.clear();
         Logic.Common.hideLoader();
-        Logic.Common.GoToRoute("/auth/login");
+        Logic.Common.GoToRoute("/auth/login", true);
       })
       .catch((error) => {
         Logic.Common.showError(error, "Oops!", "error-alert");
