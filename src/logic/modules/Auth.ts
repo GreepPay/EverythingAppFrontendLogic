@@ -9,6 +9,7 @@ import {
   MutationVerifyUserOtpArgs,
   MutationResetPasswordArgs,
   MutationSendResetPasswordOtpArgs,
+  MutationUpdateProfileArgs,
   User,
 } from "../../gql/graphql"
 import { Logic } from ".."
@@ -84,8 +85,7 @@ export default class AuthModule extends Common {
     if (formIsValid && this.SignInPayload) {
       return $api.auth
         .SignIn(this.SignInPayload)
-        .then((response) => { 
-
+        .then((response) => {
           this.SetUpAuth(response.data?.SignIn)
           // this.AuthUser = response.data?.SignIn.user
           Logic.Common.hideLoader()

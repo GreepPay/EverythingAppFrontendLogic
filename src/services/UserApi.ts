@@ -72,10 +72,11 @@ export default class UserApi extends BaseApiService {
     const requestData = `
     mutation UpdateProfile(
       $first_name: String,
-      $profile_photo: Upload,
       $last_name: String,
+      $profile_photo: Upload,
       $default_currency: String,
       $country: String,
+      $auth_passcode: String,
       $state: String
     ) {
       UpdateProfile(
@@ -85,6 +86,7 @@ export default class UserApi extends BaseApiService {
         default_currency: $default_currency,
         country: $country,
         state: $state
+        auth_passcode: $auth_passcode
       )
     }
   `

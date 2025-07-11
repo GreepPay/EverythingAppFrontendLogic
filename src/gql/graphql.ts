@@ -583,6 +583,7 @@ export type MutationSignUpArgs = {
   first_name: Scalars['String'];
   last_name: Scalars['String'];
   password: Scalars['String'];
+  profile_picture?: InputMaybe<Scalars['Upload']>;
   state: Scalars['String'];
 };
 
@@ -594,6 +595,7 @@ export type MutationUpdatePasswordArgs = {
 
 
 export type MutationUpdateProfileArgs = {
+  auth_passcode?: InputMaybe<Scalars['String']>;
   country?: InputMaybe<Scalars['String']>;
   default_currency?: InputMaybe<Scalars['String']>;
   first_name?: InputMaybe<Scalars['String']>;
@@ -1170,7 +1172,7 @@ export type Profile = {
   /** The attached customer */
   customer?: Maybe<Customer>;
   /** Default Currency */
-  default_currency: Scalars['String'];
+  default_currency?: Maybe<Scalars['String']>;
   /** Profile Picture URL (optional) */
   profile_picture?: Maybe<Scalars['String']>;
   /** Profile Updated At */
@@ -1966,25 +1968,29 @@ export type Trustline = {
 export type User = {
   __typename?: 'User';
   /** The user created at */
-  created_at: Scalars['DateTime'];
+  created_at: Scalars['String'];
   /** The user email */
   email: Scalars['String'];
   /** The user email verified at */
-  email_verified_at?: Maybe<Scalars['DateTime']>;
+  email_verified_at?: Maybe<Scalars['String']>;
   /** The user first name */
   first_name: Scalars['String'];
+  /** The user unique ID */
+  id: Scalars['ID'];
   /** The user last name */
   last_name: Scalars['String'];
   /** The user phone */
   phone?: Maybe<Scalars['String']>;
   /** The user phone verified at */
-  phone_verified_at?: Maybe<Scalars['DateTime']>;
+  phone_verified_at?: Maybe<Scalars['String']>;
   /** The attached profile */
   profile: Profile;
   /** The user status */
   status: Scalars['String'];
+  /** The auth passcode */
+  transaction_pin?: Maybe<Scalars['String']>;
   /** The user updated at */
-  updated_at: Scalars['DateTime'];
+  updated_at: Scalars['String'];
   /** The user username */
   username?: Maybe<Scalars['String']>;
   /** Unique UUID */

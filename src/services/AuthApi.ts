@@ -21,6 +21,7 @@ export default class AuthApi extends BaseApiService {
             uuid
             first_name
             last_name
+            email
             phone
             email_verified_at
             phone_verified_at
@@ -80,7 +81,8 @@ export default class AuthApi extends BaseApiService {
       $password: String!,
       $state: String!,
       $country: String!,
-      $default_currency: String!
+      $default_currency: String!,
+      $profile_picture: Upload
     ) {
       SignUp(
         first_name: $first_name,
@@ -89,7 +91,8 @@ export default class AuthApi extends BaseApiService {
         password: $password,
         state: $state,
         country: $country,
-        default_currency: $default_currency
+        default_currency: $default_currency,
+        profile_picture: $profile_picture
       ) { 
         id
         uuid
