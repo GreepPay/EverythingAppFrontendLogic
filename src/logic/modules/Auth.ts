@@ -159,6 +159,20 @@ export default class AuthModule extends Common {
     }
   }
 
+  public DeleteUser = () => {
+    Logic.Common.showLoader({ loading: true })
+    return $api.auth
+      .DeleteUser()
+      .then((response) => {
+        Logic.Common.hideLoader()
+        return response.data?.DeleteUser
+      })
+      .catch((error: CombinedError) => {
+        Logic.Common.showError(error, "Oops!", "error-alert")
+        throw new Error(error.message)
+      })
+  }
+
   public VerifyUserOTP = () => {
     if (this.VerifyUserOTPayload) {
       return $api.auth

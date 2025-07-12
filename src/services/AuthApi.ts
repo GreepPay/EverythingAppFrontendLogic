@@ -250,6 +250,19 @@ export default class AuthApi extends BaseApiService {
     return response
   }
 
+  public DeleteUser = () => {
+    const requestData = `
+    mutation DeleteUser {
+      DeleteUser
+    }
+  `
+
+    const response: Promise<OperationResult<{ DeleteUser: boolean }>> =
+      this.mutation(requestData, {})
+
+    return response
+  }
+
   public SignOut = () => {
     const requestData = `
     mutation SignOut {
