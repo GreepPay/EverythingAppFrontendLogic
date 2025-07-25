@@ -143,6 +143,22 @@ export default class AuthModule extends Common {
       })
   }
 
+  public VerifyUserIdentity = () => {
+    if (this.VerifyUserIdentityPayload) {
+      return $api.auth
+        .VerifyUserIdentity(this.VerifyUserIdentityPayload)
+        .then((response) => {
+          Logic.Common.hideLoader()
+          return response.data?.VerifyUserIdentity
+        })
+        .catch((error: CombinedError) => {
+          Logic.Common.hideLoader()
+          Logic.Common.showError(error, "Verification Failed", "error-alert")
+          throw new Error(error.message)
+        })
+    }
+  }
+
   public UpdatePassword = (formIsValid: boolean) => {
     if (formIsValid && this.UpdatePasswordPayload) {
       Logic.Common.showLoader({ loading: true })

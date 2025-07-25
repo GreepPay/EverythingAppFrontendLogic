@@ -8,6 +8,7 @@ import {
   MutationResetPasswordArgs,
   MutationSendResetPasswordOtpArgs,
   MutationResendEmailOtpArgs,
+  MutationVerifyUserIdentityArgs,
   AuthResponse,
   User,
 } from "../gql/graphql"
@@ -207,6 +208,41 @@ export default class AuthApi extends BaseApiService {
     `
 
     const response: Promise<OperationResult<{ ResetPassword: boolean }>> =
+      this.mutation(requestData, data)
+
+    return response
+  }
+
+  public VerifyUserIdentity = (data: MutationVerifyUserIdentityArgs) => {
+    const requestData = `
+    mutation VerifyUserIdentity(
+      $user_uuid: String!
+      $id_type: String!
+      $id_number: String!
+      $id_country: String!
+      $full_name: String!
+      $phone_number: String!
+      $date_of_birth: String!
+      $address: String!
+      $additional_ids: [AdditionalIdInput!]
+      $checks: VerifyChecksInput!
+    ) {
+      VerifyUserIdentity(
+        user_uuid: $user_uuid
+        id_type: $id_type
+        id_number: $id_number
+        id_country: $id_country
+        full_name: $full_name
+        phone_number: $phone_number
+        date_of_birth: $date_of_birth
+        address: $address
+        additional_ids: $additional_ids
+        checks: $checks
+      )
+    }
+  `
+
+    const response: Promise<OperationResult<{ VerifyUserIdentity: boolean }>> =
       this.mutation(requestData, data)
 
     return response
