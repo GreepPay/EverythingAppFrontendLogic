@@ -26,6 +26,7 @@ export default class AuthApi extends BaseApiService {
             email_verified_at
             phone_verified_at
             username
+            transaction_pin
             profile {
               profile_picture
               verification_status
