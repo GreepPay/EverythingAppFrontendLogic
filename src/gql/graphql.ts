@@ -40,6 +40,11 @@ export type Account = {
   uuid: Scalars['String'];
 };
 
+export type AdditionalIdInput = {
+  number: Scalars['String'];
+  type: Scalars['String'];
+};
+
 export type AddressInput = {
   city?: InputMaybe<Scalars['String']>;
   country?: InputMaybe<Scalars['String']>;
@@ -477,7 +482,7 @@ export type Mutation = {
   UpdatePassword: Scalars['Boolean'];
   /** Update a user's profile with detailed information */
   UpdateProfile: Scalars['Boolean'];
-  /** Verify user identity */
+  /** Verify user identity with optional checks */
   VerifyUserIdentity: Scalars['Boolean'];
   /** Verify user OTP */
   VerifyUserOTP: Scalars['Boolean'];
@@ -615,9 +620,15 @@ export type MutationUpdateProfileArgs = {
 
 
 export type MutationVerifyUserIdentityArgs = {
+  additional_ids?: InputMaybe<Array<AdditionalIdInput>>;
+  address: Scalars['String'];
+  checks: VerifyChecksInput;
+  date_of_birth: Scalars['String'];
+  full_name: Scalars['String'];
   id_country: Scalars['String'];
   id_number: Scalars['String'];
   id_type: Scalars['String'];
+  phone_number: Scalars['String'];
   user_uuid?: InputMaybe<Scalars['String']>;
 };
 
@@ -2070,6 +2081,12 @@ export type Verification = {
   user_type: Scalars['String'];
   /** Verification Data (optional) */
   verification_data?: Maybe<Scalars['String']>;
+};
+
+export type VerifyChecksInput = {
+  dob?: InputMaybe<Scalars['Boolean']>;
+  name?: InputMaybe<Scalars['Boolean']>;
+  phone?: InputMaybe<Scalars['Boolean']>;
 };
 
 /** A single wallet */

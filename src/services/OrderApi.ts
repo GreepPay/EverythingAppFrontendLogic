@@ -44,13 +44,10 @@ export default class OrderApi extends BaseApiService {
         }
         data {
           id
-          customerId
-          saleId
+          customerId 
           status
           paymentMethod
-          paymentStatus
-          cancellationReason
-          refundId
+          paymentStatus  
           subtotalAmount
           taxAmount
           discountAmount
