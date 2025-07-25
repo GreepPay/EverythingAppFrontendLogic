@@ -110,6 +110,8 @@ export type Business = {
   banner?: Maybe<Scalars['String']>;
   /** Business name. */
   business_name?: Maybe<Scalars['String']>;
+  /** Default Currency */
+  default_currency?: Maybe<Scalars['String']>;
   /** Business description. */
   description?: Maybe<Scalars['String']>;
   eventProducts?: Maybe<Array<Maybe<Product>>>;
@@ -118,6 +120,10 @@ export type Business = {
   /** Business logo URL. */
   logo?: Maybe<Scalars['String']>;
   products?: Maybe<Array<Maybe<Product>>>;
+  /** Attached user */
+  user?: Maybe<User>;
+  /** Business UUID. */
+  uuid: Scalars['String'];
   /** Business website URL. */
   website?: Maybe<Scalars['String']>;
 };
@@ -437,6 +443,8 @@ export type Mutation = {
   CreateOrder?: Maybe<Order>;
   /** Create a saved account */
   CreateSavedAccount: UserBank;
+  /** Delete User */
+  DeleteUser: Scalars['Boolean'];
   /** Initiate a top-up transaction */
   InitiateTopup: PaymentCollectionResponse;
   /** Initiate withdrawal */
@@ -522,6 +530,7 @@ export type MutationInitiateWithdrawalArgs = {
 
 export type MutationMakePaymentArgs = {
   amount: Scalars['Float'];
+  business_uuid?: InputMaybe<Scalars['String']>;
   currency: Scalars['String'];
   receiver_uuid: Scalars['String'];
 };
@@ -1172,7 +1181,7 @@ export type Profile = {
   /** The attached customer */
   customer?: Maybe<Customer>;
   /** Default Currency */
-  default_currency: Scalars['String'];
+  default_currency?: Maybe<Scalars['String']>;
   /** Profile Picture URL (optional) */
   profile_picture?: Maybe<Scalars['String']>;
   /** Profile Updated At */
@@ -1236,6 +1245,8 @@ export type Query = {
   GetWithdrawInfo: WithdrawInfo;
   /** Get yellow card networks */
   GetYellowCardNetwork: Array<YellowcardNetwork>;
+  /** Search businesses by name */
+  SearchBusinesses: Array<Business>;
   /** Search users by name */
   SearchUsers: Array<User>;
 };
@@ -1302,6 +1313,7 @@ export type QueryGetMyTicketsArgs = {
 export type QueryGetNotificationsArgs = {
   first: Scalars['Int'];
   page?: InputMaybe<Scalars['Int']>;
+  type: Scalars['String'];
 };
 
 
@@ -1390,12 +1402,18 @@ export type QueryGetTransactionsArgs = {
 
 export type QueryGetWithdrawInfoArgs = {
   amount: Scalars['Float'];
+  country_code?: InputMaybe<Scalars['String']>;
   currency?: InputMaybe<Scalars['String']>;
 };
 
 
 export type QueryGetYellowCardNetworkArgs = {
   country_code: Scalars['String'];
+};
+
+
+export type QuerySearchBusinessesArgs = {
+  query: Scalars['String'];
 };
 
 
@@ -1967,12 +1985,14 @@ export type Trustline = {
 /** A User in Greep */
 export type User = {
   __typename?: 'User';
+  /** The attached businesses */
+  businesses: Array<Business>;
   /** The user created at */
-  created_at: Scalars['DateTime'];
+  created_at: Scalars['String'];
   /** The user email */
   email: Scalars['String'];
   /** The user email verified at */
-  email_verified_at?: Maybe<Scalars['DateTime']>;
+  email_verified_at?: Maybe<Scalars['String']>;
   /** The user first name */
   first_name: Scalars['String'];
   /** The user unique ID */
@@ -1982,7 +2002,7 @@ export type User = {
   /** The user phone */
   phone?: Maybe<Scalars['String']>;
   /** The user phone verified at */
-  phone_verified_at?: Maybe<Scalars['DateTime']>;
+  phone_verified_at?: Maybe<Scalars['String']>;
   /** The attached profile */
   profile: Profile;
   /** The user status */
@@ -1990,7 +2010,7 @@ export type User = {
   /** The auth passcode */
   transaction_pin?: Maybe<Scalars['String']>;
   /** The user updated at */
-  updated_at: Scalars['DateTime'];
+  updated_at: Scalars['String'];
   /** The user username */
   username?: Maybe<Scalars['String']>;
   /** Unique UUID */

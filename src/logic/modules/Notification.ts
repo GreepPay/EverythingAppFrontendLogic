@@ -27,11 +27,13 @@ export default class NotificationModule extends Common {
     this.ManyNotifications = undefined;
   };
 
-  public GetNotifications = async (data: QueryGetNotificationsArgs) => {
-    return $api.notification.GetNotifications(data).then((response) => {
-      this.ManyNotifications = response.data?.GetNotifications;
-      return this.ManyNotifications;
-    });
+  public GetNotifications = async (first: number, page: number) => {
+    return $api.notification
+      .GetNotifications("email", first, page)
+      .then((response) => {
+        this.ManyNotifications = response.data?.GetNotifications;
+        return this.ManyNotifications;
+      });
   };
 
   public SavePushNotificationDevice = () => {
@@ -51,7 +53,7 @@ export default class NotificationModule extends Common {
       .MarkNotificationsAsRead(notificationIds)
       .then(() => {
         if (this.GetBitificationsPayload) {
-          this.GetNotifications(this.GetBitificationsPayload);
+          this.GetNotifications(10, 1);
         }
       });
   };

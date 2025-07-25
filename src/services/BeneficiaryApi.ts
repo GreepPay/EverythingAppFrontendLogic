@@ -22,21 +22,9 @@ export default class BeneficiaryApi extends BaseApiService {
               last_name
               username
               email
-              phone
-              email_verified_at
-              phone_verified_at
-              status
               profile {
-                created_at
-                auth_user_id
                 default_currency
               }
-              wallet {
-                cash_per_point
-                cash_point_balance
-              }
-              created_at
-              updated_at
             }
             metadata
             state
@@ -47,19 +35,9 @@ export default class BeneficiaryApi extends BaseApiService {
               first_name
               last_name
               username
-              email
-              phone
-              email_verified_at
-              phone_verified_at
               status
               profile {
-                created_at
-                auth_user_id
                 default_currency
-              }
-              wallet {
-                cash_per_point
-                cash_point_balance
               }
               created_at
               updated_at

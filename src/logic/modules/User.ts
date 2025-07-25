@@ -1,4 +1,5 @@
 import {
+  Business,
   MutationUpdateProfileArgs,
   User as UserModel,
 } from "../../gql/graphql";
@@ -11,12 +12,17 @@ export default class User extends Common {
   constructor() {
     super();
     this.defineReactiveProperty("SearchedUsers", undefined);
+    this.defineReactiveProperty("SearchedBusinesses", undefined);
     this.defineReactiveProperty("SingleUser", undefined);
   }
 
   // Base variables
   public SearchedUsers: UserModel[] | undefined;
+  public SearchedBusinesses: Business[] | undefined;
   public SingleUser: UserModel | undefined;
+
+  //
+  public UpdateProfileForm: MutationUpdateProfileArgs | undefined;
 
   // Query
   public SearchForUsers = async (query: string) => {
@@ -30,6 +36,17 @@ export default class User extends Common {
       });
   };
 
+  public SearchForBusinesses = async (query: string) => {
+    return $api.user
+      .SearchBusiness({
+        query,
+      })
+      .then((response) => {
+        this.SearchedBusinesses = response.data?.SearchBusinesses;
+        return response.data?.SearchBusinesses;
+      });
+  };
+
   public GetSingleUser = async (
     uuid: string
   ): Promise<UserModel | undefined> => {
@@ -40,17 +57,20 @@ export default class User extends Common {
   };
 
   // Mutations
-  public UpdateProfile = async (data: MutationUpdateProfileArgs) => {
-    return $api.user
-      .UpdateProfile(data)
-      .then((response) => {
-        if (response.data?.UpdateProfile) {
-          return response.data.UpdateProfile;
-        }
-      })
-      .catch((error: CombinedError) => {
-        Logic.Common.showError(error, "Oops!", "error-alert");
-        throw new Error(error.message);
-      });
+
+  public UpdateProfile = async () => {
+    if (this.UpdateProfileForm) {
+      return $api.user
+        .UpdateProfile(this.UpdateProfileForm)
+        .then((response) => {
+          if (response.data?.UpdateProfile) {
+            return response.data.UpdateProfile;
+          }
+        })
+        .catch((error: CombinedError) => {
+          Logic.Common.showError(error, "Oops!", "error-alert");
+          throw error;
+        });
+    }
   };
 }

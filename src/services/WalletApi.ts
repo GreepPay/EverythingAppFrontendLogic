@@ -95,6 +95,7 @@ export default class WalletsApi extends BaseApiService {
             charge_id
             chargeable_type
             created_at
+            updated_at
             currency
             description
             dr_or_cr
@@ -163,6 +164,7 @@ export default class WalletsApi extends BaseApiService {
             wallet_balance
             uuid
             created_at
+            updated_at
           }
         }
       }
@@ -580,11 +582,13 @@ export default class WalletsApi extends BaseApiService {
       $receiver_uuid: String!,
       $amount: Float!,
       $currency: String!
+      $business_uuid: String
     ) {
       MakePayment(
         receiver_uuid: $receiver_uuid,
         amount: $amount,
-        currency: $currency
+        currency: $currency,
+        business_uuid: $business_uuid
       )
     }
   `

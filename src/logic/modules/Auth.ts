@@ -9,6 +9,7 @@ import {
   MutationVerifyUserOtpArgs,
   MutationResetPasswordArgs,
   MutationSendResetPasswordOtpArgs,
+  MutationUpdateProfileArgs,
   User,
 } from "../../gql/graphql";
 import { Logic } from "..";

@@ -5,6 +5,8 @@ import {
   User,
   QuerySearchUsersArgs,
   MutationVerifyUserIdentityArgs,
+  QuerySearchBusinessesArgs,
+  Business,
 } from "../gql/graphql";
 
 export default class UserApi extends BaseApiService {
@@ -23,6 +25,12 @@ export default class UserApi extends BaseApiService {
             default_currency
             user_type
           }
+          businesses {
+            uuid
+            business_name
+            logo
+            default_currency
+          }
         }
       }
     `;
@@ -30,6 +38,30 @@ export default class UserApi extends BaseApiService {
     const response: Promise<
       OperationResult<{
         SearchUsers: User[];
+      }>
+    > = this.query(requestData, data);
+
+    return response;
+  };
+
+  public SearchBusiness = (data: QuerySearchBusinessesArgs) => {
+    const requestData = `
+      query SearchBusinesses($query: String!) {
+        SearchBusinesses(query: $query) {
+           uuid
+           business_name
+           user {
+             uuid
+             }
+           logo
+           default_currency
+        }
+      }
+    `;
+
+    const response: Promise<
+      OperationResult<{
+        SearchBusinesses: Business[];
       }>
     > = this.query(requestData, data);
 
@@ -46,12 +78,14 @@ export default class UserApi extends BaseApiService {
           username
           profile {
             profile_picture
+            default_currency
             user_type
-            business {
-              business_name
-              logo
-              website
-            }
+          }
+          businesses {
+            uuid
+            business_name
+            logo
+            default_currency
           }
         }
       }
@@ -72,10 +106,11 @@ export default class UserApi extends BaseApiService {
     const requestData = `
     mutation UpdateProfile(
       $first_name: String,
-      $profile_photo: Upload,
       $last_name: String,
+      $profile_photo: Upload,
       $default_currency: String,
       $country: String,
+      $auth_passcode: String,
       $state: String
       $auth_passcode: String
     ) {
