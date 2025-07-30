@@ -472,6 +472,8 @@ export type Mutation = {
   ResetPassword: Scalars['Boolean'];
   /** Save a push notification token for the authenticated user. */
   SavePushNotificationToken?: Maybe<Scalars['Boolean']>;
+  /** send rest password OTP */
+  SendResetPasswordOTP: Scalars['String'];
   /** Sign in a user */
   SignIn: AuthResponse;
   /** Sign out a user */
@@ -486,8 +488,6 @@ export type Mutation = {
   VerifyUserIdentity: Scalars['Boolean'];
   /** Verify user OTP */
   VerifyUserOTP: Scalars['Boolean'];
-  /** send rest password OTP */
-  sendResetPasswordOTP: Scalars['Boolean'];
 };
 
 
@@ -584,6 +584,11 @@ export type MutationSavePushNotificationTokenArgs = {
 };
 
 
+export type MutationSendResetPasswordOtpArgs = {
+  email: Scalars['String'];
+};
+
+
 export type MutationSignInArgs = {
   email: Scalars['String'];
   password: Scalars['String'];
@@ -636,11 +641,6 @@ export type MutationVerifyUserIdentityArgs = {
 export type MutationVerifyUserOtpArgs = {
   otp: Scalars['String'];
   user_uuid: Scalars['String'];
-};
-
-
-export type MutationSendResetPasswordOtpArgs = {
-  email: Scalars['String'];
 };
 
 /** A notification on Greep */

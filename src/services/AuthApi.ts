@@ -180,10 +180,10 @@ export default class AuthApi extends BaseApiService {
     return response
   }
 
-  public sendResetPasswordOTP = (data: MutationSendResetPasswordOtpArgs) => {
+  public SendResetPasswordOTP = (data: MutationSendResetPasswordOtpArgs) => {
     const requestData = `
-      mutation sendResetPasswordOTP($email: String!) {
-        sendResetPasswordOTP(email: $email)
+      mutation SendResetPasswordOTP($email: String!) {
+        SendResetPasswordOTP(email: $email)
       }
     `
 
