@@ -117,10 +117,10 @@ export default class AuthModule extends Common {
     data: MutationSendResetPasswordOtpArgs
   ) => {
     return $api.auth
-      .sendResetPasswordOTP(data)
+      .SendResetPasswordOTP(data)
       .then((response) => {
-        if (response.data?.sendResetPasswordOTP) {
-          return response.data.sendResetPasswordOTP
+        if (response.data?.SendResetPasswordOTP) {
+          return response.data.SendResetPasswordOTP
         }
       })
       .catch((error: CombinedError) => {
