@@ -188,7 +188,7 @@ export default class AuthApi extends BaseApiService {
     `
 
     const response: Promise<
-      OperationResult<{ sendResetPasswordOTP: boolean }>
+      OperationResult<{ sendResetPasswordOTP: String }>
     > = this.mutation(requestData, data)
     return response
   }
