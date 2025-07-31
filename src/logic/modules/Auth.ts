@@ -18,6 +18,7 @@ export default class AuthModule extends Common {
   constructor() {
     super()
     this.setDefaultAuth()
+   
   }
 
   // Base variables
@@ -116,11 +117,14 @@ export default class AuthModule extends Common {
   public sendResetPasswordOTP = async (
     data: MutationSendResetPasswordOtpArgs
   ) => {
+    console.log("Hellow")
     return $api.auth
       .SendResetPasswordOTP(data)
       .then((response) => {
         if (response.data?.SendResetPasswordOTP) {
-          return response.data.SendResetPasswordOTP
+        let  uuid =localStorage.setItem("reset_password_uuid", response.data.SendResetPasswordOTP);
+        console.log(uuid)
+        return response.data.SendResetPasswordOTP;
         }
       })
       .catch((error: CombinedError) => {

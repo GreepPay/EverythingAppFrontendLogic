@@ -186,9 +186,12 @@ export default class AuthApi extends BaseApiService {
         SendResetPasswordOTP(email: $email)
       }
     `
+    console.log(
+      "helloe"
+    )
 
     const response: Promise<
-      OperationResult<{ SendResetPasswordOTP: String }>
+      OperationResult<{ SendResetPasswordOTP: string }>
     > = this.mutation(requestData, data)
     return response
   }
@@ -197,12 +200,12 @@ export default class AuthApi extends BaseApiService {
     const requestData = `
       mutation ResetPassword(
         $user_uuid: String!,
-        $otp_code: String!,
+        $otp: String!,
         $new_password: String!
       ) {
         ResetPassword(
           user_uuid: $user_uuid,
-          otp_code: $otp_code,
+          otp: $otp,
           new_password: $new_password
         )
       }
