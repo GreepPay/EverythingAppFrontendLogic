@@ -200,12 +200,12 @@ export default class AuthApi extends BaseApiService {
     const requestData = `
       mutation ResetPassword(
         $user_uuid: String!,
-        $otp: String!,
+        $otp_code: String!,
         $new_password: String!
       ) {
         ResetPassword(
           user_uuid: $user_uuid,
-          otp: $otp,
+          otp_code: $otp_code,
           new_password: $new_password
         )
       }
