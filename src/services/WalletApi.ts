@@ -431,6 +431,36 @@ export default class WalletsApi extends BaseApiService {
     return response
   }
 
+  public GetOffRampChannelsByCountryCode = (countryCode: string) => {
+    const requestData = `
+      query GetOffRampChannelsByCountryCode($countryCode: String!) {
+        GetOffRampChannelsByCountryCode(country_code: $countryCode) {
+           id
+           max
+           currency
+           countryCurrency
+           country
+           status
+           feeLocal
+           feeUSD
+           min
+           channelType
+           apiStatus
+           vendorId
+           rampType
+        }
+      }
+    `
+
+    const response: Promise<
+      OperationResult<{
+        GetOffRampChannelsByCountryCode: PaymentChannel[]
+      }>
+    > = this.query(requestData, { countryCode })
+
+    return response
+  }
+
   public GetOnRampNetworkByCountryCode = (countryCode: string) => {
     const requestData = `
       query GetOnRampNetworkByCountryCode($countryCode: String!) {

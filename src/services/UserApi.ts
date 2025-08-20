@@ -112,7 +112,6 @@ export default class UserApi extends BaseApiService {
       $country: String,
       $auth_passcode: String,
       $state: String
-      $auth_passcode: String
     ) {
       UpdateProfile(
         first_name: $first_name,

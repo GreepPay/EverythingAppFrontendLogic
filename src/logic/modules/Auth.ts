@@ -47,7 +47,9 @@ export default class AuthModule extends Common {
         "access_token",
         this.AccessToken ? this.AccessToken : ""
       );
-      localStorage.setItem("auth_user", JSON.stringify(this.AuthUser));
+      if (this.AuthUser) {
+        localStorage.setItem("auth_user", JSON.stringify(this.AuthUser));
+      }
     }
   };
   private setDefaultAuth = () => {
@@ -59,7 +61,9 @@ export default class AuthModule extends Common {
   public GetAuthUser = async (): Promise<User | undefined> => {
     return $api.auth.GetAuthUser().then((response) => {
       this.AuthUser = response.data?.GetAuthUser;
-      localStorage.setItem("auth_user", JSON.stringify(this.AuthUser));
+      if (this.AuthUser) {
+        localStorage.setItem("auth_user", JSON.stringify(this.AuthUser));
+      }
 
       if (this.AuthUser?.profile.default_currency) {
         localStorage.setItem(
@@ -68,7 +72,10 @@ export default class AuthModule extends Common {
         );
       }
       return this.AuthUser;
-    });
+    }).catch((error: CombinedError) => {
+      Logic.Common.showError(error, "Oops!", "error-alert");
+      throw new Error(error.message);
+    });;
   };
 
   // Mutations
@@ -96,7 +103,9 @@ export default class AuthModule extends Common {
       return $api.auth
         .SignIn(this.SignInPayload)
         .then((response) => {
-          this.SetUpAuth(response.data?.SignIn);
+          if (response.data?.SignIn) {
+            this.SetUpAuth(response.data?.SignIn);
+          }
           // this.AuthUser = response.data?.SignIn.user
           Logic.Common.hideLoader();
           return response.data?.SignIn;
@@ -191,6 +200,7 @@ export default class AuthModule extends Common {
       .DeleteUser()
       .then((response) => {
         Logic.Common.hideLoader()
+        Logic.Common.GoToRoute("/start", true);
         return response.data?.DeleteUser
       })
       .catch((error: CombinedError) => {

@@ -42,6 +42,7 @@ export default class Wallet extends Common {
   public NormalFinancialSummary: FinancialSummaryResponse | undefined;
   public CurrentYellowCardNetworks: YellowcardNetwork[] | undefined;
   public OnRampChannels: PaymentChannel[] | undefined;
+  public OffRampChannels: PaymentChannel[] | undefined;
   public OnRampNetwork: PaymentNetwork[] | undefined;
   public PointFinancialSummary: FinancialSummaryResponse | undefined;
   public CheckStatusState = reactive({
@@ -73,6 +74,10 @@ export default class Wallet extends Common {
     this.defineReactiveProperty("CurrentOfframp", undefined);
     this.defineReactiveProperty("ManyExchangeAds", undefined);
     this.defineReactiveProperty("SingleExchangeAd", undefined);
+    this.defineReactiveProperty("OnRampChannels", undefined);
+    this.defineReactiveProperty("OffRampChannels", undefined);
+    this.defineReactiveProperty("OnRampNetwork", undefined);
+    this.defineReactiveProperty("CheckStatusState", { active: false });
   }
 
   // Queries
@@ -99,6 +104,20 @@ export default class Wallet extends Common {
       });
   };
 
+  public GetOffRampChannels = async (
+    countryCode: string
+  ): Promise<PaymentChannel[] | undefined> => {
+    if (!countryCode) {
+      countryCode = localStorage.getItem("default_country_code") ?? "";
+    }
+    return $api.wallet
+      .GetOffRampChannelsByCountryCode(countryCode)
+      .then((response) => {
+        this.OffRampChannels = response.data?.GetOffRampChannelsByCountryCode;
+        return this.OffRampChannels;
+      });
+  };
+
   public GetYellowCardNetwork = async (
     country_code: string
   ): Promise<YellowcardNetwork[] | undefined> => {
@@ -111,7 +130,6 @@ export default class Wallet extends Common {
   public GetOnRampNetwork = async (
     countryCode: string
   ): Promise<PaymentNetwork[] | undefined> => {
-    console.log("GetOnRampNetwork called with countryCode:", countryCode);
     if (!countryCode) {
       countryCode = localStorage.getItem("default_country_code") ?? "";
     }

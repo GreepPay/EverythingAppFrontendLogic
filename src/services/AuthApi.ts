@@ -87,6 +87,7 @@ export default class AuthApi extends BaseApiService {
       $country: String!,
       $default_currency: String!,
       $profile_picture: Upload
+      $sso_id: String
     ) {
       SignUp(
         first_name: $first_name,
@@ -96,7 +97,8 @@ export default class AuthApi extends BaseApiService {
         state: $state,
         country: $country,
         default_currency: $default_currency,
-        profile_picture: $profile_picture
+        profile_picture: $profile_picture,
+        sso_id: $sso_id
       ) { 
         id
         uuid
@@ -133,11 +135,13 @@ export default class AuthApi extends BaseApiService {
     const requestData = `
     mutation SignIn(
       $email: String!,
-      $password: String!
+      $password: String,
+      $sso_id: String
     ) {
       SignIn(
         email: $email,
-        password: $password
+        password: $password,
+        sso_id: $sso_id
       ) {
         token
         user {
