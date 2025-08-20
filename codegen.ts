@@ -1,4 +1,4 @@
-import type { CodegenConfig } from "@graphql-codegen/cli";
+import type { CodegenConfig } from "@graphql-codegen/cli"
 
 const config: CodegenConfig = {
   schema: "https://api-client-dev.greep.io/graphql",
@@ -13,6 +13,6 @@ const config: CodegenConfig = {
       plugins: [],
     },
   },
-};
+}
 
-export default config;
+export default config

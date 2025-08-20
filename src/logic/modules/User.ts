@@ -1,20 +1,20 @@
-import {
-  MutationUpdateProfileArgs,
-  User as UserModel,
-} from "../../gql/graphql";
-import { $api } from "../../services";
-import Common from "./Common";
-import { CombinedError } from "urql";
-import { Logic } from "..";
+import { MutationUpdateProfileArgs, User as UserModel } from "../../gql/graphql"
+import { $api } from "../../services"
+import Common from "./Common"
+import { CombinedError } from "urql"
+import { Logic } from ".."
 
 export default class User extends Common {
   constructor() {
-    super();
+    super()
   }
 
   // Base variables
-  public SearchedUsers: UserModel[] | undefined;
-  public SingleUser: UserModel | undefined;
+  public SearchedUsers: UserModel[] | undefined
+  public SingleUser: UserModel | undefined
+
+  //
+  public UpdateProfileForm: MutationUpdateProfileArgs | undefined
 
   // Query
   public SearchForUsers = async (query: string) => {
@@ -23,32 +23,35 @@ export default class User extends Common {
         query,
       })
       .then((response) => {
-        this.SearchedUsers = response.data?.SearchUsers;
-        return response.data?.SearchUsers;
-      });
-  };
+        this.SearchedUsers = response.data?.SearchUsers
+        return response.data?.SearchUsers
+      })
+  }
 
   public GetSingleUser = async (
-    uuid: string,
+    uuid: string
   ): Promise<UserModel | undefined> => {
     return $api.user.GetSingleUser(uuid).then((response) => {
-      this.SingleUser = response.data?.GetSingleUser;
-      return response.data?.GetSingleUser;
-    });
-  };
+      this.SingleUser = response.data?.GetSingleUser
+      return response.data?.GetSingleUser
+    })
+  }
 
   // Mutations
-  public UpdateProfile = async (data: MutationUpdateProfileArgs) => {
-    return $api.user
-      .UpdateProfile(data)
-      .then((response) => {
-        if (response.data?.UpdateProfile) {
-          return response.data.UpdateProfile;
-        }
-      })
-      .catch((error: CombinedError) => {
-        Logic.Common.showError(error, "Oops!", "error-alert");
-        throw new Error(error.message);
-      });
-  };
+
+  public UpdateProfile = async () => {
+    if (this.UpdateProfileForm) {
+      return $api.user
+        .UpdateProfile(this.UpdateProfileForm)
+        .then((response) => {
+          if (response.data?.UpdateProfile) {
+            return response.data.UpdateProfile
+          }
+        })
+        .catch((error: CombinedError) => {
+          Logic.Common.showError(error, "Oops!", "error-alert")
+          throw error
+        })
+    }
+  }
 }

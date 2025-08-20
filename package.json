@@ -1,5 +1,5 @@
 {
-  "name": "@greep/user-frontend-logic",
+  "name": "@greep/logic",
   "version": "0.0.1",
   "description": "Frontend Logic for Greep User mobile",
   "main": "src/index.ts",
@@ -53,6 +53,9 @@
     "graphql": "^16.6.0",
     "moment": "^2.29.4",
     "urql": "^4.0.5",
-    "vue-router": "^4.0.12"
+    "vue-router": "^4.0.12",
+    "@capacitor/haptics": "^7.0.1",
+    "@capacitor/push-notifications": "^7.0.0",
+    "@ionic/vue": "^8.5.2"
   }
 }

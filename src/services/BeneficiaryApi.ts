@@ -10,11 +10,6 @@ import {
 
 export default class BeneficiaryApi extends BaseApiService {
   // #region QUERIES
-  /**
-   * @description Retrieves a paginated list of beneficiaries for the authenticated user.
-   * @params first (number of items per page), page (page number)
-   * @response An object containing beneficiary details and pagination information.
-   */
   public GetBeneficiaries = (data: QueryGetBeneficiariesArgs) => {
     const requestData = `
       query GetBeneficiaries($first: Int!, $page: Int) {
@@ -92,15 +87,9 @@ export default class BeneficiaryApi extends BaseApiService {
 
     return response
   }
-
   // #endregion QUERIES
 
   // #region MUTATIONS
-  /**
-   * @description Adds a user as a beneficiary with the provided metadata.
-   * @params user_uuid, metadata
-   * @response Beneficiary object containing the added beneficiary's details
-   */
   public AddAsBeneficiary = (data: MutationAddAsBeneficiaryArgs) => {
     const requestData = `
     mutation AddAsBeneficiary(
@@ -126,11 +115,6 @@ export default class BeneficiaryApi extends BaseApiService {
     return response
   }
 
-  /**
-   * @description Removes a user from the list of beneficiaries.
-   * @params beneficiary_uuid
-   * @response Boolean indicating success or failure
-   */
   public RemoveAsBeneficiary = (data: MutationRemoveAsBeneficiaryArgs) => {
     const requestData = `
     mutation RemoveAsBeneficiary(
@@ -147,6 +131,5 @@ export default class BeneficiaryApi extends BaseApiService {
 
     return response
   }
-
   // #endregion MUTATIONS
 }

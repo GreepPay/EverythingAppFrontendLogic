@@ -9,10 +9,10 @@ import { BaseApiService } from "./common/BaseService"
 
 export default class NotificationApi extends BaseApiService {
   // #region QUERIES
-  public GetNotifications = (data: QueryGetNotificationsArgs) => {
+  public GetNotifications = (type: string, first: number, page: number) => {
     const requestData = `
-      query GetNotifications($first: Int!, $page: Int) {
-        GetNotifications(first: $first, page: $page) {
+      query GetNotifications($type: String!, $first: Int!, $page: Int ) {
+        GetNotifications(  type: $type, first: $first, page: $page) {
           paginatorInfo {
             count
             currentPage
@@ -24,14 +24,16 @@ export default class NotificationApi extends BaseApiService {
             total
           }
           data {
-            content
-            created_at
-            delivery_status
-            email
             id
-            is_read
-            title
+            auth_user_id
             type
+            title
+            content
+            email
+            is_read
+            delivery_status
+            created_at
+            updated_at
           }
         }
       }
@@ -41,7 +43,7 @@ export default class NotificationApi extends BaseApiService {
       OperationResult<{
         GetNotifications: NotificationPaginator
       }>
-    > = this.query(requestData, data)
+    > = this.query(requestData, { type, first, page })
 
     return response
   }
@@ -89,6 +91,5 @@ export default class NotificationApi extends BaseApiService {
 
     return response
   }
-
   // #endregion MUTATIONS
 }

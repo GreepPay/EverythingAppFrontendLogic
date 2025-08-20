@@ -1,19 +1,14 @@
-import { BaseApiService } from "./common/BaseService";
-import { OperationResult } from "urql";
+import { BaseApiService } from "./common/BaseService"
+import { OperationResult } from "urql"
 import {
   MutationUpdateProfileArgs,
-  MutationSavePushNotificationTokenArgs,
   User,
   QuerySearchUsersArgs,
-} from "../gql/graphql";
+  MutationVerifyUserIdentityArgs,
+} from "../gql/graphql"
 
 export default class UserApi extends BaseApiService {
   // #region QUERIES
-  /**
-   * @description Searches for users based on a query string (name, email, or phone).
-   * @params query - The search keyword used to find users.
-   * @response An array of User objects containing user details.
-   */
   public SearchUsers = (data: QuerySearchUsersArgs) => {
     const requestData = `
       query SearchUsers($query: String!) {
@@ -30,16 +25,16 @@ export default class UserApi extends BaseApiService {
           }
         }
       }
-    `;
+    `
 
     const response: Promise<
       OperationResult<{
-        SearchUsers: User[];
+        SearchUsers: User[]
       }>
-    > = this.query(requestData, data);
+    > = this.query(requestData, data)
 
-    return response;
-  };
+    return response
+  }
 
   public GetSingleUser = (uuid: string) => {
     const requestData = `
@@ -60,33 +55,28 @@ export default class UserApi extends BaseApiService {
           }
         }
       }
-    `;
+    `
 
     const response: Promise<
       OperationResult<{
-        GetSingleUser: User;
+        GetSingleUser: User
       }>
-    > = this.query(requestData, { uuid });
+    > = this.query(requestData, { uuid })
 
-    return response;
-  };
-
+    return response
+  }
   // #endregion QUERIES
 
   // #region MUTATIONS
-  /**
-   * @description Updates a user's profile with provided details.
-   * @params first_name, profile_photo, last_name, default_currency, country, state
-   * @response Boolean indicating success or failure
-   */
   public UpdateProfile = (data: MutationUpdateProfileArgs) => {
     const requestData = `
     mutation UpdateProfile(
       $first_name: String,
-      $profile_photo: Upload,
       $last_name: String,
+      $profile_photo: Upload,
       $default_currency: String,
       $country: String,
+      $auth_passcode: String,
       $state: String
     ) {
       UpdateProfile(
@@ -96,15 +86,38 @@ export default class UserApi extends BaseApiService {
         default_currency: $default_currency,
         country: $country,
         state: $state
+        auth_passcode: $auth_passcode
       )
     }
-  `;
+  `
 
     const response: Promise<OperationResult<{ UpdateProfile: boolean }>> =
-      this.mutation(requestData, data);
+      this.mutation(requestData, data)
 
-    return response;
-  };
+    return response
+  }
 
+  public VerifyUserIdentity = (data: MutationVerifyUserIdentityArgs) => {
+    const requestData = `
+    mutation VerifyUserIdentity(
+      $user_uuid: String!,
+      $id_type: String!,
+      $id_number: String!,
+      $id_country: String!
+    ) {
+      VerifyUserIdentity(
+        user_uuid: $user_uuid,
+        id_type: $id_type,
+        id_number: $id_number,
+        id_country: $id_country
+      )
+    }
+  `
+
+    const response: Promise<OperationResult<{ VerifyUserIdentity: boolean }>> =
+      this.mutation(requestData, data)
+
+    return response
+  }
   // #endregion MUTATIONS
 }
