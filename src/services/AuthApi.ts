@@ -33,6 +33,7 @@ export default class AuthApi extends BaseApiService {
               profile_picture
               verification_status
               default_currency
+              country_code
                customer {
                 city
                 country
@@ -86,6 +87,7 @@ export default class AuthApi extends BaseApiService {
       $state: String!,
       $country: String!,
       $default_currency: String!,
+      $country_code: String!,
       $profile_picture: Upload
       $sso_id: String
     ) {
@@ -97,6 +99,7 @@ export default class AuthApi extends BaseApiService {
         state: $state,
         country: $country,
         default_currency: $default_currency,
+        country_code: $country_code,
         profile_picture: $profile_picture,
         sso_id: $sso_id
       ) { 
@@ -108,6 +111,7 @@ export default class AuthApi extends BaseApiService {
         email
         phone
         status
+        email_verified_at
         profile {
           auth_user_id
           user_type
@@ -115,6 +119,7 @@ export default class AuthApi extends BaseApiService {
           verification_status
           updated_at
           default_currency
+          country_code
           created_at
         }
         created_at
@@ -152,6 +157,7 @@ export default class AuthApi extends BaseApiService {
           email
           phone
           status
+          email_verified_at
           profile {
             auth_user_id
             user_type
@@ -159,6 +165,7 @@ export default class AuthApi extends BaseApiService {
             verification_status
             updated_at
             default_currency
+            country_code
             created_at
           }
           created_at
@@ -186,18 +193,21 @@ export default class AuthApi extends BaseApiService {
     return response;
   };
 
-  public sendResetPasswordOTP = (data: MutationSendResetPasswordOtpArgs) => {
+  public SendResetPasswordOTP = (data: MutationSendResetPasswordOtpArgs) => {
     const requestData = `
-      mutation sendResetPasswordOTP($email: String!) {
-        sendResetPasswordOTP(email: $email)
+      mutation SendResetPasswordOTP($email: String!) {
+        SendResetPasswordOTP(email: $email)
       }
-    `;
+    `
+    console.log(
+      "helloe"
+    )
 
     const response: Promise<
-      OperationResult<{ sendResetPasswordOTP: boolean }>
-    > = this.mutation(requestData, data);
-    return response;
-  };
+      OperationResult<{ SendResetPasswordOTP: string }>
+    > = this.mutation(requestData, data)
+    return response
+  }
 
   public ResetPassword = (data: MutationResetPasswordArgs) => {
     const requestData = `

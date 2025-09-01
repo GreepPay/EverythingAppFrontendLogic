@@ -78,7 +78,7 @@ export default class Common {
 
   public GoToRoute = (path: string, forceReload = false) => {
     if (forceReload) {
-      window.location.pathname = path;
+      window.location.href = window.location.origin + `${path == '/' ? '' : path}` + '?isForceReload=true';
     } else {
       this.router?.push(path);
     }

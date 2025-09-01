@@ -351,10 +351,10 @@ export default class WalletsApi extends BaseApiService {
     return response
   }
 
-  public GetWithdrawInfo = (amount: number, currency: string) => {
+  public GetWithdrawInfo = (amount: number, currency: string, country_code: string) => {
     const requestData = `
-      query GetWithdrawInfo($amount: Float!, $currency: String!) {
-        GetWithdrawInfo(amount: $amount, currency: $currency) {
+      query GetWithdrawInfo($amount: Float!, $currency: String!, $country_code: String) {
+        GetWithdrawInfo(amount: $amount, currency: $currency, country_code: $country_code) {
           currency
           methods {
             name
@@ -375,6 +375,7 @@ export default class WalletsApi extends BaseApiService {
     > = this.query(requestData, {
       amount,
       currency,
+      country_code
     })
 
     return response
@@ -704,6 +705,24 @@ export default class WalletsApi extends BaseApiService {
 
     const response: Promise<OperationResult<{ MonitorTopupStatus: boolean }>> =
       this.mutation(requestData, data)
+
+    return response
+  }
+
+  public VerifyFlutterwaveTransaction = (reference: string) => {
+    const requestData = `
+        mutation VerifyFlutterwaveTransaction($reference: String!) {
+          VerifyFlutterwaveTransaction(reference: $reference)
+        }
+      `
+
+    const response: Promise<
+      OperationResult<{
+        VerifyFlutterwaveTransaction: boolean
+      }>
+    > = this.mutation(requestData, {
+      reference,
+    })
 
     return response
   }

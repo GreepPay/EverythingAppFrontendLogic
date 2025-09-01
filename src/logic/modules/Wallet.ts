@@ -142,9 +142,10 @@ export default class Wallet extends Common {
   };
   public GetWithdrawInfo = async (
     amount: number,
-    currency: string
+    currency: string,
+    countryCode = ""
   ): Promise<WithdrawInfo | undefined> => {
-    return $api.wallet.GetWithdrawInfo(amount, currency).then((response) => {
+    return $api.wallet.GetWithdrawInfo(amount, currency, countryCode).then((response) => {
       this.CurrentWithdrawalInfo = response.data?.GetWithdrawInfo;
       return this.CurrentWithdrawalInfo;
     });
@@ -324,6 +325,22 @@ export default class Wallet extends Common {
         });
     }
   };
+
+  public VerifyFlutterwaveTransaction = async (reference: string) => {
+    if (reference) {
+      return $api.wallet
+        .VerifyFlutterwaveTransaction(reference)
+        .then((response) => {
+          if (response.data?.VerifyFlutterwaveTransaction) {
+            return response.data.VerifyFlutterwaveTransaction;
+          }
+        })
+        .catch((error: CombinedError) => {
+          Logic.Common.showError(error, "Oops!", "error-alert");
+          throw new Error(error.message);
+        });
+    }
+  }
 
   public InitiateWalletKYC = (currency: string) => {
     if (currency) {

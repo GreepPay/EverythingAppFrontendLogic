@@ -1,5 +1,5 @@
 {
-  "name": "@greep/user-frontend-logic",
+  "name": "@greep/logic",
   "version": "0.0.1",
   "description": "Frontend Logic for Greep User mobile",
   "main": "src/index.ts",

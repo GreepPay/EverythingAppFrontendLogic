@@ -23,6 +23,7 @@ export default class UserApi extends BaseApiService {
             profile_picture
             verification_status
             default_currency
+            country_code
             user_type
           }
           businesses {
@@ -79,6 +80,7 @@ export default class UserApi extends BaseApiService {
           profile {
             profile_picture
             default_currency
+            country_code
             user_type
           }
           businesses {
@@ -111,6 +113,7 @@ export default class UserApi extends BaseApiService {
       $default_currency: String,
       $country: String,
       $auth_passcode: String,
+      $country_code: String,
       $state: String
     ) {
       UpdateProfile(
@@ -118,6 +121,7 @@ export default class UserApi extends BaseApiService {
         profile_photo: $profile_photo,
         last_name: $last_name,
         default_currency: $default_currency,
+        country_code: $country_code,
         country: $country,
         state: $state
         auth_passcode: $auth_passcode
