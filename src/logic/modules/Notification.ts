@@ -26,7 +26,7 @@ export default class NotificationModule extends Common {
   }
 
   public GetNotifications = async (first: number, page: number) => {
-    return $api.notification.GetNotifications(first, page).then((response) => {
+    return $api.notification.GetNotifications('email',first, page).then((response) => {
       this.ManyNotifications = response.data?.GetNotifications
       return this.ManyNotifications
     })
