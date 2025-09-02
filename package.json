@@ -1,5 +1,5 @@
 {
-  "name": "@greep/user-frontend-logic",
+  "name": "@greep/logic",
   "version": "0.0.1",
   "description": "Frontend Logic for Greep User mobile",
   "main": "src/index.ts",
@@ -46,16 +46,18 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@capacitor/haptics": "^7.0.1",
+    "@capacitor/push-notifications": "^7.0.0",
+    "@ionic/vue": "^8.5.2",
     "@urql/exchange-multipart-fetch": "^1.0.1",
     "@urql/exchange-persisted-fetch": "^2.0.0",
     "crypto-js": "^4.2.0",
     "currency.js": "^2.0.4",
     "graphql": "^16.6.0",
+    "laravel-echo": "^1.19.0",
     "moment": "^2.29.4",
+    "pusher-js": "^7.6.0",
     "urql": "^4.0.5",
-    "vue-router": "^4.0.12",
-    "@capacitor/haptics": "^7.0.1",
-    "@capacitor/push-notifications": "^7.0.0",
-    "@ionic/vue": "^8.5.2"
+    "vue-router": "^4.0.12"
   }
 }

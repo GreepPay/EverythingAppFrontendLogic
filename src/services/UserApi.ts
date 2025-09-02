@@ -1,11 +1,13 @@
-import { BaseApiService } from "./common/BaseService"
-import { OperationResult } from "urql"
+import { BaseApiService } from "./common/BaseService";
+import { OperationResult } from "urql";
 import {
   MutationUpdateProfileArgs,
   User,
   QuerySearchUsersArgs,
   MutationVerifyUserIdentityArgs,
-} from "../gql/graphql"
+  QuerySearchBusinessesArgs,
+  Business,
+} from "../gql/graphql";
 
 export default class UserApi extends BaseApiService {
   // #region QUERIES
@@ -21,20 +23,51 @@ export default class UserApi extends BaseApiService {
             profile_picture
             verification_status
             default_currency
+            country_code
             user_type
+          }
+          businesses {
+            uuid
+            business_name
+            logo
+            default_currency
           }
         }
       }
-    `
+    `;
 
     const response: Promise<
       OperationResult<{
-        SearchUsers: User[]
+        SearchUsers: User[];
       }>
-    > = this.query(requestData, data)
+    > = this.query(requestData, data);
 
-    return response
-  }
+    return response;
+  };
+
+  public SearchBusiness = (data: QuerySearchBusinessesArgs) => {
+    const requestData = `
+      query SearchBusinesses($query: String!) {
+        SearchBusinesses(query: $query) {
+           uuid
+           business_name
+           user {
+             uuid
+             }
+           logo
+           default_currency
+        }
+      }
+    `;
+
+    const response: Promise<
+      OperationResult<{
+        SearchBusinesses: Business[];
+      }>
+    > = this.query(requestData, data);
+
+    return response;
+  };
 
   public GetSingleUser = (uuid: string) => {
     const requestData = `
@@ -46,25 +79,28 @@ export default class UserApi extends BaseApiService {
           username
           profile {
             profile_picture
+            default_currency
+            country_code
             user_type
-            business {
-              business_name
-              logo
-              website
-            }
+          }
+          businesses {
+            uuid
+            business_name
+            logo
+            default_currency
           }
         }
       }
-    `
+    `;
 
     const response: Promise<
       OperationResult<{
-        GetSingleUser: User
+        GetSingleUser: User;
       }>
-    > = this.query(requestData, { uuid })
+    > = this.query(requestData, { uuid });
 
-    return response
-  }
+    return response;
+  };
   // #endregion QUERIES
 
   // #region MUTATIONS
@@ -77,6 +113,7 @@ export default class UserApi extends BaseApiService {
       $default_currency: String,
       $country: String,
       $auth_passcode: String,
+      $country_code: String,
       $state: String
     ) {
       UpdateProfile(
@@ -84,18 +121,19 @@ export default class UserApi extends BaseApiService {
         profile_photo: $profile_photo,
         last_name: $last_name,
         default_currency: $default_currency,
+        country_code: $country_code,
         country: $country,
         state: $state
         auth_passcode: $auth_passcode
       )
     }
-  `
+  `;
 
     const response: Promise<OperationResult<{ UpdateProfile: boolean }>> =
-      this.mutation(requestData, data)
+      this.mutation(requestData, data);
 
-    return response
-  }
+    return response;
+  };
 
   public VerifyUserIdentity = (data: MutationVerifyUserIdentityArgs) => {
     const requestData = `
@@ -112,12 +150,12 @@ export default class UserApi extends BaseApiService {
         id_country: $id_country
       )
     }
-  `
+  `;
 
     const response: Promise<OperationResult<{ VerifyUserIdentity: boolean }>> =
-      this.mutation(requestData, data)
+      this.mutation(requestData, data);
 
-    return response
-  }
+    return response;
+  };
   // #endregion MUTATIONS
 }

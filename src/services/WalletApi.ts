@@ -95,6 +95,7 @@ export default class WalletsApi extends BaseApiService {
             charge_id
             chargeable_type
             created_at
+            updated_at
             currency
             description
             dr_or_cr
@@ -163,6 +164,7 @@ export default class WalletsApi extends BaseApiService {
             wallet_balance
             uuid
             created_at
+            updated_at
           }
         }
       }
@@ -349,10 +351,10 @@ export default class WalletsApi extends BaseApiService {
     return response
   }
 
-  public GetWithdrawInfo = (amount: number, currency: string) => {
+  public GetWithdrawInfo = (amount: number, currency: string, country_code: string) => {
     const requestData = `
-      query GetWithdrawInfo($amount: Float!, $currency: String!) {
-        GetWithdrawInfo(amount: $amount, currency: $currency) {
+      query GetWithdrawInfo($amount: Float!, $currency: String!, $country_code: String) {
+        GetWithdrawInfo(amount: $amount, currency: $currency, country_code: $country_code) {
           currency
           methods {
             name
@@ -373,6 +375,7 @@ export default class WalletsApi extends BaseApiService {
     > = this.query(requestData, {
       amount,
       currency,
+      country_code
     })
 
     return response
@@ -423,6 +426,36 @@ export default class WalletsApi extends BaseApiService {
     const response: Promise<
       OperationResult<{
         GetOnRampChannelsByCountryCode: PaymentChannel[]
+      }>
+    > = this.query(requestData, { countryCode })
+
+    return response
+  }
+
+  public GetOffRampChannelsByCountryCode = (countryCode: string) => {
+    const requestData = `
+      query GetOffRampChannelsByCountryCode($countryCode: String!) {
+        GetOffRampChannelsByCountryCode(country_code: $countryCode) {
+           id
+           max
+           currency
+           countryCurrency
+           country
+           status
+           feeLocal
+           feeUSD
+           min
+           channelType
+           apiStatus
+           vendorId
+           rampType
+        }
+      }
+    `
+
+    const response: Promise<
+      OperationResult<{
+        GetOffRampChannelsByCountryCode: PaymentChannel[]
       }>
     > = this.query(requestData, { countryCode })
 
@@ -580,11 +613,13 @@ export default class WalletsApi extends BaseApiService {
       $receiver_uuid: String!,
       $amount: Float!,
       $currency: String!
+      $business_uuid: String
     ) {
       MakePayment(
         receiver_uuid: $receiver_uuid,
         amount: $amount,
-        currency: $currency
+        currency: $currency,
+        business_uuid: $business_uuid
       )
     }
   `
@@ -670,6 +705,24 @@ export default class WalletsApi extends BaseApiService {
 
     const response: Promise<OperationResult<{ MonitorTopupStatus: boolean }>> =
       this.mutation(requestData, data)
+
+    return response
+  }
+
+  public VerifyFlutterwaveTransaction = (reference: string) => {
+    const requestData = `
+        mutation VerifyFlutterwaveTransaction($reference: String!) {
+          VerifyFlutterwaveTransaction(reference: $reference)
+        }
+      `
+
+    const response: Promise<
+      OperationResult<{
+        VerifyFlutterwaveTransaction: boolean
+      }>
+    > = this.mutation(requestData, {
+      reference,
+    })
 
     return response
   }

@@ -232,11 +232,12 @@ export class BaseApiService {
     }
 
     if (err.graphQLErrors) {
-      if (err.graphQLErrors[0].message == "Unauthenticated.") {
+      if (err.graphQLErrors[0].message == "Unauthenticated." || err.graphQLErrors[0].message == "Authentication failed") {
         Logic.Common.hideLoader()
         // clear this.Storage
         //   Logic.Auth.Storage.clear()
         localStorage.clear()
+        window.location.href = '/auth/login'
 
         //   if (Logic.Common.currentBuildType() == 'web') {
         // 	window.location.href = '/auth/login'

@@ -1,5 +1,5 @@
-import { BaseApiService } from "./common/BaseService"
-import { OperationResult } from "urql"
+import { BaseApiService } from "./common/BaseService";
+import { OperationResult } from "urql";
 import {
   MutationSignUpArgs,
   MutationSignInArgs,
@@ -11,14 +11,15 @@ import {
   MutationVerifyUserIdentityArgs,
   AuthResponse,
   User,
-} from "../gql/graphql"
+} from "../gql/graphql";
 
 export default class AuthApi extends BaseApiService {
   // #region QUERIES
   public GetAuthUser = () => {
     const requestData = `
         query GetAuthUser {
-          GetAuthUser {  
+          GetAuthUser {
+           id
             uuid
             first_name
             last_name
@@ -27,10 +28,12 @@ export default class AuthApi extends BaseApiService {
             email_verified_at
             phone_verified_at
             username
+            transaction_pin
             profile {
               profile_picture
               verification_status
               default_currency
+              country_code
                customer {
                 city
                 country
@@ -45,7 +48,8 @@ export default class AuthApi extends BaseApiService {
               }
             }
             wallet {
-              currency 
+            uuid
+              currency
               credited_point_amount
               credited_amount
               created_at
@@ -60,16 +64,16 @@ export default class AuthApi extends BaseApiService {
             }
           }
         }
-      `
+      `;
 
     const response: Promise<
       OperationResult<{
-        GetAuthUser: User
+        GetAuthUser: User;
       }>
-    > = this.query(requestData, {})
+    > = this.query(requestData, {});
 
-    return response
-  }
+    return response;
+  };
   //
 
   // #region MUTATIONS
@@ -83,7 +87,9 @@ export default class AuthApi extends BaseApiService {
       $state: String!,
       $country: String!,
       $default_currency: String!,
+      $country_code: String!,
       $profile_picture: Upload
+      $sso_id: String
     ) {
       SignUp(
         first_name: $first_name,
@@ -93,7 +99,9 @@ export default class AuthApi extends BaseApiService {
         state: $state,
         country: $country,
         default_currency: $default_currency,
-        profile_picture: $profile_picture
+        country_code: $country_code,
+        profile_picture: $profile_picture,
+        sso_id: $sso_id
       ) { 
         id
         uuid
@@ -101,93 +109,102 @@ export default class AuthApi extends BaseApiService {
         last_name
         username
         email
-        phone  
+        phone
         status
+        email_verified_at
         profile {
           auth_user_id
           user_type
           profile_picture
-          verification_status  
+          verification_status
           updated_at
           default_currency
+          country_code
           created_at
-        } 
+        }
         created_at
         updated_at
       }
     }
-  `
+  `;
 
     const response: Promise<OperationResult<{ SignUp: User }>> = this.mutation(
       requestData,
       data
-    )
+    );
 
-    return response
-  }
+    return response;
+  };
 
   public SignIn = (data: MutationSignInArgs) => {
     const requestData = `
     mutation SignIn(
       $email: String!,
-      $password: String!
+      $password: String,
+      $sso_id: String
     ) {
       SignIn(
         email: $email,
-        password: $password
-      ) { 
+        password: $password,
+        sso_id: $sso_id
+      ) {
         token
-        user {  
+        user {
           uuid
           first_name
           last_name
           username
           email
-          phone  
+          phone
           status
+          email_verified_at
           profile {
             auth_user_id
             user_type
             profile_picture
-            verification_status  
+            verification_status
             updated_at
             default_currency
+            country_code
             created_at
-          } 
+          }
           created_at
           updated_at
         }
       }
     }
-  `
+  `;
 
     const response: Promise<OperationResult<{ SignIn: AuthResponse }>> =
-      this.mutation(requestData, data)
+      this.mutation(requestData, data);
 
-    return response
-  }
+    return response;
+  };
 
   public ResendEmailOTP = (data: MutationResendEmailOtpArgs) => {
     const requestData = `
     mutation ResendEmailOTP($email: String!) {
       ResendEmailOTP(email: $email)
     }
-  `
+  `;
     const response: Promise<OperationResult<{ ResendEmailOTP: boolean }>> =
-      this.mutation(requestData, data)
+      this.mutation(requestData, data);
 
-    return response
-  }
+    return response;
+  };
 
-  public sendResetPasswordOTP = (data: MutationSendResetPasswordOtpArgs) => {
+  public SendResetPasswordOTP = (data: MutationSendResetPasswordOtpArgs) => {
     const requestData = `
-      mutation sendResetPasswordOTP($email: String!) {
-        sendResetPasswordOTP(email: $email)
+      mutation SendResetPasswordOTP($email: String!) {
+        SendResetPasswordOTP(email: $email)
       }
     `
+    console.log(
+      "helloe"
+    )
 
     const response: Promise<
-      OperationResult<{ sendResetPasswordOTP: boolean }>
+      OperationResult<{ SendResetPasswordOTP: string }>
     > = this.mutation(requestData, data)
     return response
   }
@@ -205,13 +222,13 @@ export default class AuthApi extends BaseApiService {
           new_password: $new_password
         )
       }
-    `
+    `;
 
     const response: Promise<OperationResult<{ ResetPassword: boolean }>> =
-      this.mutation(requestData, data)
+      this.mutation(requestData, data);
 
-    return response
-  }
+    return response;
+  };
 
   public VerifyUserIdentity = (data: MutationVerifyUserIdentityArgs) => {
     const requestData = `
@@ -259,13 +276,13 @@ export default class AuthApi extends BaseApiService {
           otp: $otp
         )
       }
-    `
+    `;
 
     const response: Promise<OperationResult<{ VerifyUserOTP: boolean }>> =
-      this.mutation(requestData, data)
+      this.mutation(requestData, data);
 
-    return response
-  }
+    return response;
+  };
 
   public UpdatePassword = (data: MutationUpdatePasswordArgs) => {
     const requestData = `
@@ -278,13 +295,13 @@ export default class AuthApi extends BaseApiService {
           new_password: $new_password
         )
       }
-    `
+    `;
 
     const response: Promise<OperationResult<{ UpdatePassword: boolean }>> =
-      this.mutation(requestData, data)
+      this.mutation(requestData, data);
 
-    return response
-  }
+    return response;
+  };
 
   public DeleteUser = () => {
     const requestData = `
@@ -304,12 +321,12 @@ export default class AuthApi extends BaseApiService {
     mutation SignOut {
        SignOut
     }
-  `
+  `;
 
     const response: Promise<OperationResult<{ SignOut: boolean }>> =
-      this.mutation(requestData, {})
+      this.mutation(requestData, {});
 
-    return response
-  }
+    return response;
+  };
   // #endregion MUTATIONS
 }
