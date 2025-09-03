@@ -10,6 +10,7 @@ import TicketApi from "./TicketApi"
 import TransactionApi from "./TransactionApi"
 import UserApi from "./UserApi"
 import WalletApi from "./WalletApi"
+import ConstantApi from "./ConstantApi"
 
 export const $api = {
   auth: new AuthApi(),
@@ -24,4 +25,5 @@ export const $api = {
   transaction: new TransactionApi(),
   user: new UserApi(),
   wallet: new WalletApi(),
+  constant: new ConstantApi(),
 }
