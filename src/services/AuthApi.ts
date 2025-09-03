@@ -227,24 +227,16 @@ export default class AuthApi extends BaseApiService {
     return response
   }
 
-  // $phone_number: String!
-  // $address: String!
-  // $additional_ids: [AdditionalIdInput!]
-  // $checks: VerifyChecksInput!
-
-  // phone_number: $phone_number
-  // address: $address
-  // additional_ids: $additional_ids
-  // checks: $checks
   public VerifyUserIdentity = (data: MutationVerifyUserIdentityArgs) => {
     const requestData = `
     mutation VerifyUserIdentity(
       $full_name: String! 
       $id_country: String!
       $id_type: String!
-      $id_number: String!
-      $date_of_birth: String!
-       $checks: VerifyChecksInput!
+      $id_number: String
+      $date_of_birth: String! 
+       $checks: VerifyChecksInput! 
+       $image_links: ImageLinksInput! 
     ) {
       VerifyUserIdentity(
         full_name: $full_name 
@@ -253,6 +245,7 @@ export default class AuthApi extends BaseApiService {
         id_number: $id_number
         date_of_birth: $date_of_birth 
          checks: $checks
+         image_links: $image_links
       )
     }
   `
