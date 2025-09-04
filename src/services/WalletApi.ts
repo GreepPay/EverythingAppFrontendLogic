@@ -351,7 +351,11 @@ export default class WalletsApi extends BaseApiService {
     return response
   }
 
-  public GetWithdrawInfo = (amount: number, currency: string, country_code: string) => {
+  public GetWithdrawInfo = (
+    amount: number,
+    currency: string,
+    country_code: string
+  ) => {
     const requestData = `
       query GetWithdrawInfo($amount: Float!, $currency: String!, $country_code: String) {
         GetWithdrawInfo(amount: $amount, currency: $currency, country_code: $country_code) {
@@ -375,7 +379,7 @@ export default class WalletsApi extends BaseApiService {
     > = this.query(requestData, {
       amount,
       currency,
-      country_code
+      country_code,
     })
 
     return response
@@ -863,6 +867,22 @@ export default class WalletsApi extends BaseApiService {
         InitiateWithdrawal: OffRamp
       }>
     > = this.mutation(requestData, data)
+
+    return response
+  }
+
+  public UploadFile = (file: File) => {
+    const requestData = `
+      mutation UploadFile($file: Upload!) {
+        UploadFile(file: $file)
+      }
+    `
+
+    const response: Promise<
+      OperationResult<{
+        UploadFile: string
+      }>
+    > = this.mutation(requestData, { file })
 
     return response
   }
