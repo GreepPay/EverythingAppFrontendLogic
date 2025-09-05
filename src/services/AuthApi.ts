@@ -229,26 +229,38 @@ export default class AuthApi extends BaseApiService {
 
   public VerifyUserIdentity = (data: MutationVerifyUserIdentityArgs) => {
     const requestData = `
-    mutation VerifyUserIdentity(
-      $full_name: String! 
-      $id_country: String!
-      $id_type: String!
-      $id_number: String
-      $date_of_birth: String! 
-       $checks: VerifyChecksInput! 
-       $image_links: ImageLinksInput! 
-    ) {
-      VerifyUserIdentity(
-        full_name: $full_name 
-        id_country: $id_country
-        id_type: $id_type
-        id_number: $id_number
-        date_of_birth: $date_of_birth 
-         checks: $checks
-         image_links: $image_links
-      )
-    }
-  `
+      mutation VerifyUserIdentity(
+        $user_uuid: String
+        $id_type: String!
+        $id_number: String
+        $id_country: String!
+        $full_name: String!
+        $phone_number: String
+        $email: String
+        $date_of_birth: String!
+        $address: String
+        $additional_ids: [AdditionalIdInput!]
+        $checks: VerifyChecksInput!
+        $provider: String
+        $image_links: ImageLinksInput
+      ) {
+        VerifyUserIdentity(
+          user_uuid: $user_uuid
+          id_type: $id_type
+          id_number: $id_number
+          id_country: $id_country
+          full_name: $full_name
+          phone_number: $phone_number
+          email: $email
+          date_of_birth: $date_of_birth
+          address: $address
+          additional_ids: $additional_ids
+          checks: $checks
+          provider: $provider
+          image_links: $image_links
+        )
+      }
+    `
 
     const response: Promise<OperationResult<{ VerifyUserIdentity: boolean }>> =
       this.mutation(requestData, data)

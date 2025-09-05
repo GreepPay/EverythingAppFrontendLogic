@@ -40,6 +40,12 @@ export type Account = {
   uuid: Scalars['String'];
 };
 
+export type AddParticipantInput = {
+  added_by: Scalars['Int'];
+  conversation_id: Scalars['Int'];
+  user_id: Scalars['Int'];
+};
+
 export type AdditionalIdInput = {
   image_links?: InputMaybe<ImageLinksInput>;
   number?: InputMaybe<Scalars['String']>;
@@ -205,6 +211,13 @@ export type Conversation = {
   type: Scalars['String'];
   /** Conversation Updated At */
   updated_at: Scalars['DateTime'];
+};
+
+export type ConversationInput = {
+  entity_type: Scalars['String'];
+  entity_uuid: Scalars['String'];
+  extras?: InputMaybe<Scalars['String']>;
+  name: Scalars['String'];
 };
 
 export type Coordinates = {
@@ -525,6 +538,15 @@ export type Message = {
   uuid: Scalars['String'];
 };
 
+export type MessageInput = {
+  content: Scalars['String'];
+  conversation_id: Scalars['Int'];
+  metadata?: InputMaybe<Scalars['String']>;
+  replied_message_id?: InputMaybe<Scalars['Int']>;
+  sender_id: Scalars['Int'];
+  type: Scalars['String'];
+};
+
 export type MethodsAvailable = {
   __typename?: 'MethodsAvailable';
   IMAGE?: Maybe<Scalars['Boolean']>;
@@ -535,13 +557,19 @@ export type Mutation = {
   __typename?: 'Mutation';
   /** Add a user as a beneficiary */
   AddAsBeneficiary: Beneficiary;
+  /** Add a participant to a conversation */
+  AddParticipant: Conversation;
   /** Confirm withdrawal */
   ConfirmWithdrawal?: Maybe<OffRamp>;
+  /** Create a message */
+  CreateMessage: Message;
   CreateOrder?: Maybe<Order>;
   /** Create a saved account */
   CreateSavedAccount: UserBank;
   /** Delete User */
   DeleteUser: Scalars['Boolean'];
+  /** Initiate Conversasion */
+  InitiateConversation: Conversation;
   /** Initiate Flutterwave top-up process */
   InitiateFlutterwaveTopup: FlutterwaveTopupResponse;
   /** Initiate a top-up transaction */
@@ -574,10 +602,14 @@ export type Mutation = {
   SignOut: Scalars['Boolean'];
   /** Sign up a new user */
   SignUp: User;
+  /** Soft delete message */
+  SoftDeleteMessage: Scalars['Boolean'];
   /** Update user password */
   UpdatePassword: Scalars['Boolean'];
   /** Update a user's profile with detailed information */
   UpdateProfile: Scalars['Boolean'];
+  /** Upload any file and get the URL */
+  UploadFile: Scalars['String'];
   /** Verify Flutterwave transaction */
   VerifyFlutterwaveTransaction: Scalars['Boolean'];
   /** Verify user identity with optional checks and provider selection */
@@ -593,11 +625,21 @@ export type MutationAddAsBeneficiaryArgs = {
 };
 
 
+export type MutationAddParticipantArgs = {
+  input: AddParticipantInput;
+};
+
+
 export type MutationConfirmWithdrawalArgs = {
   amount: Scalars['Float'];
   currency: Scalars['String'];
   metadata?: InputMaybe<Scalars['String']>;
   uuid: Scalars['String'];
+};
+
+
+export type MutationCreateMessageArgs = {
+  input: MessageInput;
 };
 
 
@@ -611,6 +653,11 @@ export type MutationCreateSavedAccountArgs = {
   type: Scalars['String'];
   unique_id: Scalars['String'];
   uploads?: InputMaybe<Array<Scalars['Upload']>>;
+};
+
+
+export type MutationInitiateConversationArgs = {
+  input: ConversationInput;
 };
 
 
@@ -724,6 +771,11 @@ export type MutationSignUpArgs = {
 };
 
 
+export type MutationSoftDeleteMessageArgs = {
+  message_id: Scalars['Int'];
+};
+
+
 export type MutationUpdatePasswordArgs = {
   current_password: Scalars['String'];
   new_password: Scalars['String'];
@@ -739,6 +791,11 @@ export type MutationUpdateProfileArgs = {
   last_name?: InputMaybe<Scalars['String']>;
   profile_photo?: InputMaybe<Scalars['Upload']>;
   state?: InputMaybe<Scalars['String']>;
+};
+
+
+export type MutationUploadFileArgs = {
+  file: Scalars['Upload'];
 };
 
 
@@ -1357,6 +1414,8 @@ export type Query = {
   /** Get a paginated list of beneficiaries for the authenticated user */
   GetBeneficiaries: BeneficiaryPaginator;
   GetCategories: CategoryPaginator;
+  /** Get a conversation */
+  GetConversation?: Maybe<Conversation>;
   /** Get country information for verification */
   GetCountryInformation: CountryInformation;
   GetDeliveries: DeliveryPaginator;
@@ -1426,6 +1485,11 @@ export type QueryGetCategoriesArgs = {
   first: Scalars['Int'];
   orderBy?: InputMaybe<Array<QueryGetCategoriesOrderByOrderByClause>>;
   page?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type QueryGetConversationArgs = {
+  uuid: Scalars['String'];
 };
 
 
