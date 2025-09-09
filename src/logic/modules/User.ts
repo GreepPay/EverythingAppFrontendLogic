@@ -1,4 +1,8 @@
-import { MutationUpdateProfileArgs, User as UserModel } from "../../gql/graphql"
+import {
+  MutationUpdateProfileArgs,
+  User as UserModel,
+  Business as BusinessModel,
+} from "../../gql/graphql"
 import { $api } from "../../services"
 import Common from "./Common"
 import { CombinedError } from "urql"
@@ -12,6 +16,7 @@ export default class User extends Common {
   // Base variables
   public SearchedUsers: UserModel[] | undefined
   public SingleUser: UserModel | undefined
+  public SearchedBusinesses: BusinessModel[] | undefined
 
   //
   public UpdateProfileForm: MutationUpdateProfileArgs | undefined
@@ -25,6 +30,16 @@ export default class User extends Common {
       .then((response) => {
         this.SearchedUsers = response.data?.SearchUsers
         return response.data?.SearchUsers
+      })
+  }
+  public SearchForBusinesses = async (query: string) => {
+    return $api.user
+      .SearchBusinesses({
+        query,
+      })
+      .then((response) => {
+        this.SearchedBusinesses = response.data?.SearchBusinesses
+        return response.data?.SearchBusinesses
       })
   }
 
