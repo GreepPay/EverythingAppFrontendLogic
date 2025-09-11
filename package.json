@@ -51,6 +51,8 @@
     "crypto-js": "^4.2.0",
     "currency.js": "^2.0.4",
     "graphql": "^16.6.0",
+    "laravel-echo": "^1.19.0",
+    "pusher-js": "^7.6.0",
     "moment": "^2.29.4",
     "urql": "^4.0.5",
     "vue-router": "^4.0.12",

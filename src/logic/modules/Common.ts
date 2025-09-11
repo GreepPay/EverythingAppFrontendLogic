@@ -13,6 +13,20 @@ import { AlertSetup, FetchRule, LoaderSetup, ModalSetup } from "../types/common"
 import CryptoJS from "crypto-js"
 import { Haptics, ImpactStyle } from "@capacitor/haptics"
 import { Observable } from "./Observable"
+import Echo from "laravel-echo"
+
+
+import Pusher from "pusher-js"
+// @ts-ignore
+window.Pusher = Pusher
+
+export interface WebSocketConfig {
+  pusherKey: string;
+  pusherHost: string;
+  pusherPort: string;
+  pusherCluster: string;
+  socketAuthUrl: string;
+}
 
 export default class Common {
   public router: Router | undefined = undefined
@@ -21,6 +35,8 @@ export default class Common {
   private _observables = new Map<string, Observable<any>>()
 
   public apiUrl: string | undefined = undefined
+
+  public laravelEcho: Echo<any> | undefined
 
   public watchInterval: number | undefined = undefined
 
@@ -72,8 +88,6 @@ export default class Common {
   }
 
   public GoToRoute = (path: string) => {
- 
-    
     this.router?.push(path)
   }
 
@@ -315,6 +329,48 @@ export default class Common {
     watchAction()
   }
 
+  public copytext = (text: string) => {
+    const el = document.createElement("textarea")
+    el.value = text
+    el.setAttribute("readonly", "")
+    el.style.position = "absolute"
+    el.style.left = "-9999px"
+    document.body.appendChild(el)
+    el.select()
+    document.execCommand("copy")
+    document.body.removeChild(el)
+    this.showAlert({
+      show: true,
+      message: "Copied to clipboard",
+      type: "success",
+    })
+  }
+
+  public initiateWebSocket = (config: WebSocketConfig) => {
+    try {
+      if (!this.laravelEcho) {
+        this.laravelEcho = new Echo({
+          broadcaster: "pusher",
+          key: config.pusherKey,
+          cluster: config.pusherCluster || "mt1",
+          encrypted: true,
+          forceTLS: true,
+          disableStats: true,
+          wsPort: config.pusherPort || "6001",
+          wsHost: config.pusherHost,
+          auth: {
+            headers: {
+              authorization: `Bearer ${Logic.Auth.AccessToken}`,
+            },
+          },
+          authEndpoint: `${config.socketAuthUrl}/broadcasting/auth`,
+        })
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   public stopWatchAction = () => {
     if (this.watchInterval != undefined) {
       window.cancelAnimationFrame(this.watchInterval)
@@ -493,7 +549,6 @@ export default class Common {
 
                 // update userid
                 rule.params.forEach((param) => {
-                 
                   if (typeof param === "object") {
                     if (param.where) {
                       param.where.forEach((item: any) => {
