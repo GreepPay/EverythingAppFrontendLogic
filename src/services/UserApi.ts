@@ -5,6 +5,8 @@ import {
   User,
   QuerySearchUsersArgs,
   MutationVerifyUserIdentityArgs,
+  QuerySearchBusinessesArgs,
+  Business,
 } from "../gql/graphql"
 
 export default class UserApi extends BaseApiService {
@@ -65,6 +67,31 @@ export default class UserApi extends BaseApiService {
 
     return response
   }
+
+  public SearchBusinesses = (data: QuerySearchBusinessesArgs) => {
+    const requestData = `
+      query SearchBusinesses($query: String!) {
+        SearchBusinesses(query: $query) { 
+          logo
+          business_name
+          description
+          default_currency
+          user {
+            uuid
+          }
+        }
+      }
+    `
+
+    const response: Promise<
+      OperationResult<{
+        SearchBusinesses: Business[]
+      }>
+    > = this.query(requestData, data)
+
+    return response
+  }
+
   // #endregion QUERIES
 
   // #region MUTATIONS

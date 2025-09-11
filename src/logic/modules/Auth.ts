@@ -18,12 +18,12 @@ export default class AuthModule extends Common {
   constructor() {
     super()
     this.setDefaultAuth()
-   
   }
 
   // Base variables
   public AccessToken: string | null = null
   public AuthUser: User | undefined = undefined
+  public hasConnection: boolean = false
 
   // mutation payloads
   public SignUpPayload: MutationSignUpArgs | undefined
@@ -55,11 +55,47 @@ export default class AuthModule extends Common {
   }
 
   public GetAuthUser = async (): Promise<User | undefined> => {
-    return $api.auth.GetAuthUser().then((response) => {
-      this.AuthUser = response.data?.GetAuthUser
-      localStorage.setItem("auth_user", JSON.stringify(this.AuthUser))
-      return this.AuthUser
-    })
+    return $api.auth
+      .GetAuthUser()
+      .then((response) => {
+        this.AuthUser = response.data?.GetAuthUser
+        localStorage.setItem("auth_user", JSON.stringify(this.AuthUser))
+        this.connectSocketChannels()
+        return this.AuthUser
+      })
+      .catch((error: CombinedError) => {
+        Logic.Common.showError(error, "Oops!", "error-alert")
+        Logic.Auth.SignOut()
+        throw error
+      })
+  }
+
+  private connectSocketChannels = () => {
+    if (!Logic.Common.laravelEcho) {
+      Logic.Common.initiateWebSocket({
+        pusherKey: import.meta.env.VITE_PUSHER_APP_KEY,
+        pusherHost: import.meta.env.VITE_PUSHER_HOST,
+        pusherPort: import.meta.env.VITE_PUSHER_PORT,
+        pusherCluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
+        socketAuthUrl: import.meta.env.VITE_SOCKET_AUTH_URL,
+      })
+    }
+
+    if (Logic.Common.laravelEcho && !this.hasConnection) {
+      Logic.Common.laravelEcho
+        .private(`user.${Logic.Auth.AuthUser?.id}`)
+        .subscribed(() => (this.hasConnection = true))
+        .cancelled(() => (this.hasConnection = false))
+        .listen(
+          ".transaction.created",
+          (data: { status: string } & { [key: string]: any }) => {
+            if (data.status === "success") {
+              Logic.Auth.GetAuthUser()
+              Logic.Wallet.GetGlobalExchangeRate()
+            }
+          }
+        )
+    }
   }
 
   // Mutations
@@ -122,9 +158,12 @@ export default class AuthModule extends Common {
       .SendResetPasswordOTP(data)
       .then((response) => {
         if (response.data?.SendResetPasswordOTP) {
-        let  uuid =localStorage.setItem("reset_password_uuid", response.data.SendResetPasswordOTP);
-        console.log(uuid)
-        return response.data.SendResetPasswordOTP;
+          let uuid = localStorage.setItem(
+            "reset_password_uuid",
+            response.data.SendResetPasswordOTP
+          )
+          console.log(uuid)
+          return response.data.SendResetPasswordOTP
         }
       })
       .catch((error: CombinedError) => {
@@ -219,6 +258,9 @@ export default class AuthModule extends Common {
         Logic.Common.GoToRoute("/auth/login")
       })
       .catch((error) => {
+        localStorage.clear()
+        Logic.Common.hideLoader()
+        Logic.Common.GoToRoute("/auth/login")
         Logic.Common.showError(error, "Oops!", "error-alert")
       })
   }
