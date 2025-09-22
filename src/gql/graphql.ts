@@ -76,15 +76,6 @@ export type AuthorizationInput = {
   type: Scalars['String'];
 };
 
-<<<<<<< HEAD
-=======
-export type BankAccountNameResponse = {
-  __typename?: 'BankAccountNameResponse';
-  account_name: Scalars['String'];
-  account_number: Scalars['String'];
-};
-
->>>>>>> 0a3cf2e0943fc10ece297cc99cd2ba370f74a825
 export type BankInfo = {
   __typename?: 'BankInfo';
   accountName: Scalars['String'];
@@ -410,27 +401,6 @@ export type FinancialSummaryResponse = {
   debit: Scalars['Float'];
 };
 
-<<<<<<< HEAD
-=======
-export type FlutterwaveBank = {
-  __typename?: 'FlutterwaveBank';
-  code: Scalars['String'];
-  id: Scalars['Int'];
-  name: Scalars['String'];
-  provider_type?: Maybe<Scalars['String']>;
-};
-
-export type FlutterwaveBankBranch = {
-  __typename?: 'FlutterwaveBankBranch';
-  bank_id: Scalars['Int'];
-  bic: Scalars['String'];
-  branch_code: Scalars['String'];
-  branch_name: Scalars['String'];
-  id: Scalars['Int'];
-  swift_code: Scalars['String'];
-};
-
->>>>>>> 0a3cf2e0943fc10ece297cc99cd2ba370f74a825
 /** Flutterwave charge */
 export type FlutterwaveCharge = {
   __typename?: 'FlutterwaveCharge';
@@ -569,7 +539,10 @@ export type Message = {
 };
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 616c143e082bd0adb49d8607b889f18a2289ab56
 export type MessageInput = {
   content: Scalars['String'];
   conversation_id: Scalars['Int'];
@@ -579,7 +552,10 @@ export type MessageInput = {
   type: Scalars['String'];
 };
 
+<<<<<<< HEAD
 >>>>>>> 0a3cf2e0943fc10ece297cc99cd2ba370f74a825
+=======
+>>>>>>> 616c143e082bd0adb49d8607b889f18a2289ab56
 export type MethodsAvailable = {
   __typename?: 'MethodsAvailable';
   IMAGE?: Maybe<Scalars['Boolean']>;
@@ -602,10 +578,15 @@ export type Mutation = {
   /** Delete User */
   DeleteUser: Scalars['Boolean'];
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
   /** Initiate Conversasion */
   InitiateConversation: Conversation;
 >>>>>>> 0a3cf2e0943fc10ece297cc99cd2ba370f74a825
+=======
+  /** Initiate Conversasion */
+  InitiateConversation: Conversation;
+>>>>>>> 616c143e082bd0adb49d8607b889f18a2289ab56
   /** Initiate Flutterwave top-up process */
   InitiateFlutterwaveTopup: FlutterwaveTopupResponse;
   /** Initiate a top-up transaction */
@@ -647,10 +628,15 @@ export type Mutation = {
   /** Update a user's profile with detailed information */
   UpdateProfile: Scalars['Boolean'];
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
   /** Upload any file and get the URL */
   UploadFile: Scalars['String'];
 >>>>>>> 0a3cf2e0943fc10ece297cc99cd2ba370f74a825
+=======
+  /** Upload any file and get the URL */
+  UploadFile: Scalars['String'];
+>>>>>>> 616c143e082bd0adb49d8607b889f18a2289ab56
   /** Verify Flutterwave transaction */
   VerifyFlutterwaveTransaction: Scalars['Boolean'];
   /** Verify user identity with optional checks and provider selection */
@@ -699,13 +685,19 @@ export type MutationCreateSavedAccountArgs = {
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 616c143e082bd0adb49d8607b889f18a2289ab56
 export type MutationInitiateConversationArgs = {
   input: ConversationInput;
 };
 
 
+<<<<<<< HEAD
 >>>>>>> 0a3cf2e0943fc10ece297cc99cd2ba370f74a825
+=======
+>>>>>>> 616c143e082bd0adb49d8607b889f18a2289ab56
 export type MutationInitiateFlutterwaveTopupArgs = {
   address?: InputMaybe<AddressInput>;
   amount: Scalars['Float'];
@@ -845,13 +837,19 @@ export type MutationUpdateProfileArgs = {
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 616c143e082bd0adb49d8607b889f18a2289ab56
 export type MutationUploadFileArgs = {
   file: Scalars['Upload'];
 };
 
 
+<<<<<<< HEAD
 >>>>>>> 0a3cf2e0943fc10ece297cc99cd2ba370f74a825
+=======
+>>>>>>> 616c143e082bd0adb49d8607b889f18a2289ab56
 export type MutationVerifyFlutterwaveTransactionArgs = {
   reference: Scalars['String'];
 };
@@ -1472,10 +1470,15 @@ export type Query = {
   GetBeneficiaries: BeneficiaryPaginator;
   GetCategories: CategoryPaginator;
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
   /** Get a conversation */
   GetConversation?: Maybe<Conversation>;
 >>>>>>> 0a3cf2e0943fc10ece297cc99cd2ba370f74a825
+=======
+  /** Get a conversation */
+  GetConversation?: Maybe<Conversation>;
+>>>>>>> 616c143e082bd0adb49d8607b889f18a2289ab56
   /** Get country information for verification */
   GetCountryInformation: CountryInformation;
   GetDeliveries: DeliveryPaginator;
@@ -1563,13 +1566,19 @@ export type QueryGetCategoriesArgs = {
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 616c143e082bd0adb49d8607b889f18a2289ab56
 export type QueryGetConversationArgs = {
   uuid: Scalars['String'];
 };
 
 
+<<<<<<< HEAD
 >>>>>>> 0a3cf2e0943fc10ece297cc99cd2ba370f74a825
+=======
+>>>>>>> 616c143e082bd0adb49d8607b889f18a2289ab56
 export type QueryGetCountryInformationArgs = {
   country_code: Scalars['String'];
 };
