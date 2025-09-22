@@ -1,7 +1,6 @@
 import {
   MutationSavePushNotificationTokenArgs,
   NotificationPaginator,
-  QueryGetNotificationsArgs,
   MutationMarkNotificationsAsReadArgs,
 } from "src/gql/graphql"
 import { OperationResult } from "urql"
@@ -9,41 +8,60 @@ import { BaseApiService } from "./common/BaseService"
 
 export default class NotificationApi extends BaseApiService {
   // #region QUERIES
-  public GetNotifications = (type: string, first: number, page: number) => {
+  public GetNotifications = (
+    page: number,
+    count: number,
+    orderType = "CREATED_AT",
+    order: "ASC" | "DESC" = "DESC",
+    whereQuery = ""
+  ) => {
     const requestData = `
-      query GetNotifications($type: String!, $first: Int!, $page: Int ) {
-        GetNotifications(  type: $type, first: $first, page: $page) {
-          paginatorInfo {
-            count
-            currentPage
-            firstItem
-            hasMorePages
-            lastItem
-            lastPage
-            perPage
-            total
-          }
-          data {
-            id
-            auth_user_id
-            type
-            title
-            content
-            email
-            is_read
-            delivery_status
-            created_at
-            updated_at
-          }
+    query GetNotifications(
+      $page: Int!,
+      $count: Int! 
+    ) {
+      GetNotifications( 
+        first: $count,
+        page: $page,
+        orderBy: {
+          column: ${orderType ? orderType : "CREATED_AT"},
+          order: ${order}
+        }
+        ${whereQuery ? `where: ${whereQuery}` : ""}
+        ) {
+        paginatorInfo {
+          count
+          currentPage
+          firstItem
+          hasMorePages
+          lastItem
+          lastPage
+          perPage
+          total
+        }
+        data {
+          id
+          type
+          category
+          title
+          content
+          is_read
+          delivery_status
+          created_at
+          updated_at
         }
       }
-		`
+    }
+  `
 
     const response: Promise<
       OperationResult<{
         GetNotifications: NotificationPaginator
       }>
-    > = this.query(requestData, { type, first, page })
+    > = this.query(requestData, {
+      page,
+      count,
+    })
 
     return response
   }

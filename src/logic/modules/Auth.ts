@@ -26,6 +26,7 @@ export default class AuthModule extends Common {
   // Base variables
   public AccessToken: string | null = null
   public AuthUser: User | undefined = undefined
+  public hasConnection: boolean = false
 
   // mutation payloads
   public SignUpPayload: MutationSignUpArgs | undefined
@@ -52,17 +53,18 @@ export default class AuthModule extends Common {
       }
     }
   }
+
   private setDefaultAuth = () => {
     this.AccessToken = localStorage.getItem("access_token")
     const auth_user = localStorage.getItem("auth_user")
     this.AuthUser = auth_user ? JSON.parse(auth_user || "{}") : undefined
   }
-
   public GetAuthUser = async (): Promise<User | undefined> => {
     return $api.auth
       .GetAuthUser()
       .then((response) => {
         this.AuthUser = response.data?.GetAuthUser
+
         if (this.AuthUser) {
           localStorage.setItem("auth_user", JSON.stringify(this.AuthUser))
         }
@@ -73,12 +75,44 @@ export default class AuthModule extends Common {
             this.AuthUser.profile.default_currency
           )
         }
+
+        this.connectSocketChannels()
+
         return this.AuthUser
       })
       .catch((error: CombinedError) => {
         Logic.Common.showError(error, "Oops!", "error-alert")
-        throw new Error(error.message)
+        Logic.Auth.SignOut()
+        throw error
       })
+  }
+
+  private connectSocketChannels = () => {
+    if (!Logic.Common.laravelEcho) {
+      Logic.Common.initiateWebSocket({
+        pusherKey: import.meta.env.VITE_PUSHER_APP_KEY,
+        pusherHost: import.meta.env.VITE_PUSHER_HOST,
+        pusherPort: import.meta.env.VITE_PUSHER_PORT,
+        pusherCluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
+        socketAuthUrl: import.meta.env.VITE_SOCKET_AUTH_URL,
+      })
+    }
+
+    if (Logic.Common.laravelEcho && !this.hasConnection) {
+      Logic.Common.laravelEcho
+        .private(`user.${Logic.Auth.AuthUser?.id}`)
+        .subscribed(() => (this.hasConnection = true))
+        .cancelled(() => (this.hasConnection = false))
+        .listen(
+          ".transaction.created",
+          (data: { status: string } & { [key: string]: any }) => {
+            if (data.status === "success") {
+              Logic.Auth.GetAuthUser()
+              Logic.Wallet.GetGlobalExchangeRate()
+            }
+          }
+        )
+    }
   }
 
   // Mutations
@@ -243,6 +277,9 @@ export default class AuthModule extends Common {
         Logic.Common.GoToRoute("/auth/login", true)
       })
       .catch((error) => {
+        localStorage.clear()
+        Logic.Common.hideLoader()
+        Logic.Common.GoToRoute("/auth/login")
         Logic.Common.showError(error, "Oops!", "error-alert")
       })
   }

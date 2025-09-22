@@ -40,6 +40,12 @@ export type Account = {
   uuid: Scalars['String'];
 };
 
+export type AddParticipantInput = {
+  added_by: Scalars['Int'];
+  conversation_id: Scalars['Int'];
+  user_id: Scalars['Int'];
+};
+
 export type AdditionalIdInput = {
   image_links?: InputMaybe<ImageLinksInput>;
   number?: InputMaybe<Scalars['String']>;
@@ -70,6 +76,15 @@ export type AuthorizationInput = {
   type: Scalars['String'];
 };
 
+<<<<<<< HEAD
+=======
+export type BankAccountNameResponse = {
+  __typename?: 'BankAccountNameResponse';
+  account_name: Scalars['String'];
+  account_number: Scalars['String'];
+};
+
+>>>>>>> 0a3cf2e0943fc10ece297cc99cd2ba370f74a825
 export type BankInfo = {
   __typename?: 'BankInfo';
   accountName: Scalars['String'];
@@ -205,6 +220,13 @@ export type Conversation = {
   type: Scalars['String'];
   /** Conversation Updated At */
   updated_at: Scalars['DateTime'];
+};
+
+export type ConversationInput = {
+  entity_type: Scalars['String'];
+  entity_uuid: Scalars['String'];
+  extras?: InputMaybe<Scalars['String']>;
+  name: Scalars['String'];
 };
 
 export type Coordinates = {
@@ -388,6 +410,27 @@ export type FinancialSummaryResponse = {
   debit: Scalars['Float'];
 };
 
+<<<<<<< HEAD
+=======
+export type FlutterwaveBank = {
+  __typename?: 'FlutterwaveBank';
+  code: Scalars['String'];
+  id: Scalars['Int'];
+  name: Scalars['String'];
+  provider_type?: Maybe<Scalars['String']>;
+};
+
+export type FlutterwaveBankBranch = {
+  __typename?: 'FlutterwaveBankBranch';
+  bank_id: Scalars['Int'];
+  bic: Scalars['String'];
+  branch_code: Scalars['String'];
+  branch_name: Scalars['String'];
+  id: Scalars['Int'];
+  swift_code: Scalars['String'];
+};
+
+>>>>>>> 0a3cf2e0943fc10ece297cc99cd2ba370f74a825
 /** Flutterwave charge */
 export type FlutterwaveCharge = {
   __typename?: 'FlutterwaveCharge';
@@ -525,6 +568,18 @@ export type Message = {
   uuid: Scalars['String'];
 };
 
+<<<<<<< HEAD
+=======
+export type MessageInput = {
+  content: Scalars['String'];
+  conversation_id: Scalars['Int'];
+  metadata?: InputMaybe<Scalars['String']>;
+  replied_message_id?: InputMaybe<Scalars['Int']>;
+  sender_id: Scalars['Int'];
+  type: Scalars['String'];
+};
+
+>>>>>>> 0a3cf2e0943fc10ece297cc99cd2ba370f74a825
 export type MethodsAvailable = {
   __typename?: 'MethodsAvailable';
   IMAGE?: Maybe<Scalars['Boolean']>;
@@ -535,17 +590,28 @@ export type Mutation = {
   __typename?: 'Mutation';
   /** Add a user as a beneficiary */
   AddAsBeneficiary: Beneficiary;
+  /** Add a participant to a conversation */
+  AddParticipant: Conversation;
   /** Confirm withdrawal */
   ConfirmWithdrawal?: Maybe<OffRamp>;
+  /** Create a message */
+  CreateMessage: Message;
   CreateOrder?: Maybe<Order>;
   /** Create a saved account */
   CreateSavedAccount: UserBank;
   /** Delete User */
   DeleteUser: Scalars['Boolean'];
+<<<<<<< HEAD
+=======
+  /** Initiate Conversasion */
+  InitiateConversation: Conversation;
+>>>>>>> 0a3cf2e0943fc10ece297cc99cd2ba370f74a825
   /** Initiate Flutterwave top-up process */
   InitiateFlutterwaveTopup: FlutterwaveTopupResponse;
   /** Initiate a top-up transaction */
   InitiateTopup: PaymentCollectionResponse;
+  /** Initiate wallet KYC */
+  InitiateWalletKYC?: Maybe<Scalars['String']>;
   /** Initiate withdrawal */
   InitiateWithdrawal?: Maybe<OffRamp>;
   /** Make a payment to another user */
@@ -574,10 +640,17 @@ export type Mutation = {
   SignOut: Scalars['Boolean'];
   /** Sign up a new user */
   SignUp: User;
+  /** Soft delete message */
+  SoftDeleteMessage: Scalars['Boolean'];
   /** Update user password */
   UpdatePassword: Scalars['Boolean'];
   /** Update a user's profile with detailed information */
   UpdateProfile: Scalars['Boolean'];
+<<<<<<< HEAD
+=======
+  /** Upload any file and get the URL */
+  UploadFile: Scalars['String'];
+>>>>>>> 0a3cf2e0943fc10ece297cc99cd2ba370f74a825
   /** Verify Flutterwave transaction */
   VerifyFlutterwaveTransaction: Scalars['Boolean'];
   /** Verify user identity with optional checks and provider selection */
@@ -593,11 +666,22 @@ export type MutationAddAsBeneficiaryArgs = {
 };
 
 
+export type MutationAddParticipantArgs = {
+  input: AddParticipantInput;
+};
+
+
 export type MutationConfirmWithdrawalArgs = {
   amount: Scalars['Float'];
+  country_code: Scalars['String'];
   currency: Scalars['String'];
   metadata?: InputMaybe<Scalars['String']>;
   uuid: Scalars['String'];
+};
+
+
+export type MutationCreateMessageArgs = {
+  input: MessageInput;
 };
 
 
@@ -614,6 +698,14 @@ export type MutationCreateSavedAccountArgs = {
 };
 
 
+<<<<<<< HEAD
+=======
+export type MutationInitiateConversationArgs = {
+  input: ConversationInput;
+};
+
+
+>>>>>>> 0a3cf2e0943fc10ece297cc99cd2ba370f74a825
 export type MutationInitiateFlutterwaveTopupArgs = {
   address?: InputMaybe<AddressInput>;
   amount: Scalars['Float'];
@@ -637,6 +729,11 @@ export type MutationInitiateTopupArgs = {
   currency: Scalars['String'];
   method: Scalars['String'];
   payment_metadata: Scalars['String'];
+};
+
+
+export type MutationInitiateWalletKycArgs = {
+  currency: Scalars['String'];
 };
 
 
@@ -724,6 +821,11 @@ export type MutationSignUpArgs = {
 };
 
 
+export type MutationSoftDeleteMessageArgs = {
+  message_id: Scalars['Int'];
+};
+
+
 export type MutationUpdatePasswordArgs = {
   current_password: Scalars['String'];
   new_password: Scalars['String'];
@@ -742,6 +844,14 @@ export type MutationUpdateProfileArgs = {
 };
 
 
+<<<<<<< HEAD
+=======
+export type MutationUploadFileArgs = {
+  file: Scalars['Upload'];
+};
+
+
+>>>>>>> 0a3cf2e0943fc10ece297cc99cd2ba370f74a825
 export type MutationVerifyFlutterwaveTransactionArgs = {
   reference: Scalars['String'];
 };
@@ -1354,9 +1464,18 @@ export type Query = {
   GetAuthUser?: Maybe<User>;
   /** Get bank account details */
   GetBankAccountDetails: Scalars['String'];
+  /** Get back branches by bank ID */
+  GetBankBranchesByBankId?: Maybe<Array<FlutterwaveBankBranch>>;
+  /** Get banks by country */
+  GetBanksByCountry: Array<FlutterwaveBank>;
   /** Get a paginated list of beneficiaries for the authenticated user */
   GetBeneficiaries: BeneficiaryPaginator;
   GetCategories: CategoryPaginator;
+<<<<<<< HEAD
+=======
+  /** Get a conversation */
+  GetConversation?: Maybe<Conversation>;
+>>>>>>> 0a3cf2e0943fc10ece297cc99cd2ba370f74a825
   /** Get country information for verification */
   GetCountryInformation: CountryInformation;
   GetDeliveries: DeliveryPaginator;
@@ -1399,10 +1518,14 @@ export type Query = {
   GetSingleUser?: Maybe<User>;
   /** Get many transactions - paginated list of transactions for the authenticated user */
   GetTransactions: TransactionPaginator;
+  /** Get transfer fees */
+  GetTransferFees: Scalars['Float'];
   /** Get withdrawal info */
   GetWithdrawInfo: WithdrawInfo;
   /** Get yellow card networks */
   GetYellowCardNetwork: Array<YellowcardNetwork>;
+  /** Resolve bank account name */
+  ResolveBankAccountName?: Maybe<BankAccountNameResponse>;
   /** Search businesses by name */
   SearchBusinesses: Array<Business>;
   /** Search users by name */
@@ -1413,6 +1536,16 @@ export type Query = {
 export type QueryGetBankAccountDetailsArgs = {
   accountNumber: Scalars['String'];
   networkId: Scalars['String'];
+};
+
+
+export type QueryGetBankBranchesByBankIdArgs = {
+  bank_id: Scalars['Int'];
+};
+
+
+export type QueryGetBanksByCountryArgs = {
+  country: Scalars['String'];
 };
 
 
@@ -1429,6 +1562,14 @@ export type QueryGetCategoriesArgs = {
 };
 
 
+<<<<<<< HEAD
+=======
+export type QueryGetConversationArgs = {
+  uuid: Scalars['String'];
+};
+
+
+>>>>>>> 0a3cf2e0943fc10ece297cc99cd2ba370f74a825
 export type QueryGetCountryInformationArgs = {
   country_code: Scalars['String'];
 };
@@ -1568,6 +1709,13 @@ export type QueryGetTransactionsArgs = {
 };
 
 
+export type QueryGetTransferFeesArgs = {
+  amount: Scalars['Float'];
+  currency: Scalars['String'];
+  type: Scalars['String'];
+};
+
+
 export type QueryGetWithdrawInfoArgs = {
   amount: Scalars['Float'];
   country_code?: InputMaybe<Scalars['String']>;
@@ -1577,6 +1725,12 @@ export type QueryGetWithdrawInfoArgs = {
 
 export type QueryGetYellowCardNetworkArgs = {
   country_code: Scalars['String'];
+};
+
+
+export type QueryResolveBankAccountNameArgs = {
+  account_number: Scalars['String'];
+  bank_code: Scalars['String'];
 };
 
 

@@ -7,7 +7,7 @@ import {
   MutationVerifyUserIdentityArgs,
   QuerySearchBusinessesArgs,
   Business,
-} from "../gql/graphql";
+} from "../gql/graphql"
 
 export default class UserApi extends BaseApiService {
   // #region QUERIES
@@ -99,8 +99,33 @@ export default class UserApi extends BaseApiService {
       }>
     > = this.query(requestData, { uuid });
 
-    return response;
-  };
+    return response
+  }
+
+  public SearchBusinesses = (data: QuerySearchBusinessesArgs) => {
+    const requestData = `
+      query SearchBusinesses($query: String!) {
+        SearchBusinesses(query: $query) { 
+          logo
+          business_name
+          description
+          default_currency
+          user {
+            uuid
+          }
+        }
+      }
+    `
+
+    const response: Promise<
+      OperationResult<{
+        SearchBusinesses: Business[]
+      }>
+    > = this.query(requestData, data)
+
+    return response
+  }
+
   // #endregion QUERIES
 
   // #region MUTATIONS
