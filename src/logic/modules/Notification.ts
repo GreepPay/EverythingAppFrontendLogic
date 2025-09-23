@@ -1,5 +1,4 @@
 import {
-  MutationMarkNotificationsAsReadArgs,
   MutationSavePushNotificationTokenArgs,
   NotificationPaginator,
   QueryGetNotificationsArgs,
@@ -56,13 +55,11 @@ export default class NotificationModule extends Common {
     }
   }
 
-  public MarkNotificationsAsRead = async (
-    notificationIds: MutationMarkNotificationsAsReadArgs
-  ) => {
+  public MarkNotificationsAsRead = async (notificationIds: number[]) => {
     return $api.notification
       .MarkNotificationsAsRead(notificationIds)
       .then(() => {
-        this.GetNotifications(1, 20)
+        this.GetNotifications(1, 10)
       })
   }
 

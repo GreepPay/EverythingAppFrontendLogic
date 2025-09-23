@@ -76,6 +76,12 @@ export type AuthorizationInput = {
   type: Scalars['String'];
 };
 
+export type BankAccountNameResponse = {
+  __typename?: 'BankAccountNameResponse';
+  account_name: Scalars['String'];
+  account_number: Scalars['String'];
+};
+
 export type BankInfo = {
   __typename?: 'BankInfo';
   accountName: Scalars['String'];
@@ -401,6 +407,24 @@ export type FinancialSummaryResponse = {
   debit: Scalars['Float'];
 };
 
+export type FlutterwaveBank = {
+  __typename?: 'FlutterwaveBank';
+  code: Scalars['String'];
+  id: Scalars['Int'];
+  name: Scalars['String'];
+  provider_type?: Maybe<Scalars['String']>;
+};
+
+export type FlutterwaveBankBranch = {
+  __typename?: 'FlutterwaveBankBranch';
+  bank_id: Scalars['Int'];
+  bic: Scalars['String'];
+  branch_code: Scalars['String'];
+  branch_name: Scalars['String'];
+  id: Scalars['Int'];
+  swift_code: Scalars['String'];
+};
+
 /** Flutterwave charge */
 export type FlutterwaveCharge = {
   __typename?: 'FlutterwaveCharge';
@@ -538,11 +562,6 @@ export type Message = {
   uuid: Scalars['String'];
 };
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 616c143e082bd0adb49d8607b889f18a2289ab56
 export type MessageInput = {
   content: Scalars['String'];
   conversation_id: Scalars['Int'];
@@ -552,10 +571,6 @@ export type MessageInput = {
   type: Scalars['String'];
 };
 
-<<<<<<< HEAD
->>>>>>> 0a3cf2e0943fc10ece297cc99cd2ba370f74a825
-=======
->>>>>>> 616c143e082bd0adb49d8607b889f18a2289ab56
 export type MethodsAvailable = {
   __typename?: 'MethodsAvailable';
   IMAGE?: Maybe<Scalars['Boolean']>;
@@ -577,16 +592,8 @@ export type Mutation = {
   CreateSavedAccount: UserBank;
   /** Delete User */
   DeleteUser: Scalars['Boolean'];
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
   /** Initiate Conversasion */
   InitiateConversation: Conversation;
->>>>>>> 0a3cf2e0943fc10ece297cc99cd2ba370f74a825
-=======
-  /** Initiate Conversasion */
-  InitiateConversation: Conversation;
->>>>>>> 616c143e082bd0adb49d8607b889f18a2289ab56
   /** Initiate Flutterwave top-up process */
   InitiateFlutterwaveTopup: FlutterwaveTopupResponse;
   /** Initiate a top-up transaction */
@@ -627,16 +634,8 @@ export type Mutation = {
   UpdatePassword: Scalars['Boolean'];
   /** Update a user's profile with detailed information */
   UpdateProfile: Scalars['Boolean'];
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
   /** Upload any file and get the URL */
   UploadFile: Scalars['String'];
->>>>>>> 0a3cf2e0943fc10ece297cc99cd2ba370f74a825
-=======
-  /** Upload any file and get the URL */
-  UploadFile: Scalars['String'];
->>>>>>> 616c143e082bd0adb49d8607b889f18a2289ab56
   /** Verify Flutterwave transaction */
   VerifyFlutterwaveTransaction: Scalars['Boolean'];
   /** Verify user identity with optional checks and provider selection */
@@ -684,20 +683,11 @@ export type MutationCreateSavedAccountArgs = {
 };
 
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 616c143e082bd0adb49d8607b889f18a2289ab56
 export type MutationInitiateConversationArgs = {
   input: ConversationInput;
 };
 
 
-<<<<<<< HEAD
->>>>>>> 0a3cf2e0943fc10ece297cc99cd2ba370f74a825
-=======
->>>>>>> 616c143e082bd0adb49d8607b889f18a2289ab56
 export type MutationInitiateFlutterwaveTopupArgs = {
   address?: InputMaybe<AddressInput>;
   amount: Scalars['Float'];
@@ -836,20 +826,11 @@ export type MutationUpdateProfileArgs = {
 };
 
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 616c143e082bd0adb49d8607b889f18a2289ab56
 export type MutationUploadFileArgs = {
   file: Scalars['Upload'];
 };
 
 
-<<<<<<< HEAD
->>>>>>> 0a3cf2e0943fc10ece297cc99cd2ba370f74a825
-=======
->>>>>>> 616c143e082bd0adb49d8607b889f18a2289ab56
 export type MutationVerifyFlutterwaveTransactionArgs = {
   reference: Scalars['String'];
 };
@@ -882,6 +863,7 @@ export type Notification = {
   __typename?: 'Notification';
   /** User UUID to whom the notification belongs */
   auth_user_id: Scalars['String'];
+  category?: Maybe<Scalars['String']>;
   /** Notification Content */
   content: Scalars['String'];
   /** Notification Created At */
@@ -1469,16 +1451,8 @@ export type Query = {
   /** Get a paginated list of beneficiaries for the authenticated user */
   GetBeneficiaries: BeneficiaryPaginator;
   GetCategories: CategoryPaginator;
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
   /** Get a conversation */
   GetConversation?: Maybe<Conversation>;
->>>>>>> 0a3cf2e0943fc10ece297cc99cd2ba370f74a825
-=======
-  /** Get a conversation */
-  GetConversation?: Maybe<Conversation>;
->>>>>>> 616c143e082bd0adb49d8607b889f18a2289ab56
   /** Get country information for verification */
   GetCountryInformation: CountryInformation;
   GetDeliveries: DeliveryPaginator;
@@ -1565,20 +1539,11 @@ export type QueryGetCategoriesArgs = {
 };
 
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 616c143e082bd0adb49d8607b889f18a2289ab56
 export type QueryGetConversationArgs = {
   uuid: Scalars['String'];
 };
 
 
-<<<<<<< HEAD
->>>>>>> 0a3cf2e0943fc10ece297cc99cd2ba370f74a825
-=======
->>>>>>> 616c143e082bd0adb49d8607b889f18a2289ab56
 export type QueryGetCountryInformationArgs = {
   country_code: Scalars['String'];
 };
@@ -1625,8 +1590,9 @@ export type QueryGetMyTicketsArgs = {
 
 export type QueryGetNotificationsArgs = {
   first: Scalars['Int'];
+  orderBy?: InputMaybe<Array<QueryGetNotificationsOrderByOrderByClause>>;
   page?: InputMaybe<Scalars['Int']>;
-  type: Scalars['String'];
+  where?: InputMaybe<QueryGetNotificationsWhereWhereConditions>;
 };
 
 
@@ -1853,6 +1819,58 @@ export type QueryGetMarketsWhereWhereConditionsRelation = {
   amount?: InputMaybe<Scalars['Int']>;
   /** Additional condition logic. */
   condition?: InputMaybe<QueryGetMarketsWhereWhereConditions>;
+  /** The comparison operator to test against the amount. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The relation that is checked. */
+  relation: Scalars['String'];
+};
+
+/** Allowed column names for Query.GetNotifications.orderBy. */
+export enum QueryGetNotificationsOrderByColumn {
+  CreatedAt = 'CREATED_AT',
+  UpdatedAt = 'UPDATED_AT'
+}
+
+/** Order by clause for Query.GetNotifications.orderBy. */
+export type QueryGetNotificationsOrderByOrderByClause = {
+  /** The column that is used for ordering. */
+  column: QueryGetNotificationsOrderByColumn;
+  /** The direction that is used for ordering. */
+  order: SortOrder;
+};
+
+/** Allowed column names for Query.GetNotifications.where. */
+export enum QueryGetNotificationsWhereColumn {
+  Category = 'CATEGORY',
+  CreatedAt = 'CREATED_AT',
+  DeliveryStatus = 'DELIVERY_STATUS',
+  IsRead = 'IS_READ',
+  Type = 'TYPE',
+  UpdatedAt = 'UPDATED_AT'
+}
+
+/** Dynamic WHERE conditions for the `where` argument of the query `GetNotifications`. */
+export type QueryGetNotificationsWhereWhereConditions = {
+  /** A set of conditions that requires all conditions to match. */
+  AND?: InputMaybe<Array<QueryGetNotificationsWhereWhereConditions>>;
+  /** Check whether a relation exists. Extra conditions or a minimum amount can be applied. */
+  HAS?: InputMaybe<QueryGetNotificationsWhereWhereConditionsRelation>;
+  /** A set of conditions that requires at least one condition to match. */
+  OR?: InputMaybe<Array<QueryGetNotificationsWhereWhereConditions>>;
+  /** The column that is used for the condition. */
+  column?: InputMaybe<QueryGetNotificationsWhereColumn>;
+  /** The operator that is used for the condition. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The value that is used for the condition. */
+  value?: InputMaybe<Scalars['Mixed']>;
+};
+
+/** Dynamic HAS conditions for WHERE conditions for the `where` argument of the query `GetNotifications`. */
+export type QueryGetNotificationsWhereWhereConditionsRelation = {
+  /** The amount to test. */
+  amount?: InputMaybe<Scalars['Int']>;
+  /** Additional condition logic. */
+  condition?: InputMaybe<QueryGetNotificationsWhereWhereConditions>;
   /** The comparison operator to test against the amount. */
   operator?: InputMaybe<SqlOperator>;
   /** The relation that is checked. */
