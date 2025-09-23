@@ -18,7 +18,8 @@ export default class AuthApi extends BaseApiService {
   public GetAuthUser = () => {
     const requestData = `
         query GetAuthUser {
-          GetAuthUser {  
+          GetAuthUser {
+           id
             uuid
             first_name
             last_name
@@ -32,6 +33,7 @@ export default class AuthApi extends BaseApiService {
               profile_picture
               verification_status
               default_currency
+              country_code
                customer {
                 city
                 country
@@ -46,7 +48,8 @@ export default class AuthApi extends BaseApiService {
               }
             }
             wallet {
-              currency 
+            uuid
+              currency
               credited_point_amount
               credited_amount
               created_at
@@ -84,7 +87,9 @@ export default class AuthApi extends BaseApiService {
       $state: String!,
       $country: String!,
       $default_currency: String!,
+      $country_code: String!,
       $profile_picture: Upload
+      $sso_id: String
     ) {
       SignUp(
         first_name: $first_name,
@@ -94,7 +99,9 @@ export default class AuthApi extends BaseApiService {
         state: $state,
         country: $country,
         default_currency: $default_currency,
-        profile_picture: $profile_picture
+        country_code: $country_code,
+        profile_picture: $profile_picture,
+        sso_id: $sso_id
       ) { 
         id
         uuid
@@ -102,17 +109,19 @@ export default class AuthApi extends BaseApiService {
         last_name
         username
         email
-        phone  
+        phone
         status
+        email_verified_at
         profile {
           auth_user_id
           user_type
           profile_picture
-          verification_status  
+          verification_status
           updated_at
           default_currency
+          country_code
           created_at
-        } 
+        }
         created_at
         updated_at
       }
@@ -131,30 +140,34 @@ export default class AuthApi extends BaseApiService {
     const requestData = `
     mutation SignIn(
       $email: String!,
-      $password: String!
+      $password: String,
+      $sso_id: String
     ) {
       SignIn(
         email: $email,
-        password: $password
-      ) { 
+        password: $password,
+        sso_id: $sso_id
+      ) {
         token
-        user {  
+        user {
           uuid
           first_name
           last_name
           username
           email
-          phone  
+          phone
           status
+          email_verified_at
           profile {
             auth_user_id
             user_type
             profile_picture
-            verification_status  
+            verification_status
             updated_at
             default_currency
+            country_code
             created_at
-          } 
+          }
           created_at
           updated_at
         }
@@ -186,13 +199,10 @@ export default class AuthApi extends BaseApiService {
         SendResetPasswordOTP(email: $email)
       }
     `
-    console.log(
-      "helloe"
-    )
+    console.log("helloe")
 
-    const response: Promise<
-      OperationResult<{ SendResetPasswordOTP: string }>
-    > = this.mutation(requestData, data)
+    const response: Promise<OperationResult<{ SendResetPasswordOTP: string }>> =
+      this.mutation(requestData, data)
     return response
   }
 
@@ -219,32 +229,38 @@ export default class AuthApi extends BaseApiService {
 
   public VerifyUserIdentity = (data: MutationVerifyUserIdentityArgs) => {
     const requestData = `
-    mutation VerifyUserIdentity(
-      $user_uuid: String!
-      $id_type: String!
-      $id_number: String!
-      $id_country: String!
-      $full_name: String!
-      $phone_number: String!
-      $date_of_birth: String!
-      $address: String!
-      $additional_ids: [AdditionalIdInput!]
-      $checks: VerifyChecksInput!
-    ) {
-      VerifyUserIdentity(
-        user_uuid: $user_uuid
-        id_type: $id_type
-        id_number: $id_number
-        id_country: $id_country
-        full_name: $full_name
-        phone_number: $phone_number
-        date_of_birth: $date_of_birth
-        address: $address
-        additional_ids: $additional_ids
-        checks: $checks
-      )
-    }
-  `
+      mutation VerifyUserIdentity(
+        $user_uuid: String
+        $id_type: String!
+        $id_number: String
+        $id_country: String!
+        $full_name: String!
+        $phone_number: String
+        $email: String
+        $date_of_birth: String!
+        $address: String
+        $additional_ids: [AdditionalIdInput!]
+        $checks: VerifyChecksInput!
+        $provider: String
+        $image_links: ImageLinksInput
+      ) {
+        VerifyUserIdentity(
+          user_uuid: $user_uuid
+          id_type: $id_type
+          id_number: $id_number
+          id_country: $id_country
+          full_name: $full_name
+          phone_number: $phone_number
+          email: $email
+          date_of_birth: $date_of_birth
+          address: $address
+          additional_ids: $additional_ids
+          checks: $checks
+          provider: $provider
+          image_links: $image_links
+        )
+      }
+    `
 
     const response: Promise<OperationResult<{ VerifyUserIdentity: boolean }>> =
       this.mutation(requestData, data)

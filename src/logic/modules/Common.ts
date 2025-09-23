@@ -14,18 +14,17 @@ import CryptoJS from "crypto-js"
 import { Haptics, ImpactStyle } from "@capacitor/haptics"
 import { Observable } from "./Observable"
 import Echo from "laravel-echo"
-
-
 import Pusher from "pusher-js"
+
 // @ts-ignore
 window.Pusher = Pusher
 
 export interface WebSocketConfig {
-  pusherKey: string;
-  pusherHost: string;
-  pusherPort: string;
-  pusherCluster: string;
-  socketAuthUrl: string;
+  pusherKey: string
+  pusherHost: string
+  pusherPort: string
+  pusherCluster: string
+  socketAuthUrl: string
 }
 
 export default class Common {
@@ -87,8 +86,15 @@ export default class Common {
     this.apiUrl = apiUrl
   }
 
-  public GoToRoute = (path: string) => {
-    this.router?.push(path)
+  public GoToRoute = (path: string, forceReload = false) => {
+    if (forceReload) {
+      window.location.href =
+        window.location.origin +
+        `${path === "/" ? "" : path}` +
+        "?isForceReload=true"
+    } else {
+      this.router?.push(path)
+    }
   }
 
   public alertSetup = reactive<AlertSetup>({
@@ -217,8 +223,41 @@ export default class Common {
     this.loaderSetup = loaderSetup
   }
 
+  public copytext = (text: string) => {
+    const el = document.createElement("textarea")
+    el.value = text
+    el.setAttribute("readonly", "")
+    el.style.position = "absolute"
+    el.style.left = "-9999px"
+    document.body.appendChild(el)
+    el.select()
+    document.execCommand("copy")
+    document.body.removeChild(el)
+    this.showAlert({
+      show: true,
+      message: "Copied to clipboard",
+      type: "success",
+    })
+  }
+
   public goBack = () => {
-    window.history.length > 1 ? this.router?.go(-1) : this.router?.push("/")
+    const ignoreBackRoute = this.route?.query.ignoreBackRoute
+      ? this.route.query.ignoreBackRoute.toString()
+      : null
+    const routeMiddlewares: any = this.route?.meta.middlewares
+    const goBackRoute = routeMiddlewares?.goBackRoute
+
+    const backRouteFromQuery = this.route?.query.backRoute?.toString()
+
+    if (backRouteFromQuery) {
+      this.GoToRoute(backRouteFromQuery)
+    } else if (typeof goBackRoute == "function" && !ignoreBackRoute) {
+      this.GoToRoute(goBackRoute())
+    } else if (typeof goBackRoute == "string" && !ignoreBackRoute) {
+      this.GoToRoute(goBackRoute)
+    } else {
+      window.history.length > 1 ? this.router?.go(-1) : this.router?.push("/")
+    }
   }
 
   public hideLoader = () => {
@@ -459,7 +498,7 @@ export default class Common {
 
         if (rule.requireAuth) {
           if (!Logic.Auth.AuthUser) {
-            window.location.href = "/auth/login"
+            window.location.href = "/start"
 
             throw BreakException
           }

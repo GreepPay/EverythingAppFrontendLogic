@@ -42,6 +42,7 @@ export default class Wallet extends Common {
   public NormalFinancialSummary: FinancialSummaryResponse | undefined
   public CurrentYellowCardNetworks: YellowcardNetwork[] | undefined
   public OnRampChannels: PaymentChannel[] | undefined
+  public OffRampChannels: PaymentChannel[] | undefined
   public OnRampNetwork: PaymentNetwork[] | undefined
   public PointFinancialSummary: FinancialSummaryResponse | undefined
   public CheckStatusState = reactive({
@@ -73,6 +74,10 @@ export default class Wallet extends Common {
     this.defineReactiveProperty("CurrentOfframp", undefined)
     this.defineReactiveProperty("ManyExchangeAds", undefined)
     this.defineReactiveProperty("SingleExchangeAd", undefined)
+    this.defineReactiveProperty("OnRampChannels", undefined)
+    this.defineReactiveProperty("OffRampChannels", undefined)
+    this.defineReactiveProperty("OnRampNetwork", undefined)
+    this.defineReactiveProperty("CheckStatusState", { active: false })
   }
 
   // Queries
@@ -88,11 +93,28 @@ export default class Wallet extends Common {
   public GetOnRampChannels = async (
     countryCode: string
   ): Promise<PaymentChannel[] | undefined> => {
+    if (!countryCode) {
+      countryCode = localStorage.getItem("default_country_code") ?? ""
+    }
     return $api.wallet
       .GetOnRampChannelsByCountryCode(countryCode)
       .then((response) => {
         this.OnRampChannels = response.data?.GetOnRampChannelsByCountryCode
         return this.OnRampChannels
+      })
+  }
+
+  public GetOffRampChannels = async (
+    countryCode: string
+  ): Promise<PaymentChannel[] | undefined> => {
+    if (!countryCode) {
+      countryCode = localStorage.getItem("default_country_code") ?? ""
+    }
+    return $api.wallet
+      .GetOffRampChannelsByCountryCode(countryCode)
+      .then((response) => {
+        this.OffRampChannels = response.data?.GetOffRampChannelsByCountryCode
+        return this.OffRampChannels
       })
   }
 
@@ -108,6 +130,9 @@ export default class Wallet extends Common {
   public GetOnRampNetwork = async (
     countryCode: string
   ): Promise<PaymentNetwork[] | undefined> => {
+    if (!countryCode) {
+      countryCode = localStorage.getItem("default_country_code") ?? ""
+    }
     return $api.wallet
       .GetOnRampNetworkByCountryCode(countryCode)
       .then((response) => {
@@ -117,12 +142,15 @@ export default class Wallet extends Common {
   }
   public GetWithdrawInfo = async (
     amount: number,
-    currency: string
+    currency: string,
+    countryCode = ""
   ): Promise<WithdrawInfo | undefined> => {
-    return $api.wallet.GetWithdrawInfo(amount, currency).then((response) => {
-      this.CurrentWithdrawalInfo = response.data?.GetWithdrawInfo
-      return this.CurrentWithdrawalInfo
-    })
+    return $api.wallet
+      .GetWithdrawInfo(amount, currency, countryCode)
+      .then((response) => {
+        this.CurrentWithdrawalInfo = response.data?.GetWithdrawInfo
+        return this.CurrentWithdrawalInfo
+      })
   }
 
   public GetSavedAccounts = async (first: number, page: number) => {
@@ -142,14 +170,17 @@ export default class Wallet extends Common {
 
   public GetGlobalExchangeRate = async (
     base = "USD",
-    target = ""
+    target = "",
+    isBackground = false
   ): Promise<GlobalExchangeRate | undefined> => {
     if (!target) {
       target = Logic.Auth.AuthUser?.profile?.default_currency || "NGN"
     }
     return $api.wallet.GetGlobalExchangeRate(base, target).then((response) => {
-      this.CurrentGlobalExchangeRate = response.data?.GetGlobalExchangeRate
-      return this.CurrentGlobalExchangeRate
+      if (!isBackground) {
+        this.CurrentGlobalExchangeRate = response.data?.GetGlobalExchangeRate
+      }
+      return response.data?.GetGlobalExchangeRate
     })
   }
   public GetOnRampCurrencies = async (): Promise<
@@ -297,6 +328,22 @@ export default class Wallet extends Common {
     }
   }
 
+  public VerifyFlutterwaveTransaction = async (reference: string) => {
+    if (reference) {
+      return $api.wallet
+        .VerifyFlutterwaveTransaction(reference)
+        .then((response) => {
+          if (response.data?.VerifyFlutterwaveTransaction) {
+            return response.data.VerifyFlutterwaveTransaction
+          }
+        })
+        .catch((error: CombinedError) => {
+          Logic.Common.showError(error, "Oops!", "error-alert")
+          throw new Error(error.message)
+        })
+    }
+  }
+
   public InitiateWalletKYC = (currency: string) => {
     if (currency) {
       return $api.wallet
@@ -394,6 +441,22 @@ export default class Wallet extends Common {
       .catch((error: CombinedError) => {
         Logic.Common.showError(error, "Oops!", "error-alert")
         throw new Error(error.message)
+      })
+  }
+  public UploadFile = async (file: File) => {
+    Logic.Common.showLoader({ loading: true, show: true })
+    return $api.wallet
+      .UploadFile(file)
+      .then((response) => {
+        if (response.data?.UploadFile) {
+          Logic.Common.hideLoader()
+          return response.data.UploadFile
+        }
+      })
+      .catch((error: CombinedError) => {
+        Logic.Common.hideLoader()
+        Logic.Common.showError(error, "Oops!", "error-alert")
+        throw error
       })
   }
 }

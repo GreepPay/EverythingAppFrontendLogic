@@ -2,19 +2,20 @@ import {
   Beneficiary,
   BeneficiaryPaginator,
   QueryGetBeneficiariesArgs,
-} from "../../gql/graphql"
-import { $api } from "../../services"
-import { CombinedError } from "urql"
-import Common from "./Common"
-import { Logic } from ".."
+} from "../../gql/graphql";
+import { $api } from "../../services";
+import { CombinedError } from "urql";
+import Common from "./Common";
+import { Logic } from "..";
 
 export default class BeneficiaryModule extends Common {
   constructor() {
-    super()
+    super();
+    this.defineReactiveProperty("ManyBeneficiaries", undefined);
   }
 
   // Base Variables
-  public ManyBeneficiaries: BeneficiaryPaginator | undefined
+  public ManyBeneficiaries: BeneficiaryPaginator | undefined;
 
   public GetBeneficiaries = async (
     data: QueryGetBeneficiariesArgs
@@ -22,18 +23,18 @@ export default class BeneficiaryModule extends Common {
     return $api.beneficiary
       .GetBeneficiaries(data)
       .then((response) => {
-        this.ManyBeneficiaries = response.data?.GetBeneficiaries
-        return response.data?.GetBeneficiaries
+        this.ManyBeneficiaries = response.data?.GetBeneficiaries;
+        return response.data?.GetBeneficiaries;
       })
       .catch((error: CombinedError) => {
         Logic.Common.showError(
           error,
           "Failed to fetch beneficiaries",
           "error-alert"
-        )
-        return undefined
-      })
-  }
+        );
+        return undefined;
+      });
+  };
 
   public AddAsBeneficiary = async (
     user_uuid: string,
@@ -42,17 +43,17 @@ export default class BeneficiaryModule extends Common {
     return $api.beneficiary
       .AddAsBeneficiary({ metadata, user_uuid })
       .then((response) => {
-        return response.data?.AddAsBeneficiary
+        return response.data?.AddAsBeneficiary;
       })
       .catch((error: CombinedError) => {
         Logic.Common.showError(
           error,
           "Failed to add beneficiary",
           "error-alert"
-        )
-        return undefined
-      })
-  }
+        );
+        return undefined;
+      });
+  };
 
   public RemoveAsBeneficiary = async (
     beneficiary_uuid: string
@@ -60,15 +61,15 @@ export default class BeneficiaryModule extends Common {
     return $api.beneficiary
       .RemoveAsBeneficiary({ beneficiary_uuid })
       .then((response) => {
-        return response.data?.RemoveAsBeneficiary ?? false
+        return response.data?.RemoveAsBeneficiary ?? false;
       })
       .catch((error: CombinedError) => {
         Logic.Common.showError(
           error,
           "Failed to remove beneficiary",
           "error-alert"
-        )
-        return false
-      })
-  }
+        );
+        return false;
+      });
+  };
 }

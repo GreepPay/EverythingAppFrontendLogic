@@ -863,6 +863,7 @@ export type Notification = {
   __typename?: 'Notification';
   /** User UUID to whom the notification belongs */
   auth_user_id: Scalars['String'];
+  category?: Maybe<Scalars['String']>;
   /** Notification Content */
   content: Scalars['String'];
   /** Notification Created At */
@@ -1589,8 +1590,9 @@ export type QueryGetMyTicketsArgs = {
 
 export type QueryGetNotificationsArgs = {
   first: Scalars['Int'];
+  orderBy?: InputMaybe<Array<QueryGetNotificationsOrderByOrderByClause>>;
   page?: InputMaybe<Scalars['Int']>;
-  type: Scalars['String'];
+  where?: InputMaybe<QueryGetNotificationsWhereWhereConditions>;
 };
 
 
@@ -1817,6 +1819,58 @@ export type QueryGetMarketsWhereWhereConditionsRelation = {
   amount?: InputMaybe<Scalars['Int']>;
   /** Additional condition logic. */
   condition?: InputMaybe<QueryGetMarketsWhereWhereConditions>;
+  /** The comparison operator to test against the amount. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The relation that is checked. */
+  relation: Scalars['String'];
+};
+
+/** Allowed column names for Query.GetNotifications.orderBy. */
+export enum QueryGetNotificationsOrderByColumn {
+  CreatedAt = 'CREATED_AT',
+  UpdatedAt = 'UPDATED_AT'
+}
+
+/** Order by clause for Query.GetNotifications.orderBy. */
+export type QueryGetNotificationsOrderByOrderByClause = {
+  /** The column that is used for ordering. */
+  column: QueryGetNotificationsOrderByColumn;
+  /** The direction that is used for ordering. */
+  order: SortOrder;
+};
+
+/** Allowed column names for Query.GetNotifications.where. */
+export enum QueryGetNotificationsWhereColumn {
+  Category = 'CATEGORY',
+  CreatedAt = 'CREATED_AT',
+  DeliveryStatus = 'DELIVERY_STATUS',
+  IsRead = 'IS_READ',
+  Type = 'TYPE',
+  UpdatedAt = 'UPDATED_AT'
+}
+
+/** Dynamic WHERE conditions for the `where` argument of the query `GetNotifications`. */
+export type QueryGetNotificationsWhereWhereConditions = {
+  /** A set of conditions that requires all conditions to match. */
+  AND?: InputMaybe<Array<QueryGetNotificationsWhereWhereConditions>>;
+  /** Check whether a relation exists. Extra conditions or a minimum amount can be applied. */
+  HAS?: InputMaybe<QueryGetNotificationsWhereWhereConditionsRelation>;
+  /** A set of conditions that requires at least one condition to match. */
+  OR?: InputMaybe<Array<QueryGetNotificationsWhereWhereConditions>>;
+  /** The column that is used for the condition. */
+  column?: InputMaybe<QueryGetNotificationsWhereColumn>;
+  /** The operator that is used for the condition. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The value that is used for the condition. */
+  value?: InputMaybe<Scalars['Mixed']>;
+};
+
+/** Dynamic HAS conditions for WHERE conditions for the `where` argument of the query `GetNotifications`. */
+export type QueryGetNotificationsWhereWhereConditionsRelation = {
+  /** The amount to test. */
+  amount?: InputMaybe<Scalars['Int']>;
+  /** Additional condition logic. */
+  condition?: InputMaybe<QueryGetNotificationsWhereWhereConditions>;
   /** The comparison operator to test against the amount. */
   operator?: InputMaybe<SqlOperator>;
   /** The relation that is checked. */

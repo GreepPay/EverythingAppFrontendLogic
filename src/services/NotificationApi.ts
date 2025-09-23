@@ -1,7 +1,6 @@
 import {
   MutationSavePushNotificationTokenArgs,
   NotificationPaginator,
-  MutationMarkNotificationsAsReadArgs,
 } from "src/gql/graphql"
 import { OperationResult } from "urql"
 import { BaseApiService } from "./common/BaseService"
@@ -13,7 +12,8 @@ export default class NotificationApi extends BaseApiService {
     count: number,
     orderType = "CREATED_AT",
     order: "ASC" | "DESC" = "DESC",
-    whereQuery = ""
+    whereQuery = "",
+    channel: "email" | "push" | "all" = "email"
   ) => {
     const requestData = `
     query GetNotifications(
@@ -68,9 +68,7 @@ export default class NotificationApi extends BaseApiService {
   // #endregion QUERIES
 
   // #region MUTATIONS
-  public MarkNotificationsAsRead = (
-    data: MutationMarkNotificationsAsReadArgs
-  ) => {
+  public MarkNotificationsAsRead = (notificationIds: number[]) => {
     const requestData = `
       mutation MarkNotificationsAsRead($notificationIds: [Int!]!) {
         MarkNotificationsAsRead(notification_ids: $notificationIds)
@@ -81,7 +79,9 @@ export default class NotificationApi extends BaseApiService {
       OperationResult<{
         MarkNotificationsAsRead: Boolean
       }>
-    > = this.mutation(requestData, data)
+    > = this.mutation(requestData, {
+      notificationIds,
+    })
 
     return response
   }

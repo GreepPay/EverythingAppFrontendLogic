@@ -17,6 +17,9 @@ import { Logic } from ".."
 export default class AuthModule extends Common {
   constructor() {
     super()
+    this.defineReactiveProperty("AccessToken", null)
+    this.defineReactiveProperty("AuthUser", undefined)
+
     this.setDefaultAuth()
   }
 
@@ -45,22 +48,36 @@ export default class AuthModule extends Common {
         "access_token",
         this.AccessToken ? this.AccessToken : ""
       )
-      localStorage.setItem("auth_user", JSON.stringify(this.AuthUser))
+      if (this.AuthUser) {
+        localStorage.setItem("auth_user", JSON.stringify(this.AuthUser))
+      }
     }
   }
+
   private setDefaultAuth = () => {
     this.AccessToken = localStorage.getItem("access_token")
     const auth_user = localStorage.getItem("auth_user")
     this.AuthUser = auth_user ? JSON.parse(auth_user || "{}") : undefined
   }
-
   public GetAuthUser = async (): Promise<User | undefined> => {
     return $api.auth
       .GetAuthUser()
       .then((response) => {
         this.AuthUser = response.data?.GetAuthUser
-        localStorage.setItem("auth_user", JSON.stringify(this.AuthUser))
+
+        if (this.AuthUser) {
+          localStorage.setItem("auth_user", JSON.stringify(this.AuthUser))
+        }
+
+        if (this.AuthUser?.profile.default_currency) {
+          localStorage.setItem(
+            "default_currency",
+            this.AuthUser.profile.default_currency
+          )
+        }
+
         this.connectSocketChannels()
+
         return this.AuthUser
       })
       .catch((error: CombinedError) => {
@@ -123,7 +140,9 @@ export default class AuthModule extends Common {
       return $api.auth
         .SignIn(this.SignInPayload)
         .then((response) => {
-          this.SetUpAuth(response.data?.SignIn)
+          if (response.data?.SignIn) {
+            this.SetUpAuth(response.data?.SignIn)
+          }
           // this.AuthUser = response.data?.SignIn.user
           Logic.Common.hideLoader()
           return response.data?.SignIn
@@ -153,7 +172,6 @@ export default class AuthModule extends Common {
   public sendResetPasswordOTP = async (
     data: MutationSendResetPasswordOtpArgs
   ) => {
-    console.log("Hellow")
     return $api.auth
       .SendResetPasswordOTP(data)
       .then((response) => {
@@ -224,6 +242,7 @@ export default class AuthModule extends Common {
       .DeleteUser()
       .then((response) => {
         Logic.Common.hideLoader()
+        Logic.Common.GoToRoute("/start", true)
         return response.data?.DeleteUser
       })
       .catch((error: CombinedError) => {
@@ -255,7 +274,7 @@ export default class AuthModule extends Common {
       .then(() => {
         localStorage.clear()
         Logic.Common.hideLoader()
-        Logic.Common.GoToRoute("/auth/login")
+        Logic.Common.GoToRoute("/auth/login", true)
       })
       .catch((error) => {
         localStorage.clear()

@@ -1,7 +1,7 @@
 import {
+  Business as BusinessModel,
   MutationUpdateProfileArgs,
   User as UserModel,
-  Business as BusinessModel,
 } from "../../gql/graphql"
 import { $api } from "../../services"
 import Common from "./Common"
@@ -11,6 +11,9 @@ import { Logic } from ".."
 export default class User extends Common {
   constructor() {
     super()
+    this.defineReactiveProperty("SearchedUsers", undefined)
+    this.defineReactiveProperty("SearchedBusinesses", undefined)
+    this.defineReactiveProperty("SingleUser", undefined)
   }
 
   // Base variables
@@ -32,6 +35,7 @@ export default class User extends Common {
         return response.data?.SearchUsers
       })
   }
+
   public SearchForBusinesses = async (query: string) => {
     return $api.user
       .SearchBusinesses({

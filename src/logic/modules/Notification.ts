@@ -1,5 +1,4 @@
 import {
-  MutationMarkNotificationsAsReadArgs,
   MutationSavePushNotificationTokenArgs,
   NotificationPaginator,
   QueryGetNotificationsArgs,
@@ -12,6 +11,8 @@ import { getPlatforms } from "@ionic/vue"
 export default class NotificationModule extends Common {
   constructor() {
     super()
+    this.defineReactiveProperty("ManyNotifications", undefined)
+    this.defineReactiveProperty("GetBitificationsPayload", undefined)
   }
 
   // Base Variables
@@ -32,27 +33,17 @@ export default class NotificationModule extends Common {
     page: number,
     count: number,
     orderType = "CREATED_AT",
-    order = "DESC" as "DESC" | "ASC",
-    whereQuery = ""
+    order: "DESC" | "ASC" = "DESC",
+    whereQuery = "",
+    channel: "email" | "push" | "all" = "email"
   ) => {
     return $api.notification
-      .GetNotifications(page, count, orderType, order, whereQuery)
+      .GetNotifications(page, count, orderType, order, whereQuery, channel)
       .then((response) => {
         this.ManyNotifications = response.data?.GetNotifications
         return this.ManyNotifications
       })
   }
-  // public GetNotifications = async (
-  //   first: number,
-  //   page: number
-  // ) => {
-  //   return $api.notification
-  //     .GetNotifications(  first, page)
-  //     .then((response) => {
-  //       this.ManyNotifications = response.data?.GetNotifications
-  //       return this.ManyNotifications
-  //     })
-  // }
 
   public SavePushNotificationDevice = () => {
     if (this.PushNotificationDeviceForm) {
@@ -64,25 +55,11 @@ export default class NotificationModule extends Common {
     }
   }
 
-  // public MarkNotificationsAsRead = async (
-  //   notificationIds: MutationMarkNotificationsAsReadArgs
-  // ) => {
-  //   return $api.notification
-  //     .MarkNotificationsAsRead(notificationIds)
-  //     .then(() => {
-  //       if (this.GetBitificationsPayload) {
-  //         this.GetNotifications(this.GetBitificationsPayload)
-  //       }
-  //     })
-  // }
-
-  public MarkNotificationsAsRead = async (
-    notificationIds: MutationMarkNotificationsAsReadArgs
-  ) => {
+  public MarkNotificationsAsRead = async (notificationIds: number[]) => {
     return $api.notification
       .MarkNotificationsAsRead(notificationIds)
       .then(() => {
-        this.GetNotifications(1, 20)
+        this.GetNotifications(1, 10)
       })
   }
 
