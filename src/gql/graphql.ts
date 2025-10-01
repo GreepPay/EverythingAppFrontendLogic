@@ -196,13 +196,15 @@ export type CategoryPaginator = {
 export type Conversation = {
   __typename?: 'Conversation';
   /** Conversation Created At */
-  created_at: Scalars['DateTime'];
+  created_at: Scalars['String'];
   /** Entity Type */
   entity_type?: Maybe<Scalars['String']>;
   /** Unique ID */
   id: Scalars['Int'];
   /** Messages */
   messages: Array<Message>;
+  /** The metadata */
+  metadata?: Maybe<Scalars['String']>;
   /** Conversation Name */
   name: Scalars['String'];
   /** Owner ID */
@@ -216,7 +218,9 @@ export type Conversation = {
   /** Conversation Type */
   type: Scalars['String'];
   /** Conversation Updated At */
-  updated_at: Scalars['DateTime'];
+  updated_at: Scalars['String'];
+  /** UUID */
+  uuid: Scalars['String'];
 };
 
 export type ConversationInput = {
@@ -543,21 +547,23 @@ export type Message = {
   /** Conversation ID */
   conversation_id: Scalars['Int'];
   /** Message Created At */
-  created_at: Scalars['DateTime'];
+  createdAt: Scalars['String'];
   /** Unique ID */
   id: Scalars['Int'];
+  /** The metadata */
+  metadata?: Maybe<Scalars['String']>;
   /** Sender */
-  participant: Participant;
+  participant?: Maybe<Participant>;
   /** Replied Message */
-  replied_message: Message;
-  /** Sender ID */
-  sender_id: Scalars['Int'];
+  replied_message?: Maybe<Message>;
+  /** Sender User */
+  sender?: Maybe<User>;
   /** Message State */
   state: Scalars['String'];
   /** Message Status */
   status: Scalars['String'];
   /** Message Updated At */
-  updated_at: Scalars['DateTime'];
+  updatedAt: Scalars['String'];
   /** Unique UUID */
   uuid: Scalars['String'];
 };
@@ -1073,7 +1079,7 @@ export type Participant = {
   /** Conversation */
   conversation: Conversation;
   /** Participant Created At */
-  created_at: Scalars['DateTime'];
+  created_at: Scalars['String'];
   /** Unique ID */
   id: Scalars['Int'];
   /** Messages */
@@ -1081,9 +1087,11 @@ export type Participant = {
   /** Participant State */
   state: Scalars['String'];
   /** Participant Updated At */
-  updated_at: Scalars['DateTime'];
+  updated_at: Scalars['String'];
   /** Attached user */
-  user: User;
+  user?: Maybe<User>;
+  /** The user id */
+  user_id: Scalars['Int'];
 };
 
 export type PaymentChannel = {
