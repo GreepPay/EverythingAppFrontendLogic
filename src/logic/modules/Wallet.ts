@@ -45,6 +45,7 @@ export default class Wallet extends Common {
   public OffRampChannels: PaymentChannel[] | undefined
   public OnRampNetwork: PaymentNetwork[] | undefined
   public PointFinancialSummary: FinancialSummaryResponse | undefined
+  public CurrentCryptoTransfer: OffRamp | undefined
   public CheckStatusState = reactive({
     active: false,
   })
@@ -77,6 +78,7 @@ export default class Wallet extends Common {
     this.defineReactiveProperty("OnRampChannels", undefined)
     this.defineReactiveProperty("OffRampChannels", undefined)
     this.defineReactiveProperty("OnRampNetwork", undefined)
+    this.defineReactiveProperty("CurrentCryptoTransfer", undefined)
     this.defineReactiveProperty("CheckStatusState", { active: false })
   }
 
@@ -295,6 +297,24 @@ export default class Wallet extends Common {
         })
     }
   }
+
+  public CreateCrpytoTransfer = async (crypto: string, network: string) => {
+    if (crypto && network) {
+      return $api.wallet
+        .CreateCrpytoTransfer(crypto, network)
+        .then((response) => {
+          if (response.data?.CreateCrpytoTransfer) {
+            this.CurrentCryptoTransfer = response.data.CreateCrpytoTransfer
+            return response.data.CreateCrpytoTransfer
+          }
+        })
+        .catch((error: CombinedError) => {
+          Logic.Common.showError(error, "Oops!", "error-alert")
+          throw error
+        })
+    }
+  }
+
 
   public RedeemGRPToken = async () => {
     if (this.RedeemGRPTokenForm) {
