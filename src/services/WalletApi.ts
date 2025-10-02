@@ -611,6 +611,44 @@ export default class WalletsApi extends BaseApiService {
     return response
   }
 
+
+  public CreateCrpytoTransfer = (crypto: string, network: string) => {
+    const requestData = `
+        mutation CreateCrpytoTransfer($crypto: String!, $network: String!) {
+          CreateCrpytoTransfer(crypto: $crypto, network: $network) {
+            id
+            uuid
+            amount
+            payment_reference
+            state
+            payment_channel
+            description
+            status
+            currency
+            extra_data
+            senderName
+            senderCountry
+            senderPhone
+            senderAddress
+            senderBusinessName
+            created_at
+            updated_at
+          }
+        }
+      `
+
+    const response: Promise<
+      OperationResult<{
+        CreateCrpytoTransfer: OffRamp
+      }>
+    > = this.mutation(requestData, {
+      crypto,
+      network,
+    })
+
+    return response
+  }
+
   public MakePayment = (data: MutationMakePaymentArgs) => {
     const requestData = `
     mutation MakePayment(
