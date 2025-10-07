@@ -22,6 +22,7 @@ export interface CreateDeliveryOrderInput {
   estimatedDeliveryDate?: string;
   paymentMethod?: string;
   phone?: string;
+  conversationId?: string; // Add conversation ID field
 }
 
 export default class OrderApi extends BaseApiService {
