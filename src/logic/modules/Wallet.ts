@@ -501,8 +501,27 @@ export default class Wallet extends Common {
     return $api.wallet
       .GetRecommendedExchangeAds(page, count)
       .then((response) => {
-        this.ManyRecommendedExchangeAds =
-          response.data?.GetRecommendedExchangeAds;
+        const newData = response.data?.GetRecommendedExchangeAds;
+
+        if (page === 1) {
+          // First page - replace data
+          this.ManyRecommendedExchangeAds = newData;
+        } else {
+          // Subsequent pages - append data
+          if (this.ManyRecommendedExchangeAds && newData) {
+            // Merge the data arrays
+            const existingData = this.ManyRecommendedExchangeAds.data || [];
+            const newAds = newData.data || [];
+
+            this.ManyRecommendedExchangeAds = {
+              ...newData,
+              data: [...existingData, ...newAds],
+            };
+          } else {
+            this.ManyRecommendedExchangeAds = newData;
+          }
+        }
+
         return this.ManyRecommendedExchangeAds;
       })
       .catch((error: CombinedError) => {
