@@ -36,6 +36,7 @@ import {
   MutationCreateP2pPaymentMethodArgs,
   MutationUpdateP2pPaymentMethodArgs,
   MutationSoftDeleteP2pPaymentMethodArgs,
+  ExchangeOrder,
 } from "../gql/graphql";
 
 export default class WalletsApi extends BaseApiService {
@@ -1085,6 +1086,67 @@ export default class WalletsApi extends BaseApiService {
         SoftDeleteP2pPaymentMethod: P2pPaymentMethod;
       }>
     > = this.mutation(requestData, data);
+
+    return response;
+  };
+
+  public CreateP2pOrder = (orderData: {
+    exchange_ad_uuid: string;
+    amount: number;
+    delivery_address: string;
+    city: string;
+    country: string;
+    payment_type: string;
+    payout_option: string;
+    conversation_uuid: string;
+    metadata?: string;
+  }) => {
+    const requestData = `
+      mutation CreateP2pOrder(
+        $exchange_ad_uuid: String!
+        $amount: Float!
+        $delivery_address: String!
+        $city: String!
+        $country: String!
+        $payment_type: String!
+        $payout_option: String!
+        $conversation_uuid: String!
+        $metadata: String
+      ) {
+        CreateP2pOrder(
+          exchange_ad_uuid: $exchange_ad_uuid
+          amount: $amount
+          delivery_address: $delivery_address
+          city: $city
+          country: $country
+          payment_type: $payment_type
+          payout_option: $payout_option
+          conversation_uuid: $conversation_uuid
+          metadata: $metadata
+        ) {
+          id
+          uuid
+          amount
+          expected_amount
+          status
+          payment_type
+          payout_option
+          pickup_location_address_line
+          pickup_location_city
+          pickup_location_country
+          conversation_uuid
+          created_at
+          updated_at
+          expired_at
+        }
+      }
+    `;
+
+    const response: Promise<
+      OperationResult<{
+        CreateP2pOrder: ExchangeOrder;
+      }>
+    > = this.mutation(requestData, orderData);
 
     return response;
   };

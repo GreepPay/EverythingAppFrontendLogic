@@ -29,6 +29,32 @@ export default class MessagingApi extends BaseApiService {
               uuid
             }
           }
+          exchangeAd {
+            uuid
+            from_currency
+            to_currency
+            business {
+                uuid
+                id
+                business_name
+                storeLocations {
+                name
+                address
+                city
+                country
+              }
+            }
+            rate
+            min_amount
+            max_amount
+            payout_address
+            address_details
+            payout_banks
+            business_id
+            status
+            created_at
+            updated_at
+           }
           messages {
             id
             content

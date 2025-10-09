@@ -594,4 +594,30 @@ export default class Wallet extends Common {
         });
     }
   };
+
+  public CreateP2pOrder = async (orderData: {
+    exchange_ad_uuid: string;
+    amount: number;
+    delivery_address: string;
+    city: string;
+    country: string;
+    payment_type: string;
+    payout_option: string;
+    conversation_uuid: string;
+    metadata?: string;
+  }) => {
+    return $api.wallet
+      .CreateP2pOrder(orderData)
+      .then((response) => {
+        if (response.data?.CreateP2pOrder) {
+          Logic.Common.hideLoader();
+          return response.data.CreateP2pOrder;
+        }
+      })
+      .catch((error: CombinedError) => {
+        Logic.Common.hideLoader();
+        Logic.Common.showError(error, "Oops!", "error-alert");
+        throw error;
+      });
+  };
 }

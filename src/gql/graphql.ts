@@ -147,6 +147,7 @@ export type Business = {
   /** Business logo URL. */
   logo?: Maybe<Scalars['String']>;
   products?: Maybe<Array<Maybe<Product>>>;
+  storeLocations?: Maybe<Array<Maybe<StoreLocation>>>;
   /** Attached user */
   user?: Maybe<User>;
   /** Business UUID. */
@@ -199,6 +200,8 @@ export type Conversation = {
   created_at: Scalars['String'];
   /** Entity Type */
   entity_type?: Maybe<Scalars['String']>;
+  /** The attached exchange ad */
+  exchangeAd?: Maybe<ExchangeAd>;
   /** Unique ID */
   id: Scalars['Int'];
   /** Messages */
@@ -696,6 +699,8 @@ export type Mutation = {
   /** Create a message */
   CreateMessage: Message;
   CreateOrder?: Maybe<Order>;
+  /** Create a new P2P order */
+  CreateP2pOrder: ExchangeOrder;
   /** Create a new P2P payment method */
   CreateP2pPaymentMethod: P2pPaymentMethod;
   /** Create a saved account */
@@ -793,6 +798,19 @@ export type MutationCreateMessageArgs = {
 
 export type MutationCreateOrderArgs = {
   input: CreateOrderInput;
+};
+
+
+export type MutationCreateP2pOrderArgs = {
+  amount: Scalars['Float'];
+  city: Scalars['String'];
+  conversation_uuid: Scalars['String'];
+  country: Scalars['String'];
+  delivery_address: Scalars['String'];
+  exchange_ad_uuid: Scalars['String'];
+  metadata?: InputMaybe<Scalars['String']>;
+  payment_type: Scalars['String'];
+  payout_option: Scalars['String'];
 };
 
 
@@ -2531,6 +2549,33 @@ export type Source = {
   accountNumber: Scalars['String'];
   accountType: Scalars['String'];
   networkId: Scalars['String'];
+};
+
+/** A physical store location tied to a business profile. */
+export type StoreLocation = {
+  __typename?: 'StoreLocation';
+  /** Street or building address */
+  address: Scalars['String'];
+  /** Associated business ID */
+  business_id: Scalars['String'];
+  /** City where the store is located */
+  city: Scalars['String'];
+  /** Country (ISO code or full name) */
+  country: Scalars['String'];
+  /** When the store location was created */
+  created_at: Scalars['DateTime'];
+  /** Latitude coordinate (if available) */
+  latitude?: Maybe<Scalars['Float']>;
+  /** Longitude coordinate (if available) */
+  longitude?: Maybe<Scalars['Float']>;
+  /** Stringified metadata (e.g. hours, tags, notes) */
+  meta_data?: Maybe<Scalars['String']>;
+  /** Name or label for the location */
+  name?: Maybe<Scalars['String']>;
+  /** When the store location was last updated */
+  updated_at: Scalars['DateTime'];
+  /** Public UUID for external reference */
+  uuid: Scalars['String'];
 };
 
 export type SubscriptionProduct = {
