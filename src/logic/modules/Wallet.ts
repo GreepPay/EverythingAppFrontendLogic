@@ -639,4 +639,31 @@ export default class Wallet extends Common {
         throw error;
       });
   };
+
+  public ReleaseP2pFunds = async (
+    order_uuid: string,
+    amount: number,
+    metadata?: string
+  ) => {
+    return $api.wallet
+      .ReleaseP2pFunds(order_uuid, amount, metadata)
+      .then((response) => {
+        if (response.data?.ReleaseP2pFunds) {
+          Logic.Common.showAlert({
+            show: true,
+            message: "P2P funds released successfully!",
+            type: "success",
+          });
+          return response.data.ReleaseP2pFunds;
+        }
+      })
+      .catch((error: CombinedError) => {
+        Logic.Common.showError(
+          error,
+          "Failed to release P2P funds",
+          "error-alert"
+        );
+        throw error;
+      });
+  };
 }

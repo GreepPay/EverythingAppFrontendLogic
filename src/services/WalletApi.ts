@@ -1150,4 +1150,39 @@ export default class WalletsApi extends BaseApiService {
 
     return response;
   };
+
+  // P2P Fund Release
+  public ReleaseP2pFunds = (
+    order_uuid: string,
+    amount: number,
+    metadata?: string
+  ) => {
+    const requestData = `
+      mutation ReleaseP2pFunds(
+        $order_uuid: String!
+        $amount: Float!
+        $metadata: String
+      ) {
+        ReleaseP2pFunds(
+          order_uuid: $order_uuid
+          amount: $amount
+          metadata: $metadata
+        )
+      }
+    `;
+
+    const releaseData = {
+      order_uuid,
+      amount,
+      metadata,
+    };
+
+    const response: Promise<
+      OperationResult<{
+        ReleaseP2pFunds: boolean;
+      }>
+    > = this.mutation(requestData, releaseData);
+
+    return response;
+  };
 }
