@@ -147,6 +147,7 @@ export type Business = {
   /** Business logo URL. */
   logo?: Maybe<Scalars['String']>;
   products?: Maybe<Array<Maybe<Product>>>;
+  storeLocations?: Maybe<Array<Maybe<StoreLocation>>>;
   /** Attached user */
   user?: Maybe<User>;
   /** Business UUID. */
@@ -196,13 +197,17 @@ export type CategoryPaginator = {
 export type Conversation = {
   __typename?: 'Conversation';
   /** Conversation Created At */
-  created_at: Scalars['DateTime'];
+  created_at: Scalars['String'];
   /** Entity Type */
   entity_type?: Maybe<Scalars['String']>;
+  /** The attached exchange ad */
+  exchangeAd?: Maybe<ExchangeAd>;
   /** Unique ID */
   id: Scalars['Int'];
   /** Messages */
   messages: Array<Message>;
+  /** The metadata */
+  metadata?: Maybe<Scalars['String']>;
   /** Conversation Name */
   name: Scalars['String'];
   /** Owner ID */
@@ -216,7 +221,9 @@ export type Conversation = {
   /** Conversation Type */
   type: Scalars['String'];
   /** Conversation Updated At */
-  updated_at: Scalars['DateTime'];
+  updated_at: Scalars['String'];
+  /** UUID */
+  uuid: Scalars['String'];
 };
 
 export type ConversationInput = {
@@ -241,6 +248,22 @@ export type CountryInformation = {
   methodsAvailable?: Maybe<MethodsAvailable>;
   requiredFields?: Maybe<RequiredFields>;
   supportedMethods?: Maybe<SupportedMethods>;
+};
+
+export type CreateDeliveryOrderInput = {
+  conversationId?: InputMaybe<Scalars['String']>;
+  deliveryAddress: Scalars['String'];
+  deliveryPrice: Scalars['Float'];
+  estimatedDeliveryDate?: InputMaybe<Scalars['String']>;
+  itemDescription: Scalars['String'];
+  note?: InputMaybe<Scalars['String']>;
+  paymentMethod?: InputMaybe<Scalars['String']>;
+  phone?: InputMaybe<Scalars['String']>;
+  pickupAddress: Scalars['String'];
+  scheduledDate?: InputMaybe<Scalars['String']>;
+  scheduledTime?: InputMaybe<Scalars['String']>;
+  urgency?: InputMaybe<Scalars['String']>;
+  weight?: InputMaybe<Scalars['String']>;
 };
 
 export type CreateOrderInput = {
@@ -286,21 +309,21 @@ export type Delivery = {
   /** Delivery Address */
   deliveryAddress: Scalars['String'];
   /** Delivery Attempts */
-  deliveryAttempts: Scalars['String'];
+  deliveryAttempts?: Maybe<Scalars['String']>;
   /** Estimated Delivery Date */
   estimatedDeliveryDate: Scalars['String'];
   /** Unique ID */
   id: Scalars['Int'];
   /** Metadata */
-  metadata: Scalars['String'];
+  metadata?: Maybe<Scalars['String']>;
   /** Order */
-  order: Order;
+  order?: Maybe<Order>;
   /** Status */
   status: Scalars['String'];
   /** Tracking Number */
-  trackingNumber: Scalars['String'];
+  trackingNumber?: Maybe<Scalars['String']>;
   /** Tracking Updates */
-  trackingUpdates: Scalars['String'];
+  trackingUpdates?: Maybe<Scalars['String']>;
   /** Delivery Updated At */
   updatedAt: Scalars['String'];
   /** UUID */
@@ -373,6 +396,93 @@ export enum EventType {
   Offline = 'OFFLINE',
   Online = 'ONLINE'
 }
+
+/** A single Ad */
+export type ExchangeAd = {
+  __typename?: 'ExchangeAd';
+  /** Ad Type ('buy' or 'sell') */
+  ad_type: Scalars['String'];
+  /** Address Details */
+  address_details?: Maybe<Scalars['String']>;
+  /** Business */
+  business?: Maybe<Business>;
+  /** Business ID */
+  business_id?: Maybe<Scalars['String']>;
+  /** Ad Created At */
+  created_at: Scalars['DateTime'];
+  /** From Currency */
+  from_currency: Scalars['String'];
+  /** Maximum Amount */
+  max_amount: Scalars['Float'];
+  /** Minimum Amount */
+  min_amount: Scalars['Float'];
+  /** Payout Address */
+  payout_address?: Maybe<Scalars['String']>;
+  /** Payout Banks */
+  payout_banks?: Maybe<Scalars['String']>;
+  /** Exchange Rate */
+  rate: Scalars['Float'];
+  /** Ad Status ('active', 'completed', 'cancelled') */
+  status: Scalars['String'];
+  /** To Currency */
+  to_currency: Scalars['String'];
+  /** Ad Updated At */
+  updated_at: Scalars['DateTime'];
+  /** Unique UUID */
+  uuid: Scalars['String'];
+};
+
+/** A paginated list of ExchangeAd items. */
+export type ExchangeAdPaginator = {
+  __typename?: 'ExchangeAdPaginator';
+  /** A list of ExchangeAd items. */
+  data: Array<ExchangeAd>;
+  /** Pagination information about the list of items. */
+  paginatorInfo: PaginatorInfo;
+};
+
+/** A single Order */
+export type ExchangeOrder = {
+  __typename?: 'ExchangeOrder';
+  /** The attached Ad */
+  ad: ExchangeAd;
+  /** Ad ID */
+  ad_id: Scalars['Int'];
+  /** Amount */
+  amount: Scalars['Float'];
+  /** Conversation UUID associated with this order */
+  conversation_uuid?: Maybe<Scalars['String']>;
+  /** Order Created At */
+  created_at: Scalars['DateTime'];
+  /** Expected Amount */
+  expected_amount: Scalars['Float'];
+  /** Expiration Time */
+  expired_at: Scalars['DateTime'];
+  /** ID */
+  id: Scalars['Int'];
+  /** Payment Amount */
+  payment_amount: Scalars['String'];
+  /** Payment Type */
+  payment_type: Scalars['String'];
+  /** Payout Option */
+  payout_option: Scalars['String'];
+  /** Pickup Location Address Line */
+  pickup_location_address_line?: Maybe<Scalars['String']>;
+  /** Pickup Location City */
+  pickup_location_city?: Maybe<Scalars['String']>;
+  /** Pickup Location Country */
+  pickup_location_country?: Maybe<Scalars['String']>;
+  /** Order Status ('pending', 'completed', 'cancelled', 'failed') */
+  status: Scalars['String'];
+  /** Order Updated At */
+  updated_at: Scalars['DateTime'];
+  /** The attached User */
+  user: User;
+  /** User ID */
+  user_id: Scalars['Int'];
+  /** Unique UUID */
+  uuid: Scalars['String'];
+};
 
 export type ExchangeRate = {
   __typename?: 'ExchangeRate';
@@ -543,21 +653,23 @@ export type Message = {
   /** Conversation ID */
   conversation_id: Scalars['Int'];
   /** Message Created At */
-  created_at: Scalars['DateTime'];
+  createdAt: Scalars['String'];
   /** Unique ID */
   id: Scalars['Int'];
+  /** The metadata */
+  metadata?: Maybe<Scalars['String']>;
   /** Sender */
-  participant: Participant;
+  participant?: Maybe<Participant>;
   /** Replied Message */
-  replied_message: Message;
-  /** Sender ID */
-  sender_id: Scalars['Int'];
+  replied_message?: Maybe<Message>;
+  /** Sender User */
+  sender?: Maybe<User>;
   /** Message State */
   state: Scalars['String'];
   /** Message Status */
   status: Scalars['String'];
   /** Message Updated At */
-  updated_at: Scalars['DateTime'];
+  updatedAt: Scalars['String'];
   /** Unique UUID */
   uuid: Scalars['String'];
 };
@@ -585,9 +697,14 @@ export type Mutation = {
   AddParticipant: Conversation;
   /** Confirm withdrawal */
   ConfirmWithdrawal?: Maybe<OffRamp>;
+  CreateDeliveryOrder?: Maybe<Delivery>;
   /** Create a message */
   CreateMessage: Message;
   CreateOrder?: Maybe<Order>;
+  /** Create a new P2P order */
+  CreateP2pOrder: ExchangeOrder;
+  /** Create a new P2P payment method */
+  CreateP2pPaymentMethod: P2pPaymentMethod;
   /** Create a saved account */
   CreateSavedAccount: UserBank;
   /** Delete User */
@@ -610,6 +727,8 @@ export type Mutation = {
   MonitorTopupStatus: Scalars['Boolean'];
   /** Redeem GRP tokens */
   RedeemGRPToken: Scalars['Boolean'];
+  /** Release USDC for a P2P order (seller triggers fund release) */
+  ReleaseP2pFunds: Scalars['Boolean'];
   /** Remove a user as a beneficiary */
   RemoveAsBeneficiary: Scalars['Boolean'];
   /** Remove a saved account */
@@ -630,6 +749,10 @@ export type Mutation = {
   SignUp: User;
   /** Soft delete message */
   SoftDeleteMessage: Scalars['Boolean'];
+  /** Soft delete a P2P payment method by UUID */
+  SoftDeleteP2pPaymentMethod: Scalars['Boolean'];
+  /** Update an existing P2P payment method by UUID */
+  UpdateP2pPaymentMethod: P2pPaymentMethod;
   /** Update user password */
   UpdatePassword: Scalars['Boolean'];
   /** Update a user's profile with detailed information */
@@ -665,6 +788,11 @@ export type MutationConfirmWithdrawalArgs = {
 };
 
 
+export type MutationCreateDeliveryOrderArgs = {
+  input: CreateDeliveryOrderInput;
+};
+
+
 export type MutationCreateMessageArgs = {
   input: MessageInput;
 };
@@ -672,6 +800,28 @@ export type MutationCreateMessageArgs = {
 
 export type MutationCreateOrderArgs = {
   input: CreateOrderInput;
+};
+
+
+export type MutationCreateP2pOrderArgs = {
+  amount: Scalars['Float'];
+  city: Scalars['String'];
+  conversation_uuid: Scalars['String'];
+  country: Scalars['String'];
+  delivery_address: Scalars['String'];
+  exchange_ad_uuid: Scalars['String'];
+  metadata?: InputMaybe<Scalars['String']>;
+  payment_type: Scalars['String'];
+  payout_option: Scalars['String'];
+};
+
+
+export type MutationCreateP2pPaymentMethodArgs = {
+  account_name: Scalars['String'];
+  account_number: Scalars['String'];
+  bank_name: Scalars['String'];
+  currency?: InputMaybe<Scalars['String']>;
+  meta_data?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -749,6 +899,13 @@ export type MutationRedeemGrpTokenArgs = {
 };
 
 
+export type MutationReleaseP2pFundsArgs = {
+  amount: Scalars['Float'];
+  metadata?: InputMaybe<Scalars['String']>;
+  order_uuid: Scalars['String'];
+};
+
+
 export type MutationRemoveAsBeneficiaryArgs = {
   beneficiary_uuid: Scalars['String'];
 };
@@ -805,6 +962,21 @@ export type MutationSignUpArgs = {
 
 export type MutationSoftDeleteMessageArgs = {
   message_id: Scalars['Int'];
+};
+
+
+export type MutationSoftDeleteP2pPaymentMethodArgs = {
+  p2p_payment_method_uuid: Scalars['String'];
+};
+
+
+export type MutationUpdateP2pPaymentMethodArgs = {
+  account_name?: InputMaybe<Scalars['String']>;
+  account_number?: InputMaybe<Scalars['String']>;
+  bank_name?: InputMaybe<Scalars['String']>;
+  currency?: InputMaybe<Scalars['String']>;
+  meta_data?: InputMaybe<Scalars['String']>;
+  p2p_payment_method_uuid: Scalars['String'];
 };
 
 
@@ -1046,6 +1218,38 @@ export type OrderPaginator = {
   paginatorInfo: PaginatorInfo;
 };
 
+/** A saved peer-to-peer (P2P) payment method for a user */
+export type P2pPaymentMethod = {
+  __typename?: 'P2pPaymentMethod';
+  /** Full name of the account holder */
+  account_name: Scalars['String'];
+  /** Unique account identifier */
+  account_number: Scalars['String'];
+  /** Name of the bank or financial institution */
+  bank_name: Scalars['String'];
+  /** Timestamp when the payment method was created */
+  created_at: Scalars['DateTime'];
+  /** Currency code (e.g. NGN, USD) */
+  currency?: Maybe<Scalars['String']>;
+  /** Extra details as stringified JSON */
+  meta_data?: Maybe<Scalars['String']>;
+  /** Timestamp when the payment method was last updated */
+  updated_at: Scalars['DateTime'];
+  /** ID of the user who owns this payment method */
+  user_id: Scalars['Int'];
+  /** Public UUID for external reference */
+  uuid: Scalars['String'];
+};
+
+/** A paginated list of P2pPaymentMethod items. */
+export type P2pPaymentMethodPaginator = {
+  __typename?: 'P2pPaymentMethodPaginator';
+  /** A list of P2pPaymentMethod items. */
+  data: Array<P2pPaymentMethod>;
+  /** Pagination information about the list of items. */
+  paginatorInfo: PaginatorInfo;
+};
+
 /** Information about pagination using a fully featured paginator. */
 export type PaginatorInfo = {
   __typename?: 'PaginatorInfo';
@@ -1073,7 +1277,7 @@ export type Participant = {
   /** Conversation */
   conversation: Conversation;
   /** Participant Created At */
-  created_at: Scalars['DateTime'];
+  created_at: Scalars['String'];
   /** Unique ID */
   id: Scalars['Int'];
   /** Messages */
@@ -1081,9 +1285,11 @@ export type Participant = {
   /** Participant State */
   state: Scalars['String'];
   /** Participant Updated At */
-  updated_at: Scalars['DateTime'];
+  updated_at: Scalars['String'];
   /** Attached user */
-  user: User;
+  user?: Maybe<User>;
+  /** The user id */
+  user_id: Scalars['Int'];
 };
 
 export type PaymentChannel = {
@@ -1456,6 +1662,10 @@ export type Query = {
   /** Get country information for verification */
   GetCountryInformation: CountryInformation;
   GetDeliveries: DeliveryPaginator;
+  /** Get an exchange ads */
+  GetExchangeAd?: Maybe<ExchangeAd>;
+  /** Get Exchange Ads */
+  GetExchangeAds: ExchangeAdPaginator;
   /** Get the current exchange rate between two currencies */
   GetExchangeRate: ExchangeRate;
   /** Get financial summary */
@@ -1463,6 +1673,8 @@ export type Query = {
   /** Get the global exchange rate between two currencies */
   GetGlobalExchangeRate: GlobalExchangeRate;
   GetMarkets: BusinessPaginator;
+  /** Get a paginated list of P2P payment methods for the authenticated user */
+  GetMyP2pPaymentMethods: P2pPaymentMethodPaginator;
   GetMyTickets: TicketPaginator;
   /** Get a paginated list of notifications for the authenticated user */
   GetNotifications: NotificationPaginator;
@@ -1477,11 +1689,15 @@ export type Query = {
   /** Get a order by UUID */
   GetOrder?: Maybe<Order>;
   GetOrders: OrderPaginator;
+  /** Get a single P2P payment method by UUID */
+  GetP2pPaymentMethod?: Maybe<P2pPaymentMethod>;
   /** Get many point transactions */
   GetPointTransactions: PointTransactionPaginator;
   /** Get a product by UUID */
   GetProduct?: Maybe<Product>;
   GetProducts: ProductPaginator;
+  /** Get Recommended Exchange Ads */
+  GetRecommendedExchangeAds: ExchangeAdPaginator;
   /** Get a paginated list of saved accounts for the authenticated user */
   GetSavedAccounts: UserBankPaginator;
   GetSingleDelivery?: Maybe<Delivery>;
@@ -1557,6 +1773,19 @@ export type QueryGetDeliveriesArgs = {
 };
 
 
+export type QueryGetExchangeAdArgs = {
+  uuid: Scalars['String'];
+};
+
+
+export type QueryGetExchangeAdsArgs = {
+  first: Scalars['Int'];
+  orderBy?: InputMaybe<Array<QueryGetExchangeAdsOrderByOrderByClause>>;
+  page?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<QueryGetExchangeAdsWhereWhereConditions>;
+};
+
+
 export type QueryGetExchangeRateArgs = {
   from_currency: Scalars['String'];
   to_currency: Scalars['String'];
@@ -1579,6 +1808,12 @@ export type QueryGetMarketsArgs = {
   orderBy?: InputMaybe<Array<QueryGetMarketsOrderByOrderByClause>>;
   page?: InputMaybe<Scalars['Int']>;
   where?: InputMaybe<QueryGetMarketsWhereWhereConditions>;
+};
+
+
+export type QueryGetMyP2pPaymentMethodsArgs = {
+  first: Scalars['Int'];
+  page?: InputMaybe<Scalars['Int']>;
 };
 
 
@@ -1624,6 +1859,11 @@ export type QueryGetOrdersArgs = {
 };
 
 
+export type QueryGetP2pPaymentMethodArgs = {
+  uuid: Scalars['String'];
+};
+
+
 export type QueryGetPointTransactionsArgs = {
   first: Scalars['Int'];
   orderBy?: InputMaybe<Array<QueryGetPointTransactionsOrderByOrderByClause>>;
@@ -1642,6 +1882,14 @@ export type QueryGetProductsArgs = {
   orderBy?: InputMaybe<Array<QueryGetProductsOrderByOrderByClause>>;
   page?: InputMaybe<Scalars['Int']>;
   where?: InputMaybe<QueryGetProductsWhereWhereConditions>;
+};
+
+
+export type QueryGetRecommendedExchangeAdsArgs = {
+  first: Scalars['Int'];
+  orderBy?: InputMaybe<Array<QueryGetRecommendedExchangeAdsOrderByOrderByClause>>;
+  page?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<QueryGetRecommendedExchangeAdsWhereWhereConditions>;
 };
 
 
@@ -1772,6 +2020,58 @@ export type QueryGetDeliveriesWhereWhereConditionsRelation = {
   amount?: InputMaybe<Scalars['Int']>;
   /** Additional condition logic. */
   condition?: InputMaybe<QueryGetDeliveriesWhereWhereConditions>;
+  /** The comparison operator to test against the amount. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The relation that is checked. */
+  relation: Scalars['String'];
+};
+
+/** Allowed column names for Query.GetExchangeAds.orderBy. */
+export enum QueryGetExchangeAdsOrderByColumn {
+  CreatedAt = 'CREATED_AT',
+  UpdatedAt = 'UPDATED_AT'
+}
+
+/** Order by clause for Query.GetExchangeAds.orderBy. */
+export type QueryGetExchangeAdsOrderByOrderByClause = {
+  /** The column that is used for ordering. */
+  column: QueryGetExchangeAdsOrderByColumn;
+  /** The direction that is used for ordering. */
+  order: SortOrder;
+};
+
+/** Allowed column names for Query.GetExchangeAds.where. */
+export enum QueryGetExchangeAdsWhereColumn {
+  AdType = 'AD_TYPE',
+  CreatedAt = 'CREATED_AT',
+  FromCurrency = 'FROM_CURRENCY',
+  Status = 'STATUS',
+  ToCurrency = 'TO_CURRENCY',
+  UpdatedAt = 'UPDATED_AT'
+}
+
+/** Dynamic WHERE conditions for the `where` argument of the query `GetExchangeAds`. */
+export type QueryGetExchangeAdsWhereWhereConditions = {
+  /** A set of conditions that requires all conditions to match. */
+  AND?: InputMaybe<Array<QueryGetExchangeAdsWhereWhereConditions>>;
+  /** Check whether a relation exists. Extra conditions or a minimum amount can be applied. */
+  HAS?: InputMaybe<QueryGetExchangeAdsWhereWhereConditionsRelation>;
+  /** A set of conditions that requires at least one condition to match. */
+  OR?: InputMaybe<Array<QueryGetExchangeAdsWhereWhereConditions>>;
+  /** The column that is used for the condition. */
+  column?: InputMaybe<QueryGetExchangeAdsWhereColumn>;
+  /** The operator that is used for the condition. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The value that is used for the condition. */
+  value?: InputMaybe<Scalars['Mixed']>;
+};
+
+/** Dynamic HAS conditions for WHERE conditions for the `where` argument of the query `GetExchangeAds`. */
+export type QueryGetExchangeAdsWhereWhereConditionsRelation = {
+  /** The amount to test. */
+  amount?: InputMaybe<Scalars['Int']>;
+  /** Additional condition logic. */
+  condition?: InputMaybe<QueryGetExchangeAdsWhereWhereConditions>;
   /** The comparison operator to test against the amount. */
   operator?: InputMaybe<SqlOperator>;
   /** The relation that is checked. */
@@ -2023,6 +2323,58 @@ export type QueryGetProductsWhereWhereConditionsRelation = {
   relation: Scalars['String'];
 };
 
+/** Allowed column names for Query.GetRecommendedExchangeAds.orderBy. */
+export enum QueryGetRecommendedExchangeAdsOrderByColumn {
+  CreatedAt = 'CREATED_AT',
+  UpdatedAt = 'UPDATED_AT'
+}
+
+/** Order by clause for Query.GetRecommendedExchangeAds.orderBy. */
+export type QueryGetRecommendedExchangeAdsOrderByOrderByClause = {
+  /** The column that is used for ordering. */
+  column: QueryGetRecommendedExchangeAdsOrderByColumn;
+  /** The direction that is used for ordering. */
+  order: SortOrder;
+};
+
+/** Allowed column names for Query.GetRecommendedExchangeAds.where. */
+export enum QueryGetRecommendedExchangeAdsWhereColumn {
+  AdType = 'AD_TYPE',
+  CreatedAt = 'CREATED_AT',
+  FromCurrency = 'FROM_CURRENCY',
+  Status = 'STATUS',
+  ToCurrency = 'TO_CURRENCY',
+  UpdatedAt = 'UPDATED_AT'
+}
+
+/** Dynamic WHERE conditions for the `where` argument of the query `GetRecommendedExchangeAds`. */
+export type QueryGetRecommendedExchangeAdsWhereWhereConditions = {
+  /** A set of conditions that requires all conditions to match. */
+  AND?: InputMaybe<Array<QueryGetRecommendedExchangeAdsWhereWhereConditions>>;
+  /** Check whether a relation exists. Extra conditions or a minimum amount can be applied. */
+  HAS?: InputMaybe<QueryGetRecommendedExchangeAdsWhereWhereConditionsRelation>;
+  /** A set of conditions that requires at least one condition to match. */
+  OR?: InputMaybe<Array<QueryGetRecommendedExchangeAdsWhereWhereConditions>>;
+  /** The column that is used for the condition. */
+  column?: InputMaybe<QueryGetRecommendedExchangeAdsWhereColumn>;
+  /** The operator that is used for the condition. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The value that is used for the condition. */
+  value?: InputMaybe<Scalars['Mixed']>;
+};
+
+/** Dynamic HAS conditions for WHERE conditions for the `where` argument of the query `GetRecommendedExchangeAds`. */
+export type QueryGetRecommendedExchangeAdsWhereWhereConditionsRelation = {
+  /** The amount to test. */
+  amount?: InputMaybe<Scalars['Int']>;
+  /** Additional condition logic. */
+  condition?: InputMaybe<QueryGetRecommendedExchangeAdsWhereWhereConditions>;
+  /** The comparison operator to test against the amount. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The relation that is checked. */
+  relation: Scalars['String'];
+};
+
 /** Allowed column names for Query.GetTransactions.orderBy. */
 export enum QueryGetTransactionsOrderByColumn {
   CreatedAt = 'CREATED_AT'
@@ -2201,6 +2553,33 @@ export type Source = {
   accountNumber: Scalars['String'];
   accountType: Scalars['String'];
   networkId: Scalars['String'];
+};
+
+/** A physical store location tied to a business profile. */
+export type StoreLocation = {
+  __typename?: 'StoreLocation';
+  /** Street or building address */
+  address: Scalars['String'];
+  /** Associated business ID */
+  business_id: Scalars['String'];
+  /** City where the store is located */
+  city: Scalars['String'];
+  /** Country (ISO code or full name) */
+  country: Scalars['String'];
+  /** When the store location was created */
+  created_at: Scalars['DateTime'];
+  /** Latitude coordinate (if available) */
+  latitude?: Maybe<Scalars['Float']>;
+  /** Longitude coordinate (if available) */
+  longitude?: Maybe<Scalars['Float']>;
+  /** Stringified metadata (e.g. hours, tags, notes) */
+  meta_data?: Maybe<Scalars['String']>;
+  /** Name or label for the location */
+  name?: Maybe<Scalars['String']>;
+  /** When the store location was last updated */
+  updated_at: Scalars['DateTime'];
+  /** Public UUID for external reference */
+  uuid: Scalars['String'];
 };
 
 export type SubscriptionProduct = {

@@ -1,5 +1,5 @@
-import { BaseApiService } from "./common/BaseService"
-import { OperationResult } from "urql"
+import { BaseApiService } from "./common/BaseService";
+import { OperationResult } from "urql";
 import {
   MutationInitiateTopupArgs,
   MutationMakePaymentArgs,
@@ -29,7 +29,15 @@ import {
   YellowcardNetwork,
   FinancialSummaryResponse,
   FinancialSummaryInput,
-} from "../gql/graphql"
+  ExchangeAdPaginator,
+  ExchangeAd,
+  P2pPaymentMethodPaginator,
+  P2pPaymentMethod,
+  MutationCreateP2pPaymentMethodArgs,
+  MutationUpdateP2pPaymentMethodArgs,
+  MutationSoftDeleteP2pPaymentMethodArgs,
+  ExchangeOrder,
+} from "../gql/graphql";
 
 export default class WalletsApi extends BaseApiService {
   // Query
@@ -47,16 +55,16 @@ export default class WalletsApi extends BaseApiService {
           }
         }
       }
-		`
+		`;
 
     const response: Promise<
       OperationResult<{
-        GetExchangeRate: ExchangeRate
+        GetExchangeRate: ExchangeRate;
       }>
-    > = this.query(requestData, data)
+    > = this.query(requestData, data);
 
-    return response
-  }
+    return response;
+  };
 
   public GetPointTransactions = (
     page: number,
@@ -106,18 +114,18 @@ export default class WalletsApi extends BaseApiService {
           }
         }
       }
-    `
+    `;
     const response: Promise<
       OperationResult<{
-        GetPointTransactions: PointTransactionPaginator
+        GetPointTransactions: PointTransactionPaginator;
       }>
     > = this.query(requestData, {
       page,
       count,
-    })
+    });
 
-    return response
-  }
+    return response;
+  };
 
   public GetTransactions = (
     page: number,
@@ -168,18 +176,18 @@ export default class WalletsApi extends BaseApiService {
           }
         }
       }
-    `
+    `;
     const response: Promise<
       OperationResult<{
-        GetTransactions: TransactionPaginator
+        GetTransactions: TransactionPaginator;
       }>
     > = this.query(requestData, {
       page,
       count,
-    })
+    });
 
-    return response
-  }
+    return response;
+  };
 
   public GetSinglePointTransaction = (uuid: string) => {
     const requestData = `
@@ -201,17 +209,17 @@ export default class WalletsApi extends BaseApiService {
           uuid
         }
       }
-    `
+    `;
     const response: Promise<
       OperationResult<{
-        GetSinglePointTransaction: PointTransaction
+        GetSinglePointTransaction: PointTransaction;
       }>
     > = this.query(requestData, {
       uuid,
-    })
+    });
 
-    return response
-  }
+    return response;
+  };
 
   public GetSingleTransaction = (uuid: string) => {
     const requestData = `
@@ -234,18 +242,18 @@ export default class WalletsApi extends BaseApiService {
           wallet_balance
         }
       }
-    `
+    `;
 
     const response: Promise<
       OperationResult<{
-        GetSingleTransaction: Transaction
+        GetSingleTransaction: Transaction;
       }>
     > = this.query(requestData, {
       uuid,
-    })
+    });
 
-    return response
-  }
+    return response;
+  };
 
   public GetSavedAccounts = (first: number, page: number) => {
     const requestData = `
@@ -273,18 +281,18 @@ export default class WalletsApi extends BaseApiService {
           }
         }
       }
-    `
+    `;
     const response: Promise<
       OperationResult<{
-        GetSavedAccounts: UserBankPaginator
+        GetSavedAccounts: UserBankPaginator;
       }>
     > = this.query(requestData, {
       first,
       page,
-    })
+    });
 
-    return response
-  }
+    return response;
+  };
 
   public GetYellowCardNetwork = (country_code: string) => {
     const requestData = `
@@ -301,37 +309,37 @@ export default class WalletsApi extends BaseApiService {
             channelIds
           }
         }
-    `
+    `;
 
     const response: Promise<
       OperationResult<{
-        GetYellowCardNetwork: YellowcardNetwork[]
+        GetYellowCardNetwork: YellowcardNetwork[];
       }>
     > = this.query(requestData, {
       country_code,
-    })
+    });
 
-    return response
-  }
+    return response;
+  };
 
   public GetBankAccountDetails = (accountNumber: string, networkId: string) => {
     const requestData = `
         query GetBankAccountDetails($accountNumber: String!, $networkId: String!) {
           GetBankAccountDetails(accountNumber: $accountNumber, networkId: $networkId)
         }
-    `
+    `;
 
     const response: Promise<
       OperationResult<{
-        GetBankAccountDetails: string
+        GetBankAccountDetails: string;
       }>
     > = this.query(requestData, {
       accountNumber,
       networkId,
-    })
+    });
 
-    return response
-  }
+    return response;
+  };
 
   public GetFinancialSummary = (input: FinancialSummaryInput) => {
     const requestData = `
@@ -341,15 +349,15 @@ export default class WalletsApi extends BaseApiService {
          debit
         }
       }
-    `
+    `;
     const response: Promise<
       OperationResult<{ GetFinancialSummary: FinancialSummaryResponse }>
     > = this.query(requestData, {
       input,
-    })
+    });
 
-    return response
-  }
+    return response;
+  };
 
   public GetWithdrawInfo = (
     amount: number,
@@ -370,20 +378,20 @@ export default class WalletsApi extends BaseApiService {
           }
         }
       }
-		`
+		`;
 
     const response: Promise<
       OperationResult<{
-        GetWithdrawInfo: WithdrawInfo
+        GetWithdrawInfo: WithdrawInfo;
       }>
     > = this.query(requestData, {
       amount,
       currency,
       country_code,
-    })
+    });
 
-    return response
-  }
+    return response;
+  };
 
   public GetOnRampCurrencies = () => {
     const requestData = `
@@ -395,16 +403,16 @@ export default class WalletsApi extends BaseApiService {
           supported_methods
         }
       }
-    `
+    `;
 
     const response: Promise<
       OperationResult<{
-        GetOnRampCurrencies: SupportedCurrency[]
+        GetOnRampCurrencies: SupportedCurrency[];
       }>
-    > = this.query(requestData, {})
+    > = this.query(requestData, {});
 
-    return response
-  }
+    return response;
+  };
 
   public GetOnRampChannelsByCountryCode = (countryCode: string) => {
     const requestData = `
@@ -425,16 +433,16 @@ export default class WalletsApi extends BaseApiService {
            rampType
         }
       }
-    `
+    `;
 
     const response: Promise<
       OperationResult<{
-        GetOnRampChannelsByCountryCode: PaymentChannel[]
+        GetOnRampChannelsByCountryCode: PaymentChannel[];
       }>
-    > = this.query(requestData, { countryCode })
+    > = this.query(requestData, { countryCode });
 
-    return response
-  }
+    return response;
+  };
 
   public GetOffRampChannelsByCountryCode = (countryCode: string) => {
     const requestData = `
@@ -455,16 +463,16 @@ export default class WalletsApi extends BaseApiService {
            rampType
         }
       }
-    `
+    `;
 
     const response: Promise<
       OperationResult<{
-        GetOffRampChannelsByCountryCode: PaymentChannel[]
+        GetOffRampChannelsByCountryCode: PaymentChannel[];
       }>
-    > = this.query(requestData, { countryCode })
+    > = this.query(requestData, { countryCode });
 
-    return response
-  }
+    return response;
+  };
 
   public GetOnRampNetworkByCountryCode = (countryCode: string) => {
     const requestData = `
@@ -480,16 +488,16 @@ export default class WalletsApi extends BaseApiService {
            countryAccountNumberType
         }
       }
-    `
+    `;
 
     const response: Promise<
       OperationResult<{
-        GetOnRampNetworkByCountryCode: PaymentNetwork[]
+        GetOnRampNetworkByCountryCode: PaymentNetwork[];
       }>
-    > = this.query(requestData, { countryCode })
+    > = this.query(requestData, { countryCode });
 
-    return response
-  }
+    return response;
+  };
 
   public GetOfframp = (uuid: string) => {
     const requestData = `
@@ -527,18 +535,18 @@ export default class WalletsApi extends BaseApiService {
         updated_at
         }
       }
-    `
+    `;
 
     const response: Promise<
       OperationResult<{
-        GetOfframp: OffRamp
+        GetOfframp: OffRamp;
       }>
     > = this.query(requestData, {
       uuid,
-    })
+    });
 
-    return response
-  }
+    return response;
+  };
 
   // Mutation
   public CreateSavedAccount = (data: MutationCreateSavedAccountArgs) => {
@@ -555,16 +563,16 @@ export default class WalletsApi extends BaseApiService {
             uuid
           }
         }
-      `
+      `;
 
     const response: Promise<
       OperationResult<{
-        CreateSavedAccount: UserBank
+        CreateSavedAccount: UserBank;
       }>
-    > = this.mutation(requestData, data)
+    > = this.mutation(requestData, data);
 
-    return response
-  }
+    return response;
+  };
 
   public InitiateTopup = (data: MutationInitiateTopupArgs) => {
     const requestData = `
@@ -602,14 +610,14 @@ export default class WalletsApi extends BaseApiService {
              serviceFeeAmountLocal
            }
          }
-  `
+  `;
 
     const response: Promise<
       OperationResult<{ InitiateTopup: PaymentCollectionResponse }>
-    > = this.mutation(requestData, data)
+    > = this.mutation(requestData, data);
 
-    return response
-  }
+    return response;
+  };
 
 
   public CreateCrpytoTransfer = (crypto: string, network: string) => {
@@ -664,13 +672,13 @@ export default class WalletsApi extends BaseApiService {
         business_uuid: $business_uuid
       )
     }
-  `
+  `;
 
     const response: Promise<OperationResult<{ MakePayment: boolean }>> =
-      this.mutation(requestData, data)
+      this.mutation(requestData, data);
 
-    return response
-  }
+    return response;
+  };
 
   public GetGlobalExchangeRate = (base: string, target: string) => {
     const requestData = `
@@ -682,19 +690,19 @@ export default class WalletsApi extends BaseApiService {
           unit
         }
       }
-		`
+		`;
 
     const response: Promise<
       OperationResult<{
-        GetGlobalExchangeRate: GlobalExchangeRate
+        GetGlobalExchangeRate: GlobalExchangeRate;
       }>
     > = this.query(requestData, {
       base,
       target,
-    })
+    });
 
-    return response
-  }
+    return response;
+  };
 
   public GetOffRampCurrencies = () => {
     const requestData = `
@@ -706,16 +714,16 @@ export default class WalletsApi extends BaseApiService {
             supported_methods
           }
         }
-    `
+    `;
 
     const response: Promise<
       OperationResult<{
-        GetOffRampCurrencies: SupportedCurrency[]
+        GetOffRampCurrencies: SupportedCurrency[];
       }>
-    > = this.query(requestData, {})
+    > = this.query(requestData, {});
 
-    return response
-  }
+    return response;
+  };
 
   public RedeemGRPToken = (data: MutationRedeemGrpTokenArgs) => {
     const requestData = `
@@ -726,13 +734,13 @@ export default class WalletsApi extends BaseApiService {
         grp_amount: $grp_amount
       )
     }
-  `
+  `;
 
     const response: Promise<OperationResult<{ RedeemGRPToken: boolean }>> =
-      this.mutation(requestData, data)
+      this.mutation(requestData, data);
 
-    return response
-  }
+    return response;
+  };
 
   public MonitorTopupStatus = (data: MutationMonitorTopupStatusArgs) => {
     const requestData = `
@@ -743,49 +751,49 @@ export default class WalletsApi extends BaseApiService {
         collection_id: $collection_id
       )
     }
-  `
+  `;
 
     const response: Promise<OperationResult<{ MonitorTopupStatus: boolean }>> =
-      this.mutation(requestData, data)
+      this.mutation(requestData, data);
 
-    return response
-  }
+    return response;
+  };
 
   public VerifyFlutterwaveTransaction = (reference: string) => {
     const requestData = `
         mutation VerifyFlutterwaveTransaction($reference: String!) {
           VerifyFlutterwaveTransaction(reference: $reference)
         }
-      `
+      `;
 
     const response: Promise<
       OperationResult<{
-        VerifyFlutterwaveTransaction: boolean
+        VerifyFlutterwaveTransaction: boolean;
       }>
     > = this.mutation(requestData, {
       reference,
-    })
+    });
 
-    return response
-  }
+    return response;
+  };
 
   public InitiateWalletKYC = (currency: string) => {
     const requestData = `
         mutation InitiateWalletKYC($currency: String!) {
           InitiateWalletKYC(currency: $currency)
         }
-      `
+      `;
 
     const response: Promise<
       OperationResult<{
-        InitiateWalletKYC: string
+        InitiateWalletKYC: string;
       }>
     > = this.mutation(requestData, {
       currency,
-    })
+    });
 
-    return response
-  }
+    return response;
+  };
 
   public ConfirmWithdrawal = (
     uuid: string,
@@ -838,21 +846,21 @@ export default class WalletsApi extends BaseApiService {
              updated_at
           }
         }
-      `
+      `;
 
     const response: Promise<
       OperationResult<{
-        ConfirmWithdrawal: OffRamp
+        ConfirmWithdrawal: OffRamp;
       }>
     > = this.mutation(requestData, {
       uuid,
       currency,
       amount,
       metadata,
-    })
+    });
 
-    return response
-  }
+    return response;
+  };
 
   public InitiateWithdrawal = (data: MutationInitiateWithdrawalArgs) => {
     const requestData = `
@@ -898,30 +906,291 @@ export default class WalletsApi extends BaseApiService {
              updated_at
           }
         }
-      `
+      `;
 
     const response: Promise<
       OperationResult<{
-        InitiateWithdrawal: OffRamp
+        InitiateWithdrawal: OffRamp;
       }>
-    > = this.mutation(requestData, data)
+    > = this.mutation(requestData, data);
 
-    return response
-  }
+    return response;
+  };
 
   public UploadFile = (file: File) => {
     const requestData = `
       mutation UploadFile($file: Upload!) {
         UploadFile(file: $file)
       }
-    `
+    `;
 
     const response: Promise<
       OperationResult<{
-        UploadFile: string
+        UploadFile: string;
       }>
-    > = this.mutation(requestData, { file })
+    > = this.mutation(requestData, { file });
 
-    return response
-  }
+    return response;
+  };
+
+  // P2P Methods
+  public GetRecommendedExchangeAds = (page: number, count: number, ad_type = 'buy') => {
+    const requestData = `
+      query GetRecommendedExchangeAds($page: Int!, $count: Int!) {
+        GetRecommendedExchangeAds(first: $count, page: $page, where: {
+          column: AD_TYPE,
+          operator: EQ,
+          value: "${ad_type}",
+        }) {
+          paginatorInfo {
+            total
+            perPage
+            lastPage
+            lastItem
+            hasMorePages
+            firstItem
+            currentPage
+            count
+          }
+          data {
+            uuid
+            business_id
+            address_details
+            from_currency
+            to_currency
+            rate
+            min_amount
+            max_amount
+            payout_address
+            payout_banks
+            status
+            ad_type
+            created_at
+            updated_at
+            business {
+              uuid
+              business_name
+            }
+          }
+        }
+      }
+    `;
+
+    const response: Promise<
+      OperationResult<{
+        GetRecommendedExchangeAds: ExchangeAdPaginator;
+      }>
+    > = this.query(requestData, { page, count });
+
+    return response;
+  };
+
+  public GetP2pPaymentMethods = (page: number, count: number) => {
+    const requestData = `
+      query GetMyP2pPaymentMethods($page: Int!, $count: Int!) {
+        GetMyP2pPaymentMethods(first: $count, page: $page) {
+          paginatorInfo {
+            total
+            perPage
+            lastPage
+            lastItem
+            hasMorePages
+            firstItem
+            currentPage
+            count
+          }
+          data {
+            uuid
+            user_id
+            account_name
+            account_number
+            bank_name
+            currency
+            meta_data
+            created_at
+            updated_at
+          }
+        }
+      }
+    `;
+
+    const response: Promise<
+      OperationResult<{
+        GetMyP2pPaymentMethods: P2pPaymentMethodPaginator;
+      }>
+    > = this.query(requestData, { page, count });
+
+    return response;
+  };
+
+  public CreateP2pPaymentMethod = (
+    data: MutationCreateP2pPaymentMethodArgs
+  ) => {
+    const requestData = `
+      mutation CreateP2pPaymentMethod(
+        $account_name: String!,
+        $account_number: String!,
+        $bank_name: String!,
+        $currency: String,
+        $meta_data: String
+      ) {
+        CreateP2pPaymentMethod(
+          account_name: $account_name,
+          account_number: $account_number,
+          bank_name: $bank_name,
+          currency: $currency,
+          meta_data: $meta_data
+        ) {
+          uuid
+          user_id
+          account_name
+          account_number
+          bank_name
+          currency
+          meta_data
+          created_at
+          updated_at
+        }
+      }
+    `;
+
+    const response: Promise<
+      OperationResult<{
+        CreateP2pPaymentMethod: P2pPaymentMethod;
+      }>
+    > = this.mutation(requestData, data);
+
+    return response;
+  };
+
+  public UpdateP2pPaymentMethod = (
+    data: MutationUpdateP2pPaymentMethodArgs
+  ) => {
+    const requestData = `
+      mutation UpdateP2pPaymentMethod(
+        $p2p_payment_method_uuid: String!,
+        $account_name: String,
+        $account_number: String,
+        $bank_name: String,
+        $currency: String,
+        $meta_data: String
+      ) {
+        UpdateP2pPaymentMethod(
+          p2p_payment_method_uuid: $p2p_payment_method_uuid,
+          account_name: $account_name,
+          account_number: $account_number,
+          bank_name: $bank_name,
+          currency: $currency,
+          meta_data: $meta_data
+        ) {
+          uuid
+          user_id
+          account_name
+          account_number
+          bank_name
+          currency
+          meta_data
+          created_at
+          updated_at
+        }
+      }
+    `;
+
+    const response: Promise<
+      OperationResult<{
+        UpdateP2pPaymentMethod: P2pPaymentMethod;
+      }>
+    > = this.mutation(requestData, data);
+
+    return response;
+  };
+
+  public SoftDeleteP2pPaymentMethod = (
+    data: MutationSoftDeleteP2pPaymentMethodArgs
+  ) => {
+    const requestData = `
+      mutation SoftDeleteP2pPaymentMethod($p2p_payment_method_uuid: String!) {
+        SoftDeleteP2pPaymentMethod(p2p_payment_method_uuid: $p2p_payment_method_uuid) {
+          uuid
+          user_id
+          account_name
+          account_number
+          bank_name
+          currency
+          meta_data
+          created_at
+          updated_at
+        }
+      }
+    `;
+
+    const response: Promise<
+      OperationResult<{
+        SoftDeleteP2pPaymentMethod: P2pPaymentMethod;
+      }>
+    > = this.mutation(requestData, data);
+
+    return response;
+  };
+
+  public CreateP2pOrder = (orderData: {
+    exchange_ad_uuid: string;
+    amount: number;
+    delivery_address: string;
+    city: string;
+    country: string;
+    payment_type: string;
+    payout_option: string;
+    conversation_uuid: string;
+    metadata?: string;
+  }) => {
+    const requestData = `
+      mutation CreateP2pOrder(
+        $exchange_ad_uuid: String!
+        $amount: Float!
+        $delivery_address: String!
+        $city: String!
+        $country: String!
+        $payment_type: String!
+        $payout_option: String!
+        $conversation_uuid: String!
+        $metadata: String
+      ) {
+        CreateP2pOrder(
+          exchange_ad_uuid: $exchange_ad_uuid
+          amount: $amount
+          delivery_address: $delivery_address
+          city: $city
+          country: $country
+          payment_type: $payment_type
+          payout_option: $payout_option
+          conversation_uuid: $conversation_uuid
+          metadata: $metadata
+        ) {
+          id
+          uuid
+          amount
+          expected_amount
+          status
+          payment_type
+          payout_option
+          pickup_location_address_line
+          pickup_location_city
+          pickup_location_country
+          conversation_uuid
+          created_at
+          updated_at
+          expired_at
+        }
+      }
+    `;
+
+    const response: Promise<
+      OperationResult<{
+        CreateP2pOrder: ExchangeOrder;
+      }>
+    > = this.mutation(requestData, orderData);
+
+    return response;
+  };
 }

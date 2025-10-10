@@ -1,12 +1,29 @@
-import { BaseApiService } from "./common/BaseService"
-import { OperationResult } from "urql"
+import { BaseApiService } from "./common/BaseService";
+import { OperationResult } from "urql";
 import {
   CreateOrderInput,
   Order,
   OrderPaginator,
   QueryGetOrdersOrderByOrderByClause,
   QueryGetOrdersWhereWhereConditions,
-} from "../gql/graphql"
+} from "../gql/graphql";
+
+// This should match the CreateDeliveryOrderInput from the GraphQL schema
+export interface CreateDeliveryOrderInput {
+  itemDescription: string;
+  weight?: string;
+  scheduledDate?: string;
+  scheduledTime?: string;
+  pickupAddress: string;
+  deliveryAddress: string;
+  note?: string;
+  deliveryPrice: number;
+  urgency?: string;
+  estimatedDeliveryDate?: string;
+  paymentMethod?: string;
+  phone?: string;
+  conversationId?: string; // Add conversation ID field
+}
 
 export default class OrderApi extends BaseApiService {
   // #region MUTATIONS
@@ -19,13 +36,46 @@ export default class OrderApi extends BaseApiService {
         paymentStatus 
       }
     }
-  `
+  `;
 
     const response: Promise<OperationResult<{ CreateOrder: Order }>> =
-      this.mutation(requestData, { input })
+      this.mutation(requestData, { input });
 
-    return response
-  }
+    return response;
+  };
+
+  public CreateDeliveryOrder = (input: CreateDeliveryOrderInput) => {
+    const requestData = `
+    mutation CreateDeliveryOrder($input: CreateDeliveryOrderInput!) {
+      CreateDeliveryOrder(input: $input) { 
+        id
+        uuid
+        trackingNumber
+        status
+        estimatedDeliveryDate
+        actualDeliveryDate
+        deliveryAddress
+        order {
+          id
+          uuid
+          orderNumber
+          status
+          paymentStatus
+          totalAmount
+          currency
+          paymentMethod
+        }
+        createdAt
+        updatedAt
+      }
+    }
+  `;
+
+    const response: Promise<OperationResult<{ CreateDeliveryOrder: any }>> =
+      this.mutation(requestData, { input });
+
+    return response;
+  };
   // MUTATIONS
 
   // #region QUERIES
@@ -56,16 +106,16 @@ export default class OrderApi extends BaseApiService {
         }
       }
     }
-  `
+  `;
 
     const response: Promise<
       OperationResult<{
-        GetOrders: OrderPaginator
+        GetOrders: OrderPaginator;
       }>
-    > = this.query(requestData, { first, page })
+    > = this.query(requestData, { first, page });
 
-    return response
-  }
+    return response;
+  };
 
   public GetSingleOrder = (id: string) => {
     const requestData = `
@@ -146,15 +196,15 @@ export default class OrderApi extends BaseApiService {
         }
       }
     }
-  `
+  `;
 
     const response: Promise<
       OperationResult<{
-        GetSingleOrder: Order
+        GetSingleOrder: Order;
       }>
-    > = this.query(requestData, { id })
+    > = this.query(requestData, { id });
 
-    return response
-  }
+    return response;
+  };
   // #endregion QUERIES
 }

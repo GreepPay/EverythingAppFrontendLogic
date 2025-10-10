@@ -5,6 +5,7 @@ import {
   QueryGetOrdersOrderByOrderByClause,
   QueryGetOrdersWhereWhereConditions,
 } from "../../gql/graphql";
+import { CreateDeliveryOrderInput } from "../../services/OrderApi";
 import { $api } from "../../services";
 import { CombinedError } from "@urql/core";
 import { Logic } from "..";
@@ -22,6 +23,7 @@ export default class OrderModule extends Common {
 
   // mutation payloads
   public CreateOrderPayload: CreateOrderInput | undefined;
+  public CreateDeliveryOrderPayload: CreateDeliveryOrderInput | undefined;
 
   public CreateOrder = async (): Promise<Order | undefined> => {
     if (!this.CreateOrderPayload) return;
@@ -33,6 +35,32 @@ export default class OrderModule extends Common {
       })
       .catch((error: CombinedError) => {
         Logic.Common.showError(error, "Failed to create order", "error-alert");
+        return undefined;
+      });
+  };
+
+  public CreateDeliveryOrder = async (): Promise<Order | undefined> => {
+    if (!this.CreateDeliveryOrderPayload) return;
+
+    Logic.Common.showLoader({
+      loading: true,
+      show: true,
+      message: "Processing your delivery order...",
+    });
+
+    return $api.order
+      .CreateDeliveryOrder(this.CreateDeliveryOrderPayload)
+      .then((response) => {
+        Logic.Common.hideLoader();
+        return response.data?.CreateDeliveryOrder;
+      })
+      .catch((error: CombinedError) => {
+        Logic.Common.hideLoader();
+        Logic.Common.showError(
+          error,
+          "Failed to create delivery order",
+          "error-alert"
+        );
         return undefined;
       });
   };
