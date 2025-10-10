@@ -528,11 +528,11 @@ export type FlutterwaveBank = {
 export type FlutterwaveBankBranch = {
   __typename?: 'FlutterwaveBankBranch';
   bank_id: Scalars['Int'];
-  bic: Scalars['String'];
-  branch_code: Scalars['String'];
-  branch_name: Scalars['String'];
+  bic?: Maybe<Scalars['String']>;
+  branch_code?: Maybe<Scalars['String']>;
+  branch_name?: Maybe<Scalars['String']>;
   id: Scalars['Int'];
-  swift_code: Scalars['String'];
+  swift_code?: Maybe<Scalars['String']>;
 };
 
 /** Flutterwave charge */
@@ -697,6 +697,8 @@ export type Mutation = {
   AddParticipant: Conversation;
   /** Confirm withdrawal */
   ConfirmWithdrawal?: Maybe<OffRamp>;
+  /** Create Crypto Transfer */
+  CreateCrpytoTransfer: OffRamp;
   CreateDeliveryOrder?: Maybe<Delivery>;
   /** Create a message */
   CreateMessage: Message;
@@ -785,6 +787,12 @@ export type MutationConfirmWithdrawalArgs = {
   currency: Scalars['String'];
   metadata?: InputMaybe<Scalars['String']>;
   uuid: Scalars['String'];
+};
+
+
+export type MutationCreateCrpytoTransferArgs = {
+  crypto: Scalars['String'];
+  network: Scalars['String'];
 };
 
 
@@ -2662,6 +2670,8 @@ export type Transaction = {
   description: Scalars['String'];
   /** Credit or Debit: 'credit' or 'debit' */
   dr_or_cr: Scalars['String'];
+  /** Extra Data (JSON string) */
+  extra_data?: Maybe<Scalars['String']>;
   /** Gateway (default: 'Greep-wallet') */
   gateway: Scalars['String'];
   /** The associated point transaction */
