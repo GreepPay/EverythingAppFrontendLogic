@@ -76,6 +76,25 @@ export default class OrderApi extends BaseApiService {
 
     return response;
   };
+
+  public UpdateDeliveryStatus = (deliveryId: string, status: string) => {
+    const requestData = `
+    mutation UpdateDeliveryStatus($input: UpdateDeliveryStatusInput!) {
+      UpdateDeliveryStatus(input: $input)
+    }
+  `;
+
+    // Convert deliveryId to integer since GraphQL schema expects Int
+    const deliveryIdInt = parseInt(deliveryId, 10);
+
+    const response: Promise<
+      OperationResult<{ UpdateDeliveryStatus: boolean }>
+    > = this.mutation(requestData, {
+      input: { deliveryId: deliveryIdInt, status },
+    });
+
+    return response;
+  };
   // MUTATIONS
 
   // #region QUERIES
