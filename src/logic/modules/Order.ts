@@ -99,7 +99,6 @@ export default class OrderModule extends Common {
     status: string
   ): Promise<boolean | undefined> => {
     if (!deliveryId || !status) {
-      console.error("❌ Missing deliveryId or status for UpdateDeliveryStatus");
       return false;
     }
 

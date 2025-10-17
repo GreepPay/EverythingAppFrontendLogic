@@ -84,9 +84,14 @@ export default class OrderApi extends BaseApiService {
     }
   `;
 
+    // Convert deliveryId to integer since GraphQL schema expects Int
+    const deliveryIdInt = parseInt(deliveryId, 10);
+
     const response: Promise<
       OperationResult<{ UpdateDeliveryStatus: boolean }>
-    > = this.mutation(requestData, { input: { deliveryId, status } });
+    > = this.mutation(requestData, {
+      input: { deliveryId: deliveryIdInt, status },
+    });
 
     return response;
   };
