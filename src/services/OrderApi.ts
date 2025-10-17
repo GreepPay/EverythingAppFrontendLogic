@@ -84,8 +84,9 @@ export default class OrderApi extends BaseApiService {
     }
   `;
 
-    const response: Promise<OperationResult<{ UpdateDeliveryStatus: boolean }>> =
-      this.mutation(requestData, { input: { deliveryId, status } });
+    const response: Promise<
+      OperationResult<{ UpdateDeliveryStatus: boolean }>
+    > = this.mutation(requestData, { input: { deliveryId, status } });
 
     return response;
   };
