@@ -93,4 +93,44 @@ export default class OrderModule extends Common {
         return undefined;
       });
   };
+
+  public UpdateDeliveryStatus = async (
+    deliveryId: string,
+    status: string
+  ): Promise<boolean | undefined> => {
+    if (!deliveryId || !status) {
+      console.error("❌ Missing deliveryId or status for UpdateDeliveryStatus");
+      return false;
+    }
+
+    Logic.Common.showLoader({
+      loading: true,
+      show: true,
+      message: "Updating delivery status...",
+    });
+
+    return $api.order
+      .UpdateDeliveryStatus(deliveryId, status)
+      .then((response) => {
+        Logic.Common.hideLoader();
+        if (response.data?.UpdateDeliveryStatus) {
+          Logic.Common.showAlert({
+            show: true,
+            message: "Delivery status updated successfully",
+            type: "success",
+          });
+          return true;
+        }
+        return false;
+      })
+      .catch((error: CombinedError) => {
+        Logic.Common.hideLoader();
+        Logic.Common.showError(
+          error,
+          "Failed to update delivery status",
+          "error-alert"
+        );
+        return false;
+      });
+  };
 }

@@ -76,6 +76,19 @@ export default class OrderApi extends BaseApiService {
 
     return response;
   };
+
+  public UpdateDeliveryStatus = (deliveryId: string, status: string) => {
+    const requestData = `
+    mutation UpdateDeliveryStatus($input: UpdateDeliveryStatusInput!) {
+      UpdateDeliveryStatus(input: $input)
+    }
+  `;
+
+    const response: Promise<OperationResult<{ UpdateDeliveryStatus: boolean }>> =
+      this.mutation(requestData, { input: { deliveryId, status } });
+
+    return response;
+  };
   // MUTATIONS
 
   // #region QUERIES
