@@ -142,6 +142,7 @@ export type Business = {
   /** Business description. */
   description?: Maybe<Scalars['String']>;
   eventProducts?: Maybe<Array<Maybe<Product>>>;
+  featuredProduct?: Maybe<Product>;
   /** Unique identifier for the business. */
   id: Scalars['String'];
   /** Business logo URL. */
@@ -482,6 +483,15 @@ export type ExchangeOrder = {
   user_id: Scalars['Int'];
   /** Unique UUID */
   uuid: Scalars['String'];
+};
+
+/** A paginated list of ExchangeOrder items. */
+export type ExchangeOrderPaginator = {
+  __typename?: 'ExchangeOrderPaginator';
+  /** A list of ExchangeOrder items. */
+  data: Array<ExchangeOrder>;
+  /** Pagination information about the list of items. */
+  paginatorInfo: PaginatorInfo;
 };
 
 export type ExchangeRate = {
@@ -1654,6 +1664,12 @@ export type Profile = {
 
 export type Query = {
   __typename?: 'Query';
+  /** Get featured events */
+  FeaturedEvents: ProductPaginator;
+  /** Get featured products */
+  FeaturedProducts: ProductPaginator;
+  /** Get featured shops */
+  FeaturedShops: BusinessPaginator;
   /** Get the authenticated user */
   GetAuthUser?: Maybe<User>;
   /** Get bank account details */
@@ -1681,6 +1697,8 @@ export type Query = {
   /** Get the global exchange rate between two currencies */
   GetGlobalExchangeRate: GlobalExchangeRate;
   GetMarkets: BusinessPaginator;
+  /** Get a paginated list of P2P orders for the authenticated user */
+  GetMyP2POrders: ExchangeOrderPaginator;
   /** Get a paginated list of P2P payment methods for the authenticated user */
   GetMyP2pPaymentMethods: P2pPaymentMethodPaginator;
   GetMyTickets: TicketPaginator;
@@ -1717,6 +1735,8 @@ export type Query = {
   GetSingleTransaction?: Maybe<Transaction>;
   /** Get user by UUID */
   GetSingleUser?: Maybe<User>;
+  /** Get SmileID token */
+  GetSmileIdToken: Scalars['String'];
   /** Get many transactions - paginated list of transactions for the authenticated user */
   GetTransactions: TransactionPaginator;
   /** Get transfer fees */
@@ -1725,12 +1745,40 @@ export type Query = {
   GetWithdrawInfo: WithdrawInfo;
   /** Get yellow card networks */
   GetYellowCardNetwork: Array<YellowcardNetwork>;
+  /** Get markt events */
+  MarketProducts: ProductPaginator;
+  /** Get market shops */
+  MarketShops: BusinessPaginator;
   /** Resolve bank account name */
   ResolveBankAccountName?: Maybe<BankAccountNameResponse>;
   /** Search businesses by name */
   SearchBusinesses: Array<Business>;
   /** Search users by name */
   SearchUsers: Array<User>;
+};
+
+
+export type QueryFeaturedEventsArgs = {
+  first: Scalars['Int'];
+  orderBy?: InputMaybe<Array<QueryFeaturedEventsOrderByOrderByClause>>;
+  page?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<QueryFeaturedEventsWhereWhereConditions>;
+};
+
+
+export type QueryFeaturedProductsArgs = {
+  first: Scalars['Int'];
+  orderBy?: InputMaybe<Array<QueryFeaturedProductsOrderByOrderByClause>>;
+  page?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<QueryFeaturedProductsWhereWhereConditions>;
+};
+
+
+export type QueryFeaturedShopsArgs = {
+  first: Scalars['Int'];
+  orderBy?: InputMaybe<Array<QueryFeaturedShopsOrderByOrderByClause>>;
+  page?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<QueryFeaturedShopsWhereWhereConditions>;
 };
 
 
@@ -1816,6 +1864,12 @@ export type QueryGetMarketsArgs = {
   orderBy?: InputMaybe<Array<QueryGetMarketsOrderByOrderByClause>>;
   page?: InputMaybe<Scalars['Int']>;
   where?: InputMaybe<QueryGetMarketsWhereWhereConditions>;
+};
+
+
+export type QueryGetMyP2POrdersArgs = {
+  first: Scalars['Int'];
+  page?: InputMaybe<Scalars['Int']>;
 };
 
 
@@ -1932,6 +1986,11 @@ export type QueryGetSingleUserArgs = {
 };
 
 
+export type QueryGetSmileIdTokenArgs = {
+  verification_type: Scalars['String'];
+};
+
+
 export type QueryGetTransactionsArgs = {
   first: Scalars['Int'];
   orderBy?: InputMaybe<Array<QueryGetTransactionsOrderByOrderByClause>>;
@@ -1959,6 +2018,22 @@ export type QueryGetYellowCardNetworkArgs = {
 };
 
 
+export type QueryMarketProductsArgs = {
+  first: Scalars['Int'];
+  orderBy?: InputMaybe<Array<QueryMarketProductsOrderByOrderByClause>>;
+  page?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<QueryMarketProductsWhereWhereConditions>;
+};
+
+
+export type QueryMarketShopsArgs = {
+  first: Scalars['Int'];
+  orderBy?: InputMaybe<Array<QueryMarketShopsOrderByOrderByClause>>;
+  page?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<QueryMarketShopsWhereWhereConditions>;
+};
+
+
 export type QueryResolveBankAccountNameArgs = {
   account_number: Scalars['String'];
   bank_code: Scalars['String'];
@@ -1972,6 +2047,170 @@ export type QuerySearchBusinessesArgs = {
 
 export type QuerySearchUsersArgs = {
   query: Scalars['String'];
+};
+
+/** Allowed column names for Query.FeaturedEvents.orderBy. */
+export enum QueryFeaturedEventsOrderByColumn {
+  CreatedAt = 'CREATED_AT',
+  Price = 'PRICE',
+  UpdatedAt = 'UPDATED_AT'
+}
+
+/** Order by clause for Query.FeaturedEvents.orderBy. */
+export type QueryFeaturedEventsOrderByOrderByClause = {
+  /** The column that is used for ordering. */
+  column: QueryFeaturedEventsOrderByColumn;
+  /** The direction that is used for ordering. */
+  order: SortOrder;
+};
+
+/** Allowed column names for Query.FeaturedEvents.where. */
+export enum QueryFeaturedEventsWhereColumn {
+  BusinessId = 'BUSINESS_ID',
+  CreatedAt = 'CREATED_AT',
+  Currency = 'CURRENCY',
+  Name = 'NAME',
+  Price = 'PRICE',
+  Slug = 'SLUG',
+  Status = 'STATUS',
+  UpdatedAt = 'UPDATED_AT'
+}
+
+/** Dynamic WHERE conditions for the `where` argument of the query `FeaturedEvents`. */
+export type QueryFeaturedEventsWhereWhereConditions = {
+  /** A set of conditions that requires all conditions to match. */
+  AND?: InputMaybe<Array<QueryFeaturedEventsWhereWhereConditions>>;
+  /** Check whether a relation exists. Extra conditions or a minimum amount can be applied. */
+  HAS?: InputMaybe<QueryFeaturedEventsWhereWhereConditionsRelation>;
+  /** A set of conditions that requires at least one condition to match. */
+  OR?: InputMaybe<Array<QueryFeaturedEventsWhereWhereConditions>>;
+  /** The column that is used for the condition. */
+  column?: InputMaybe<QueryFeaturedEventsWhereColumn>;
+  /** The operator that is used for the condition. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The value that is used for the condition. */
+  value?: InputMaybe<Scalars['Mixed']>;
+};
+
+/** Dynamic HAS conditions for WHERE conditions for the `where` argument of the query `FeaturedEvents`. */
+export type QueryFeaturedEventsWhereWhereConditionsRelation = {
+  /** The amount to test. */
+  amount?: InputMaybe<Scalars['Int']>;
+  /** Additional condition logic. */
+  condition?: InputMaybe<QueryFeaturedEventsWhereWhereConditions>;
+  /** The comparison operator to test against the amount. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The relation that is checked. */
+  relation: Scalars['String'];
+};
+
+/** Allowed column names for Query.FeaturedProducts.orderBy. */
+export enum QueryFeaturedProductsOrderByColumn {
+  CreatedAt = 'CREATED_AT',
+  Price = 'PRICE',
+  UpdatedAt = 'UPDATED_AT'
+}
+
+/** Order by clause for Query.FeaturedProducts.orderBy. */
+export type QueryFeaturedProductsOrderByOrderByClause = {
+  /** The column that is used for ordering. */
+  column: QueryFeaturedProductsOrderByColumn;
+  /** The direction that is used for ordering. */
+  order: SortOrder;
+};
+
+/** Allowed column names for Query.FeaturedProducts.where. */
+export enum QueryFeaturedProductsWhereColumn {
+  BusinessId = 'BUSINESS_ID',
+  CreatedAt = 'CREATED_AT',
+  Currency = 'CURRENCY',
+  Name = 'NAME',
+  Price = 'PRICE',
+  Slug = 'SLUG',
+  Status = 'STATUS',
+  Type = 'TYPE',
+  UpdatedAt = 'UPDATED_AT'
+}
+
+/** Dynamic WHERE conditions for the `where` argument of the query `FeaturedProducts`. */
+export type QueryFeaturedProductsWhereWhereConditions = {
+  /** A set of conditions that requires all conditions to match. */
+  AND?: InputMaybe<Array<QueryFeaturedProductsWhereWhereConditions>>;
+  /** Check whether a relation exists. Extra conditions or a minimum amount can be applied. */
+  HAS?: InputMaybe<QueryFeaturedProductsWhereWhereConditionsRelation>;
+  /** A set of conditions that requires at least one condition to match. */
+  OR?: InputMaybe<Array<QueryFeaturedProductsWhereWhereConditions>>;
+  /** The column that is used for the condition. */
+  column?: InputMaybe<QueryFeaturedProductsWhereColumn>;
+  /** The operator that is used for the condition. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The value that is used for the condition. */
+  value?: InputMaybe<Scalars['Mixed']>;
+};
+
+/** Dynamic HAS conditions for WHERE conditions for the `where` argument of the query `FeaturedProducts`. */
+export type QueryFeaturedProductsWhereWhereConditionsRelation = {
+  /** The amount to test. */
+  amount?: InputMaybe<Scalars['Int']>;
+  /** Additional condition logic. */
+  condition?: InputMaybe<QueryFeaturedProductsWhereWhereConditions>;
+  /** The comparison operator to test against the amount. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The relation that is checked. */
+  relation: Scalars['String'];
+};
+
+/** Allowed column names for Query.FeaturedShops.orderBy. */
+export enum QueryFeaturedShopsOrderByColumn {
+  CreatedAt = 'CREATED_AT',
+  UpdatedAt = 'UPDATED_AT'
+}
+
+/** Order by clause for Query.FeaturedShops.orderBy. */
+export type QueryFeaturedShopsOrderByOrderByClause = {
+  /** The column that is used for ordering. */
+  column: QueryFeaturedShopsOrderByColumn;
+  /** The direction that is used for ordering. */
+  order: SortOrder;
+};
+
+/** Allowed column names for Query.FeaturedShops.where. */
+export enum QueryFeaturedShopsWhereColumn {
+  BusinessName = 'BUSINESS_NAME',
+  Category = 'CATEGORY',
+  City = 'CITY',
+  Country = 'COUNTRY',
+  CreatedAt = 'CREATED_AT',
+  DefaultCurrency = 'DEFAULT_CURRENCY',
+  UpdatedAt = 'UPDATED_AT'
+}
+
+/** Dynamic WHERE conditions for the `where` argument of the query `FeaturedShops`. */
+export type QueryFeaturedShopsWhereWhereConditions = {
+  /** A set of conditions that requires all conditions to match. */
+  AND?: InputMaybe<Array<QueryFeaturedShopsWhereWhereConditions>>;
+  /** Check whether a relation exists. Extra conditions or a minimum amount can be applied. */
+  HAS?: InputMaybe<QueryFeaturedShopsWhereWhereConditionsRelation>;
+  /** A set of conditions that requires at least one condition to match. */
+  OR?: InputMaybe<Array<QueryFeaturedShopsWhereWhereConditions>>;
+  /** The column that is used for the condition. */
+  column?: InputMaybe<QueryFeaturedShopsWhereColumn>;
+  /** The operator that is used for the condition. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The value that is used for the condition. */
+  value?: InputMaybe<Scalars['Mixed']>;
+};
+
+/** Dynamic HAS conditions for WHERE conditions for the `where` argument of the query `FeaturedShops`. */
+export type QueryFeaturedShopsWhereWhereConditionsRelation = {
+  /** The amount to test. */
+  amount?: InputMaybe<Scalars['Int']>;
+  /** Additional condition logic. */
+  condition?: InputMaybe<QueryFeaturedShopsWhereWhereConditions>;
+  /** The comparison operator to test against the amount. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The relation that is checked. */
+  relation: Scalars['String'];
 };
 
 /** Allowed column names for Query.GetCategories.orderBy. */
@@ -2428,6 +2667,114 @@ export type QueryGetTransactionsWhereWhereConditionsRelation = {
   amount?: InputMaybe<Scalars['Int']>;
   /** Additional condition logic. */
   condition?: InputMaybe<QueryGetTransactionsWhereWhereConditions>;
+  /** The comparison operator to test against the amount. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The relation that is checked. */
+  relation: Scalars['String'];
+};
+
+/** Allowed column names for Query.MarketProducts.orderBy. */
+export enum QueryMarketProductsOrderByColumn {
+  CreatedAt = 'CREATED_AT',
+  Price = 'PRICE',
+  UpdatedAt = 'UPDATED_AT'
+}
+
+/** Order by clause for Query.MarketProducts.orderBy. */
+export type QueryMarketProductsOrderByOrderByClause = {
+  /** The column that is used for ordering. */
+  column: QueryMarketProductsOrderByColumn;
+  /** The direction that is used for ordering. */
+  order: SortOrder;
+};
+
+/** Allowed column names for Query.MarketProducts.where. */
+export enum QueryMarketProductsWhereColumn {
+  BusinessId = 'BUSINESS_ID',
+  CreatedAt = 'CREATED_AT',
+  Currency = 'CURRENCY',
+  Name = 'NAME',
+  Price = 'PRICE',
+  Slug = 'SLUG',
+  Status = 'STATUS',
+  UpdatedAt = 'UPDATED_AT'
+}
+
+/** Dynamic WHERE conditions for the `where` argument of the query `MarketProducts`. */
+export type QueryMarketProductsWhereWhereConditions = {
+  /** A set of conditions that requires all conditions to match. */
+  AND?: InputMaybe<Array<QueryMarketProductsWhereWhereConditions>>;
+  /** Check whether a relation exists. Extra conditions or a minimum amount can be applied. */
+  HAS?: InputMaybe<QueryMarketProductsWhereWhereConditionsRelation>;
+  /** A set of conditions that requires at least one condition to match. */
+  OR?: InputMaybe<Array<QueryMarketProductsWhereWhereConditions>>;
+  /** The column that is used for the condition. */
+  column?: InputMaybe<QueryMarketProductsWhereColumn>;
+  /** The operator that is used for the condition. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The value that is used for the condition. */
+  value?: InputMaybe<Scalars['Mixed']>;
+};
+
+/** Dynamic HAS conditions for WHERE conditions for the `where` argument of the query `MarketProducts`. */
+export type QueryMarketProductsWhereWhereConditionsRelation = {
+  /** The amount to test. */
+  amount?: InputMaybe<Scalars['Int']>;
+  /** Additional condition logic. */
+  condition?: InputMaybe<QueryMarketProductsWhereWhereConditions>;
+  /** The comparison operator to test against the amount. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The relation that is checked. */
+  relation: Scalars['String'];
+};
+
+/** Allowed column names for Query.MarketShops.orderBy. */
+export enum QueryMarketShopsOrderByColumn {
+  CreatedAt = 'CREATED_AT',
+  UpdatedAt = 'UPDATED_AT'
+}
+
+/** Order by clause for Query.MarketShops.orderBy. */
+export type QueryMarketShopsOrderByOrderByClause = {
+  /** The column that is used for ordering. */
+  column: QueryMarketShopsOrderByColumn;
+  /** The direction that is used for ordering. */
+  order: SortOrder;
+};
+
+/** Allowed column names for Query.MarketShops.where. */
+export enum QueryMarketShopsWhereColumn {
+  BusinessName = 'BUSINESS_NAME',
+  Category = 'CATEGORY',
+  City = 'CITY',
+  Country = 'COUNTRY',
+  CreatedAt = 'CREATED_AT',
+  DefaultCurrency = 'DEFAULT_CURRENCY',
+  UpdatedAt = 'UPDATED_AT'
+}
+
+/** Dynamic WHERE conditions for the `where` argument of the query `MarketShops`. */
+export type QueryMarketShopsWhereWhereConditions = {
+  /** A set of conditions that requires all conditions to match. */
+  AND?: InputMaybe<Array<QueryMarketShopsWhereWhereConditions>>;
+  /** Check whether a relation exists. Extra conditions or a minimum amount can be applied. */
+  HAS?: InputMaybe<QueryMarketShopsWhereWhereConditionsRelation>;
+  /** A set of conditions that requires at least one condition to match. */
+  OR?: InputMaybe<Array<QueryMarketShopsWhereWhereConditions>>;
+  /** The column that is used for the condition. */
+  column?: InputMaybe<QueryMarketShopsWhereColumn>;
+  /** The operator that is used for the condition. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The value that is used for the condition. */
+  value?: InputMaybe<Scalars['Mixed']>;
+};
+
+/** Dynamic HAS conditions for WHERE conditions for the `where` argument of the query `MarketShops`. */
+export type QueryMarketShopsWhereWhereConditionsRelation = {
+  /** The amount to test. */
+  amount?: InputMaybe<Scalars['Int']>;
+  /** Additional condition logic. */
+  condition?: InputMaybe<QueryMarketShopsWhereWhereConditions>;
   /** The comparison operator to test against the amount. */
   operator?: InputMaybe<SqlOperator>;
   /** The relation that is checked. */

@@ -241,8 +241,9 @@ export default class Common {
   }
 
   public goBack = () => {
-    const ignoreBackRoute = this.route?.query.ignoreBackRoute
-      ? this.route.query.ignoreBackRoute.toString()
+    const ignoreBackRoute =
+      this.route?.query.ignoreBackRoute ?
+        this.route.query.ignoreBackRoute.toString()
       : null
     const routeMiddlewares: any = this.route?.meta.middlewares
     const goBackRoute = routeMiddlewares?.goBackRoute
@@ -366,23 +367,6 @@ export default class Common {
     }
 
     watchAction()
-  }
-
-  public copytext = (text: string) => {
-    const el = document.createElement("textarea")
-    el.value = text
-    el.setAttribute("readonly", "")
-    el.style.position = "absolute"
-    el.style.left = "-9999px"
-    document.body.appendChild(el)
-    el.select()
-    document.execCommand("copy")
-    document.body.removeChild(el)
-    this.showAlert({
-      show: true,
-      message: "Copied to clipboard",
-      type: "success",
-    })
   }
 
   public initiateWebSocket = (config: WebSocketConfig) => {
@@ -514,14 +498,12 @@ export default class Common {
               )
               break
             case "params":
-              addRuleToRequest = routeTo["params"][rule.condition.searchQuery]
-                ? true
-                : false
+              addRuleToRequest =
+                routeTo["params"][rule.condition.searchQuery] ? true : false
               break
             case "query":
-              addRuleToRequest = routeTo["query"][rule.condition.searchQuery]
-                ? true
-                : false
+              addRuleToRequest =
+                routeTo["query"][rule.condition.searchQuery] ? true : false
               break
             default:
               break
@@ -569,8 +551,9 @@ export default class Common {
 
                 if (rule.useRouteQuery) {
                   const allQueries: any[] = []
-                  const catenation_type = rule.query_concatenation_type
-                    ? rule.query_concatenation_type
+                  const catenation_type =
+                    rule.query_concatenation_type ?
+                      rule.query_concatenation_type
                     : "prehend"
                   rule.queries?.forEach((item) => {
                     if (catenation_type == "prehend") {
@@ -620,8 +603,9 @@ export default class Common {
               }
               if (rule.useRouteQuery) {
                 const allQueries: any[] = []
-                const catenation_type = rule.query_concatenation_type
-                  ? rule.query_concatenation_type
+                const catenation_type =
+                  rule.query_concatenation_type ?
+                    rule.query_concatenation_type
                   : "prehend"
                 rule.queries?.forEach((item) => {
                   if (catenation_type == "prehend") {
