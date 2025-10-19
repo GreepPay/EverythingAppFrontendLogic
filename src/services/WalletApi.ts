@@ -37,6 +37,7 @@ import {
   MutationUpdateP2pPaymentMethodArgs,
   MutationSoftDeleteP2pPaymentMethodArgs,
   ExchangeOrder,
+  PaymentDetailsResponse,
 } from "../gql/graphql";
 
 export default class WalletsApi extends BaseApiService {
@@ -619,11 +620,14 @@ export default class WalletsApi extends BaseApiService {
     return response;
   };
 
-
-  public CreateCrpytoTransfer = (crypto: string, network: string) => {
+  public CreateCrpytoTransfer = (
+    crypto: string,
+    network: string,
+    wallet_uuid = ""
+  ) => {
     const requestData = `
-        mutation CreateCrpytoTransfer($crypto: String!, $network: String!) {
-          CreateCrpytoTransfer(crypto: $crypto, network: $network) {
+        mutation CreateCrpytoTransfer($crypto: String!, $network: String!, $wallet_uuid: String) {
+          CreateCrpytoTransfer(crypto: $crypto, network: $network, wallet_uuid: $wallet_uuid) {
             id
             uuid
             amount
@@ -643,19 +647,20 @@ export default class WalletsApi extends BaseApiService {
             updated_at
           }
         }
-      `
+      `;
 
     const response: Promise<
       OperationResult<{
-        CreateCrpytoTransfer: OffRamp
+        CreateCrpytoTransfer: OffRamp;
       }>
     > = this.mutation(requestData, {
       crypto,
       network,
-    })
+      wallet_uuid,
+    });
 
-    return response
-  }
+    return response;
+  };
 
   public MakePayment = (data: MutationMakePaymentArgs) => {
     const requestData = `
@@ -704,6 +709,30 @@ export default class WalletsApi extends BaseApiService {
     return response;
   };
 
+  public GetPaymentDetails = (payment_uuid: string) => {
+    const requestData = `
+      query GetPaymentDetails($payment_uuid: String!) {
+        GetPaymentDetails(payment_uuid: $payment_uuid) {
+          user_uuid
+          wallet_uuid
+          profile_image_url
+          user_type
+          user_name
+        }
+      }
+		`;
+
+    const response: Promise<
+      OperationResult<{
+        GetPaymentDetails: PaymentDetailsResponse;
+      }>
+    > = this.query(requestData, {
+      payment_uuid,
+    });
+
+    return response;
+  };
+
   public GetOffRampCurrencies = () => {
     const requestData = `
         query GetOffRampCurrencies {
@@ -721,6 +750,24 @@ export default class WalletsApi extends BaseApiService {
         GetOffRampCurrencies: SupportedCurrency[];
       }>
     > = this.query(requestData, {});
+
+    return response;
+  };
+
+  public GetSmileIdToken = (verification_type: string) => {
+    const requestData = `
+      query GetSmileIdToken($verification_type: String!) {
+      GetSmileIdToken(verification_type: $verification_type)
+      }
+    `;
+
+    const response: Promise<
+      OperationResult<{
+        GetSmileIdToken: string;
+      }>
+    > = this.query(requestData, {
+      verification_type,
+    });
 
     return response;
   };
@@ -934,7 +981,11 @@ export default class WalletsApi extends BaseApiService {
   };
 
   // P2P Methods
-  public GetRecommendedExchangeAds = (page: number, count: number, ad_type = 'buy') => {
+  public GetRecommendedExchangeAds = (
+    page: number,
+    count: number,
+    ad_type = "buy"
+  ) => {
     const requestData = `
       query GetRecommendedExchangeAds($page: Int!, $count: Int!) {
         GetRecommendedExchangeAds(first: $count, page: $page, where: {

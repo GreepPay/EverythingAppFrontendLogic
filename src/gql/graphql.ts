@@ -153,6 +153,8 @@ export type Business = {
   user?: Maybe<User>;
   /** Business UUID. */
   uuid: Scalars['String'];
+  /** Attached wallet */
+  wallet?: Maybe<Wallet>;
   /** Business website URL. */
   website?: Maybe<Scalars['String']>;
 };
@@ -1385,6 +1387,21 @@ export type PaymentCollectionResponse = {
   updatedAt: Scalars['String'];
 };
 
+/** Payment details response */
+export type PaymentDetailsResponse = {
+  __typename?: 'PaymentDetailsResponse';
+  /** Profile image URL */
+  profile_image_url: Scalars['String'];
+  /** User name */
+  user_name: Scalars['String'];
+  /** User type */
+  user_type: Scalars['String'];
+  /** User UUID */
+  user_uuid: Scalars['String'];
+  /** Wallet UUID */
+  wallet_uuid: Scalars['String'];
+};
+
 /** Payment method data input */
 export type PaymentMethodDataInput = {
   data: Scalars['String'];
@@ -1723,6 +1740,8 @@ export type Query = {
   GetOrders: OrderPaginator;
   /** Get a single P2P payment method by UUID */
   GetP2pPaymentMethod?: Maybe<P2pPaymentMethod>;
+  /** Get Payment Details */
+  GetPaymentDetails: PaymentDetailsResponse;
   /** Get many point transactions */
   GetPointTransactions: PointTransactionPaginator;
   /** Get a product by UUID */
@@ -1929,6 +1948,11 @@ export type QueryGetOrdersArgs = {
 
 export type QueryGetP2pPaymentMethodArgs = {
   uuid: Scalars['String'];
+};
+
+
+export type QueryGetPaymentDetailsArgs = {
+  payment_uuid: Scalars['String'];
 };
 
 
