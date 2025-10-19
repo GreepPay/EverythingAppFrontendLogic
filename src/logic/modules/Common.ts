@@ -101,6 +101,7 @@ export default class Common {
     show: false,
     message: "",
     type: "success",
+    duration: 5100,
   })
 
   constructor() {
@@ -165,8 +166,9 @@ export default class Common {
           message: "",
           type: "success",
         }
-      }, 5100)
+      }, this.alertSetup?.duration || 5100)
     }
+
     if (this.alertSetup.show) {
       // sleep for 5 seconds
       new Promise((resolve) => setTimeout(resolve, 5000)).then(() => {

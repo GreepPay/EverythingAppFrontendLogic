@@ -1,3 +1,4 @@
+import currency from "currency.js"
 // types/cart.ts
 export type ProductSource = "market" | "event" | "ticket" | "other"
 export type ProductCategory = "physical" | "ticket" | "event" | "other"
@@ -7,12 +8,14 @@ export interface CartItem {
   uuid?: string // optional uuid from backend
   name: string
   price: number // raw numeric price (unformatted)
-  formattedPrice?: string // optional display price (e.g. "USD 12.00")
+  formattedPrice?: string // optional display price (e.g. "$ 12.00")
   currency?: string
+  currencySymbol?: string
   quantity: number
-  category: ProductCategory // grouping key (e.g. "Groceries", "Electronics")
-  productType?: ProductSource
+  totalItems: number
   imageUrl?: string
+  category: ProductCategory
+  productType?: ProductSource
   selected?: boolean
   meta?: Record<string, any>
 }
