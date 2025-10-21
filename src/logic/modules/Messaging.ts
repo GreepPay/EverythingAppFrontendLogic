@@ -51,6 +51,7 @@ export default class Messaging extends Common {
           }
         })
         .catch((error: CombinedError) => {
+          console.log(error);
           Logic.Common.hideLoader();
           Logic.Common.showError(error, "Oops!", "error-alert");
           throw error;

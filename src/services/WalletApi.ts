@@ -238,6 +238,7 @@ export default class WalletsApi extends BaseApiService {
           reference
           state
           status
+          blockchain_transid
           updated_at
           uuid
           wallet_balance

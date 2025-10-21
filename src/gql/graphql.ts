@@ -806,6 +806,7 @@ export type MutationConfirmWithdrawalArgs = {
 export type MutationCreateCrpytoTransferArgs = {
   crypto: Scalars['String'];
   network: Scalars['String'];
+  wallet_uuid?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -2669,6 +2670,7 @@ export type QueryGetTransactionsOrderByOrderByClause = {
 export enum QueryGetTransactionsWhereColumn {
   Amount = 'AMOUNT',
   ChargeableType = 'CHARGEABLE_TYPE',
+  CreatedAt = 'CREATED_AT',
   Currency = 'CURRENCY',
   DrOrCr = 'DR_OR_CR',
   Reference = 'REFERENCE',
@@ -3033,6 +3035,8 @@ export type Transaction = {
   __typename?: 'Transaction';
   /** Transaction Amount */
   amount: Scalars['Float'];
+  /** The blockchain transaction ID */
+  blockchain_transid?: Maybe<Scalars['String']>;
   /** Charge ID */
   charge_id: Scalars['String'];
   /** Chargeable Type */
@@ -3049,7 +3053,7 @@ export type Transaction = {
   dr_or_cr: Scalars['String'];
   /** Extra Data (JSON string) */
   extra_data?: Maybe<Scalars['String']>;
-  /** Gateway (default: 'Greep-wallet') */
+  /** Gateway (default: 'greep-wallet') */
   gateway: Scalars['String'];
   /** The associated point transaction */
   point_transaction?: Maybe<PointTransaction>;
