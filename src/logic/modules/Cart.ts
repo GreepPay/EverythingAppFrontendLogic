@@ -51,6 +51,26 @@ export default class CartModule extends Common {
     )
   }
 
+  private _extractUniqueCurrencies(
+    items: any[]
+  ): { code: string; symbol?: string }[] {
+    const uniqueCurrencies = new Map<
+      string,
+      { code: string; symbol?: string }
+    >()
+
+    for (const item of items) {
+      if (item.currency) {
+        uniqueCurrencies.set(item.currency, {
+          code: item.currency,
+          symbol: item.currencySymbol || "",
+        })
+      }
+    }
+
+    return Array.from(uniqueCurrencies.values())
+  }
+
   /** Find an item in a category array by ID */
   private _findCartItemIndex(arr: CartItem[], id: string | number): number {
     return arr.findIndex((it) => String(it.id) === String(id))
@@ -90,11 +110,8 @@ export default class CartModule extends Common {
     )
   }
 
-  /* ---------------------------
-   Public Cart Methods
-  ----------------------------*/
+  // #region Generic
 
-  // Add item to cart
   public AddToCart = (
     item: CartItem,
     forceAdd = false,
@@ -149,7 +166,27 @@ export default class CartModule extends Common {
     return this.ItemsInCart[category]
   }
 
-  /** 🧮 Update item quantity (increase or decrease via button clicks) */
+  public RemoveItemFromCart = (
+    category: ProductCategory,
+    itemId: string | number
+  ): void => {
+    if (!this.ItemsInCart[category]) return
+
+    // Remove the specific item
+    this.ItemsInCart[category] = this.ItemsInCart[category].filter(
+      (item) => item.id !== itemId
+    )
+
+    // If category becomes empty, delete it
+    if (this.ItemsInCart[category].length === 0) {
+      delete this.ItemsInCart[category]
+    }
+
+    this.ItemsInCart = { ...this.ItemsInCart }
+    this._persistCart()
+    this.GetTotalItemsInCart()
+  }
+
   public UpdateItemQuantity = (
     category: ProductCategory,
     itemId: string | number,
@@ -185,7 +222,6 @@ export default class CartModule extends Common {
     this.GetTotalItemsInCart()
   }
 
-  /** 🟢 Toggle item selection on checkout */
   public ToggleItemSelection = (
     category: ProductCategory,
     itemId: string | number
@@ -213,29 +249,6 @@ export default class CartModule extends Common {
     this._persistCart()
   }
 
-  /** ❌ Remove item completely */
-  public RemoveItemFromCart = (
-    category: ProductCategory,
-    itemId: string | number
-  ): void => {
-    if (!this.ItemsInCart[category]) return
-
-    // Remove the specific item
-    this.ItemsInCart[category] = this.ItemsInCart[category].filter(
-      (item) => item.id !== itemId
-    )
-
-    // If category becomes empty, delete it
-    if (this.ItemsInCart[category].length === 0) {
-      delete this.ItemsInCart[category]
-    }
-
-    this.ItemsInCart = { ...this.ItemsInCart }
-    this._persistCart()
-    this.GetTotalItemsInCart()
-  }
-
-  /** ✅ Check if an item already exists in cart */
   public IsItemInCart(
     category: ProductCategory,
     itemId: string | number
@@ -247,81 +260,15 @@ export default class CartModule extends Common {
     return exists
   }
 
-  /** ✅ Get number of categories that have at least one selected item */
-  public GetCategoriesWithSelectedItemsCount(): number {
-    return Object.keys(this.ItemsInCart).reduce((count, categoryKey) => {
-      const category = categoryKey as ProductCategory
-      const items = this.ItemsInCart[category] || []
-      const hasSelected = items.some((item) => item.selected)
-      return count + (hasSelected ? 1 : 0)
-    }, 0)
+  public GetCurrenciesInCart(): { code: string; symbol?: string }[] {
+    const allItems = Object.values(this.ItemsInCart).flat()
+    return this._extractUniqueCurrencies(allItems)
   }
 
-  /** ✅ Get only selected categories and their selected items */
-  public GetSelectedItemsInCart(): Partial<
-    Record<ProductCategory, CartItem[]>
-  > {
-    const selectedItemsInCart: Partial<Record<ProductCategory, CartItem[]>> = {}
-
-    for (const [categoryKey, items] of Object.entries(this.ItemsInCart)) {
-      const category = categoryKey as ProductCategory
-      const selectedItems = items.filter((item) => item.selected)
-
-      if (selectedItems.length > 0) {
-        selectedItemsInCart[category] = selectedItems
-      }
-    }
-
-    return selectedItemsInCart
-  }
-  /** Get items for a specific category */
-  public GetCategoryItems = (category: ProductCategory): CartItem[] => {
-    return this.ItemsInCart?.[category] || []
+  public setExchangeRates(rates: GlobalExchangeRate[]) {
+    return (this.exchangeRatesInCart = rates)
   }
 
-  /** Get all items across all categories */
-  public GetAllItems = (): CartItem[] => {
-    return this._flattenCart(this.ItemsInCart || {})
-  }
-  // ✅ Get total number of items by category
-  public GetTotalItemsByCategory(
-    category: ProductCategory,
-    useQuantity: boolean = false
-  ): number {
-    const items = this.ItemsInCart[category] || []
-
-    // If useQuantity is true → sum of quantities
-    // If false → just count number of items
-    const total =
-      useQuantity ?
-        items.reduce((sum, item) => sum + (item.quantity || 0), 0)
-      : items.length
-
-    return total
-  }
-
-  // ✅ Get total number of all items in cart (across categories)
-  public GetTotalItemsInCart(useQuantity: boolean = false): number {
-    const totalItems: number = Object.keys(this.ItemsInCart).reduce(
-      (total, category) => {
-        const cat = category as ProductCategory
-        const items = this.ItemsInCart[cat] || []
-
-        const categoryTotal =
-          useQuantity ?
-            items.reduce((sum, item) => sum + (item.quantity || 0), 0)
-          : items.length
-
-        return total + categoryTotal
-      },
-      0
-    )
-
-    this.TotalItemsInCart = totalItems
-    return totalItems
-  }
-
-  /** 💱 Map each category and its items with exchange rate conversions */
   public mapCartItemsWithExchangeRates(): ItemsInCartType {
     const mapped: ItemsInCartType = {} as ItemsInCartType
 
@@ -349,92 +296,11 @@ export default class CartModule extends Common {
     return mapped
   }
 
-  public setExchangeRates(rates: GlobalExchangeRate[]) {
-    return (this.exchangeRatesInCart = rates)
-  }
-
-  /** ✅ Get total number of selected items per category */
-  public GetSelectedItemsByCategory(
-    category: ProductCategory,
-    useQuantity: boolean = false
-  ): number {
-    const items = this.ItemsInCart[category] || []
-
-    const selectedItems = items.filter((item) => item.selected)
-
-    const total =
-      useQuantity ?
-        selectedItems.reduce((sum, item) => sum + (item.quantity || 0), 0)
-      : selectedItems.length
-
-    return total
-  }
-
-  /** ✅ Get total number of selected items across all categories */
-  public GetTotalSelectedItems(useQuantity: boolean = false): number {
-    let total = 0
-
-    for (const categoryKey of Object.keys(this.ItemsInCart)) {
-      const category = categoryKey as ProductCategory
-      const items = this.ItemsInCart[category] || []
-      const selectedItems = items.filter((item) => item.selected)
-
-      total +=
-        useQuantity ?
-          selectedItems.reduce((sum, item) => sum + (item.quantity || 0), 0)
-        : selectedItems.length
-    }
-
-    return total
-  }
-
-  /** 💰 Get subtotal for a specific category (only selected items) */
-  public GetCategorySubtotal(category: ProductCategory): number {
-    const items = this.ItemsInCart[category] || []
-
-    const subtotal = items
-      .filter((item) => item.selected)
-      .reduce((sum, item) => sum + item.price * item.quantity, 0)
-
-    return subtotal
-  }
-
-  /** 💰 Get subtotal for all selected items across all categories */
-  public GetSelectedItemsSubtotal(): number {
-    let total = 0
-
-    for (const categoryKey of Object.keys(this.ItemsInCart)) {
-      const category = categoryKey as ProductCategory
-      const items = this.ItemsInCart[category] || []
-
-      const selectedSubtotal = items
-        .filter((item) => item.selected)
-        .reduce((sum, item) => sum + item.price * item.quantity, 0)
-
-      total += selectedSubtotal
-    }
-
-    return total
-  }
-
-  /** Clear a specific category */
-  public ClearCategory = (category: ProductCategory) => {
-    if (!this.ItemsInCart) return
-    delete this.ItemsInCart[category]
-    this.ItemsInCart = { ...this.ItemsInCart }
-    this._persistCart()
-  }
-
-  /** Clear entire cart */
   public ClearCart = (): void => {
     this.ItemsInCart = {} as ItemsInCartType
     this._persistCart()
   }
-  /* ---------------------------
-   Checkout Helpers
-  ----------------------------*/
 
-  /** Build checkout payload */
   public BuildCheckoutPayload = (
     category?: ProductCategory,
     includeUnselected = false
@@ -469,6 +335,195 @@ export default class CartModule extends Common {
       metadata: {},
     }
   }
+  // #endregion Generic
+
+  // #region By Category
+  public GetCategoryItems = (category: ProductCategory): CartItem[] => {
+    return this.ItemsInCart?.[category] || []
+  }
+
+  public GetTotalItemsByCategory(
+    category: ProductCategory,
+    useQuantity: boolean = false
+  ): number {
+    const items = this.ItemsInCart[category] || []
+
+    // If useQuantity is true → sum of quantities
+    // If false → just count number of items
+    const total =
+      useQuantity ?
+        items.reduce((sum, item) => sum + (item.quantity || 0), 0)
+      : items.length
+
+    return total
+  }
+
+  public GetCategorySubtotal(category: ProductCategory): number {
+    const items = this.ItemsInCart[category] || []
+
+    const subtotal = items
+      .filter((item) => item.selected)
+      .reduce((sum, item) => sum + item.price * item.quantity, 0)
+
+    return subtotal
+  }
+
+  public ClearCategory = (category: ProductCategory) => {
+    if (!this.ItemsInCart) return
+    delete this.ItemsInCart[category]
+    this.ItemsInCart = { ...this.ItemsInCart }
+    this._persistCart()
+  }
+
+  public GetSelectedItemsByCategory(
+    category: ProductCategory,
+    useQuantity: boolean = false
+  ): number {
+    const items = this.ItemsInCart[category] || []
+
+    const selectedItems = items.filter((item) => item.selected)
+
+    const total =
+      useQuantity ?
+        selectedItems.reduce((sum, item) => sum + (item.quantity || 0), 0)
+      : selectedItems.length
+
+    return total
+  }
+
+  public GetCurrenciesInCartByCategory(
+    category: ProductCategory
+  ): { code: string; symbol?: string }[] {
+    const items = this.ItemsInCart[category] || []
+    return this._extractUniqueCurrencies(items)
+  }
+  // #endregion By Category
+
+  // #region Selected Items
+  public GetSelectedItemsInCart(): Partial<
+    Record<ProductCategory, CartItem[]>
+  > {
+    const selectedItemsInCart: Partial<Record<ProductCategory, CartItem[]>> = {}
+
+    for (const [categoryKey, items] of Object.entries(this.ItemsInCart)) {
+      const category = categoryKey as ProductCategory
+      const selectedItems = items.filter((item) => item.selected)
+
+      if (selectedItems.length > 0) {
+        selectedItemsInCart[category] = selectedItems
+      }
+    }
+
+    return selectedItemsInCart
+  }
+
+  public GetCategoriesWithSelectedItemsCount(): number {
+    return Object.keys(this.ItemsInCart).reduce((count, categoryKey) => {
+      const category = categoryKey as ProductCategory
+      const items = this.ItemsInCart[category] || []
+      const hasSelected = items.some((item) => item.selected)
+      return count + (hasSelected ? 1 : 0)
+    }, 0)
+  }
+
+  public GetTotalSelectedItems(useQuantity: boolean = false): number {
+    let total = 0
+
+    for (const categoryKey of Object.keys(this.ItemsInCart)) {
+      const category = categoryKey as ProductCategory
+      const items = this.ItemsInCart[category] || []
+      const selectedItems = items.filter((item) => item.selected)
+
+      total +=
+        useQuantity ?
+          selectedItems.reduce((sum, item) => sum + (item.quantity || 0), 0)
+        : selectedItems.length
+    }
+
+    return total
+  }
+
+  public GetSelectedItemsSubtotal(): number {
+    let total = 0
+
+    for (const categoryKey of Object.keys(this.ItemsInCart)) {
+      const category = categoryKey as ProductCategory
+      const items = this.ItemsInCart[category] || []
+
+      const selectedSubtotal = items
+        .filter((item) => item.selected)
+        .reduce((sum, item) => sum + item.price * item.quantity, 0)
+
+      total += selectedSubtotal
+    }
+
+    return total
+  }
+
+  // #endregion Selected Items
+
+  // #region all items
+  public GetAllItems = (): CartItem[] => {
+    return this._flattenCart(this.ItemsInCart || {})
+  }
+
+  public GetTotalItemsInCart(useQuantity: boolean = false): number {
+    const totalItems: number = Object.keys(this.ItemsInCart).reduce(
+      (total, category) => {
+        const cat = category as ProductCategory
+        const items = this.ItemsInCart[cat] || []
+
+        const categoryTotal =
+          useQuantity ?
+            items.reduce((sum, item) => sum + (item.quantity || 0), 0)
+          : items.length
+
+        return total + categoryTotal
+      },
+      0
+    )
+
+    this.TotalItemsInCart = totalItems
+    return totalItems
+  }
+
+  // #endregion all items
+
+  /** 🟢 Toggle item selection on checkout */
+
+  /** ✅ Check if an item already exists in cart */
+
+  /** ✅ Get number of categories that have at least one selected item */
+
+  /** ✅ Get only selected categories and their selected items */
+
+  /** Get items for a specific category */
+
+  /** Get all items across all categories */
+
+  // ✅ Get total number of items by category
+
+  // ✅ Get total number of all items in cart (across categories)
+
+  /** 💱 Map each category and its items with exchange rate conversions */
+
+  /** ✅ Get total number of selected items per category */
+
+  /** ✅ Get total number of selected items across all categories */
+
+  /** 💰 Get subtotal for a specific category (only selected items) */
+
+  /** 💰 Get subtotal for all selected items across all categories */
+
+  /** Clear a specific category */
+
+  /** Clear entire cart */
+
+  /* ---------------------------
+   Checkout Helpers
+  ----------------------------*/
+
+  /** Build checkout payload */
 
   /** Checkout a single category */
   // public CheckoutCategory = async (
