@@ -1,13 +1,13 @@
 export interface FormRule {
   type:
-    | 'isRequired'
-    | 'isGreaterThan'
-    | 'isLessThan'
-    | 'isEqualsTo'
-    | 'isGreaterThanOrEqualsTo'
-    | 'isLessThanOrEqualsTo'
-    | 'isRegex'
-    | 'isCondition'
+    | "isRequired"
+    | "isGreaterThan"
+    | "isLessThan"
+    | "isEqualsTo"
+    | "isGreaterThanOrEqualsTo"
+    | "isLessThanOrEqualsTo"
+    | "isRegex"
+    | "isCondition"
   value: any | undefined
   errorMessage: string | undefined
 }
@@ -23,7 +23,7 @@ export interface SelectOption {
   useSlot?: boolean
   disabled?: boolean
   formField?: {
-    type: 'text' | 'tel' | 'select'
+    type: "text" | "tel" | "select"
     placeholder: string
     value: string
     validations: FormRule[]
@@ -56,7 +56,7 @@ export interface LoaderSetup {
 }
 
 export interface ModalSetup {
-  type?: ''
+  type?: ""
   title?: string
   show: boolean
   actionLabel?: string
@@ -70,8 +70,9 @@ export interface ModalSetup {
 export interface AlertSetup {
   show: boolean
   message: string
-  type: 'success' | 'error' | 'info'
+  type: "success" | "error" | "info"
   wait_until_next_alert?: boolean
+  duration?: number // number of seconds to show alert
   action?: {
     text: string
     handler: () => void
@@ -89,11 +90,11 @@ export interface FetchRule {
   useRouteId: boolean
   useRouteQuery?: boolean
   queries?: string[]
-  query_concatenation_type?: 'append' | 'prehend'
+  query_concatenation_type?: "append" | "prehend"
   alignCurrency?: boolean
   silentUpdate?: boolean
   condition?: {
-    routeSearchItem: 'fullPath' | 'params' | 'query'
+    routeSearchItem: "fullPath" | "params" | "query"
     searchQuery: string
   }
 }

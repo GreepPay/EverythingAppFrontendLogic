@@ -1,17 +1,21 @@
-import { BusinessPaginator } from "../../gql/graphql";
-import { $api } from "../../services";
-import { CombinedError } from "@urql/core";
-import Common from "./Common";
-import { Logic } from "..";
+import { BusinessPaginator } from "../../gql/graphql"
+import { $api } from "../../services"
+import { CombinedError } from "@urql/core"
+import Common from "./Common"
+import { Logic } from ".."
 
 export default class MarketModule extends Common {
   constructor() {
-    super();
-    this.defineReactiveProperty("BusinessesPaginator", undefined);
+    super()
+    this.defineReactiveProperty("ManyFeaturedShops", undefined)
+    this.defineReactiveProperty("ManyMarketShops", undefined)
+    this.defineReactiveProperty("BusinessesPaginator", undefined)
   }
 
   // Base Variable
-  public BusinessesPaginator: BusinessPaginator | undefined;
+  public ManyMarketShops: BusinessPaginator | undefined
+  public ManyFeaturedShops: BusinessPaginator | undefined
+  public BusinessesPaginator: BusinessPaginator | undefined
 
   // Get paginated markets
   public GetMarkets = async (
@@ -21,12 +25,29 @@ export default class MarketModule extends Common {
     return $api.market
       .GetMarkets(first, page)
       .then((response) => {
-        this.BusinessesPaginator = response.data?.GetMarkets;
-        return this.BusinessesPaginator;
+        this.BusinessesPaginator = response.data?.GetMarkets
+        return this.BusinessesPaginator
       })
       .catch((error: CombinedError) => {
-        Logic.Common.showError(error, "Failed to fetch markets", "error-alert");
-        return undefined;
-      });
-  };
+        Logic.Common.showError(error, "Failed to fetch markets", "error-alert")
+        return undefined
+      })
+  }
+
+  //
+  public GetMarketShops = async (page: number, count: number) => {
+    return $api.market.GetMarketShops(page, count).then((response) => {
+      this.BusinessesPaginator = response.data?.MarketShops
+      return this.BusinessesPaginator
+    })
+  }
+
+  public GetFeaturedShops = async (page: number, count: number) => {
+    return $api.market.GetFeaturedShops(page, count).then((response) => {
+      this.ManyFeaturedShops = response.data?.FeaturedShops
+      return this.ManyFeaturedShops
+    })
+  }
+
+  //
 }

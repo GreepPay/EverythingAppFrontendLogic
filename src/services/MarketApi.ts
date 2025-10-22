@@ -59,5 +59,170 @@ export default class MarketApi extends BaseApiService {
 
     return response
   }
+
+  public GetMarketShops = (page: number, count: number) => {
+    const requestData = `
+    query MarketShops(
+      $page: Int!
+      $count: Int!
+    ) {
+      MarketShops(
+        first: $count,
+        page: $page
+      ) {
+        paginatorInfo {
+          count
+          currentPage
+          firstItem
+          hasMorePages
+          lastItem
+          lastPage
+          perPage
+          total
+        }
+        data {
+          id
+          uuid
+          business_name
+          logo
+          banner
+          description
+          default_currency
+          user {
+            id
+            uuid
+            first_name
+            last_name
+            email
+            phone
+          }
+          website
+          products {
+            id
+            uuid
+            name
+            price
+            currency
+            images
+            description
+          }
+          eventProducts {
+            id
+            uuid
+            name
+            eventStartDate
+            eventEndDate
+            venueName
+            price
+            images
+          } 
+          featuredProduct {
+            id
+            uuid
+            name
+            price
+            currency
+            images
+            description
+          }
+        }
+      }
+    }
+  `
+
+    const response: Promise<
+      OperationResult<{
+        MarketShops: BusinessPaginator
+      }>
+    > = this.query(requestData, {
+      page,
+      count,
+    })
+
+    return response
+  }
+
+  public GetFeaturedShops = (page: number, count: number) => {
+    const requestData = `
+    query FeaturedShops(
+      $page: Int!
+      $count: Int!
+    ) {
+      FeaturedShops(
+        first: $count,
+        page: $page
+      ) {
+        paginatorInfo {
+          count
+          currentPage
+          firstItem
+          hasMorePages
+          lastItem
+          lastPage
+          perPage
+          total
+        }
+        data {
+          id
+          uuid
+          business_name
+          logo
+          banner
+          description
+          default_currency
+          user {
+            id
+            uuid
+            first_name
+            last_name
+            email
+            phone
+          }
+          website
+          products {
+            id
+            uuid
+            name
+            price
+            currency
+            images
+            description
+          }
+          eventProducts {
+            id
+            uuid
+            name
+            eventStartDate
+            eventEndDate
+            venueName
+            price
+            images
+          } 
+          featuredProduct {
+            id
+            uuid
+            name
+            price
+            currency
+            images
+            description
+          }
+        }
+      }
+    }
+  `
+
+    const response: Promise<
+      OperationResult<{
+        FeaturedShops: BusinessPaginator
+      }>
+    > = this.query(requestData, {
+      page,
+      count,
+    })
+
+    return response
+  }
+
   // #endregion QUERIES
 }

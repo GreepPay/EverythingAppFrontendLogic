@@ -1,11 +1,11 @@
-import { BaseApiService } from "./common/BaseService";
-import { OperationResult } from "urql";
+import { BaseApiService } from "./common/BaseService"
+import { OperationResult } from "urql"
 import {
   Category,
   PaginatorInfo,
   Product,
   ProductPaginator,
-} from "../gql/graphql";
+} from "../gql/graphql"
 
 export default class ProductApi extends BaseApiService {
   // #region QUERIES
@@ -89,18 +89,18 @@ export default class ProductApi extends BaseApiService {
           }
         }
       }
-    `;
+    `
     const response: Promise<
       OperationResult<{
-        GetProducts: ProductPaginator;
+        GetProducts: ProductPaginator
       }>
     > = this.query(requestData, {
       page,
       count,
-    });
+    })
 
-    return response;
-  };
+    return response
+  }
 
   public GetProduct = (uuid: string) => {
     const requestData = `
@@ -155,17 +155,17 @@ export default class ProductApi extends BaseApiService {
         updatedAt
         }
       }
-    `;
+    `
     const response: Promise<
       OperationResult<{
-        GetProduct: Product;
+        GetProduct: Product
       }>
     > = this.query(requestData, {
       uuid,
-    });
+    })
 
-    return response;
-  };
+    return response
+  }
 
   public GetSingleProduct = (where: Record<string, any>) => {
     const requestData = `
@@ -218,16 +218,16 @@ export default class ProductApi extends BaseApiService {
         updatedAt
       }
     }
-  `;
+  `
 
     const response: Promise<
       OperationResult<{
-        GetSingleProduct: Product;
+        GetSingleProduct: Product
       }>
-    > = this.query(requestData, { where });
+    > = this.query(requestData, { where })
 
-    return response;
-  };
+    return response
+  }
 
   public GetCategories = (
     first: number,
@@ -251,25 +251,293 @@ export default class ProductApi extends BaseApiService {
           hasMorePages
         }
         data {
-          id
+          slug
           name
-          description
-          parentId
+          id
+          uuid
+          updatedAt
         }
       }
     }
-  `;
+  `
 
     const response: Promise<
       OperationResult<{
         GetCategories: {
-          paginatorInfo: PaginatorInfo;
-          data: Category[];
-        };
+          paginatorInfo: PaginatorInfo
+          data: Category[]
+        }
       }>
-    > = this.query(requestData, { orderBy, first, page });
+    > = this.query(requestData, { orderBy, first, page })
 
-    return response;
-  };
+    return response
+  }
+
+  public GetMarketProducts = (
+    page: number,
+    count: number,
+    orderType = "CREATED_AT",
+    order: "ASC" | "DESC" = "DESC",
+    whereQuery = ""
+  ) => {
+    const requestData = `
+    query MarketProducts(
+      $page: Int!
+      $count: Int!
+    ) {
+      MarketProducts(
+        first: $count,
+        page: $page, 
+        ) {
+        paginatorInfo {
+          count
+          currentPage
+          firstItem
+          hasMorePages
+          lastItem
+          lastPage
+          perPage
+          total
+        }
+        data {
+          id
+          uuid
+          businessId 
+          sku
+          name
+          slug
+          description
+          price
+          currency
+          taxCode
+          type
+          status
+          variants
+          inventoryCount
+          stockThreshold
+          isBackorderAllowed
+          downloadUrl
+          downloadLimit
+          license
+          fileInfo
+          dimensions
+          weight
+          billingInterval
+          trialPeriodDays
+          gracePeriod
+          renewal
+          features
+          eventType
+          eventStartDate
+          eventEndDate
+          venueName
+          eventOnlineUrl
+          eventLocation
+          eventCapacity
+          eventRegisteredCount
+          eventWaitlistEnabled
+          metaTitle
+          metaDescription
+          isVisible
+          images
+          createdAt
+          updatedAt
+        }
+      }
+    }
+  `
+
+    const response: Promise<
+      OperationResult<{
+        MarketProducts: ProductPaginator
+      }>
+    > = this.query(requestData, {
+      page,
+      count,
+    })
+
+    return response
+  }
+
+  public GetFeaturedProducts = (page: number, count: number) => {
+    const requestData = `
+    query FeaturedProducts(
+      $page: Int!
+      $count: Int!
+    ) {
+      FeaturedProducts(
+        first: $count,
+        page: $page
+      ) {
+        paginatorInfo {
+          count
+          currentPage
+          firstItem
+          hasMorePages
+          lastItem
+          lastPage
+          perPage
+          total
+        }
+        data {
+          id
+          uuid
+          businessId
+          business {
+            id
+            uuid
+            business_name
+            logo
+            banner
+            description
+            default_currency
+            website
+          }
+          sku
+          name
+          slug
+          description
+          price
+          currency
+          taxCode
+          type
+          status
+          variants
+          inventoryCount
+          stockThreshold
+          isBackorderAllowed
+          downloadUrl
+          downloadLimit
+          license
+          fileInfo
+          dimensions
+          weight
+          billingInterval
+          trialPeriodDays
+          gracePeriod
+          renewal
+          features
+          eventType
+          eventStartDate
+          eventEndDate
+          venueName
+          eventOnlineUrl
+          eventLocation
+          eventCapacity
+          eventRegisteredCount
+          eventWaitlistEnabled
+          metaTitle
+          metaDescription
+          isVisible
+          images
+          createdAt
+          updatedAt
+        }
+      }
+    }
+  `
+
+    const response: Promise<
+      OperationResult<{
+        FeaturedProducts: ProductPaginator
+      }>
+    > = this.query(requestData, {
+      page,
+      count,
+    })
+
+    return response
+  }
+
+  public GetFeaturedEvents = (page: number, count: number) => {
+    const requestData = `
+    query FeaturedEvents(
+      $page: Int!
+      $count: Int!
+    ) {
+      FeaturedEvents(
+        first: $count,
+        page: $page
+      ) {
+        paginatorInfo {
+          count
+          currentPage
+          firstItem
+          hasMorePages
+          lastItem
+          lastPage
+          perPage
+          total
+        }
+        data {
+          id
+          uuid
+          businessId
+          business {
+            id
+            uuid
+            business_name
+            logo
+            banner
+            description
+            default_currency
+            website
+          }
+          sku
+          name
+          slug
+          description
+          price
+          currency
+          taxCode
+          type
+          status
+          variants
+          inventoryCount
+          stockThreshold
+          isBackorderAllowed
+          downloadUrl
+          downloadLimit
+          license
+          fileInfo
+          dimensions
+          weight
+          billingInterval
+          trialPeriodDays
+          gracePeriod
+          renewal
+          features
+          eventType
+          eventStartDate
+          eventEndDate
+          venueName
+          eventOnlineUrl
+          eventLocation
+          eventCapacity
+          eventRegisteredCount
+          eventWaitlistEnabled
+          metaTitle
+          metaDescription
+          isVisible
+          images
+          createdAt
+          updatedAt
+        }
+      }
+    }
+  `
+
+    const response: Promise<
+      OperationResult<{
+        FeaturedEvents: ProductPaginator
+      }>
+    > = this.query(requestData, {
+      page,
+      count,
+    })
+
+    return response
+  }
+
   // #endregion QUERIES
 }

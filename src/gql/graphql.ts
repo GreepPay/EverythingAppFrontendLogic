@@ -133,6 +133,8 @@ export enum BillingInterval {
 /** Business profile details. */
 export type Business = {
   __typename?: 'Business';
+  /** The auth_user_id */
+  auth_user_id: Scalars['Int'];
   /** Business banner URL. */
   banner?: Maybe<Scalars['String']>;
   /** Business name. */
@@ -333,6 +335,68 @@ export type Delivery = {
   uuid: Scalars['String'];
 };
 
+/** A delivery address for a user. */
+export type DeliveryAddress = {
+  __typename?: 'DeliveryAddress';
+  /** User ID reference */
+  auth_user_id: Scalars['Int'];
+  /** When the address was created */
+  created_at: Scalars['DateTime'];
+  /** Custom location identifier */
+  delivery_location_id?: Maybe<Scalars['String']>;
+  /** Additional description */
+  description?: Maybe<Scalars['String']>;
+  /** Google Maps link */
+  google_map_link?: Maybe<Scalars['String']>;
+  /** Unique identifier */
+  id: Scalars['ID'];
+  /** Whether the address is active */
+  is_active: Scalars['Boolean'];
+  /** Whether this is the default address */
+  is_default: Scalars['Boolean'];
+  /** Address label/name */
+  name: Scalars['String'];
+  /** When the address was last updated */
+  updated_at: Scalars['DateTime'];
+  /** User UUID who owns this address */
+  uuid: Scalars['String'];
+};
+
+/** A paginated list of DeliveryAddress items. */
+export type DeliveryAddressPaginator = {
+  __typename?: 'DeliveryAddressPaginator';
+  /** A list of DeliveryAddress items. */
+  data: Array<DeliveryAddress>;
+  /** Pagination information about the list of items. */
+  paginatorInfo: PaginatorInfo;
+};
+
+/** A delivery location */
+export type DeliveryLocation = {
+  __typename?: 'DeliveryLocation';
+  /** Area */
+  area: Scalars['String'];
+  /** Country */
+  country: Scalars['String'];
+  /** Created At */
+  createdAt: Scalars['String'];
+  /** Unique ID */
+  id: Scalars['Int'];
+  /** Status */
+  status: Scalars['String'];
+  /** Updated At */
+  updatedAt: Scalars['String'];
+};
+
+/** A paginated list of DeliveryLocation items. */
+export type DeliveryLocationPaginator = {
+  __typename?: 'DeliveryLocationPaginator';
+  /** A list of DeliveryLocation items. */
+  data: Array<DeliveryLocation>;
+  /** Pagination information about the list of items. */
+  paginatorInfo: PaginatorInfo;
+};
+
 /** A paginated list of Delivery items. */
 export type DeliveryPaginator = {
   __typename?: 'DeliveryPaginator';
@@ -340,6 +404,25 @@ export type DeliveryPaginator = {
   data: Array<Delivery>;
   /** Pagination information about the list of items. */
   paginatorInfo: PaginatorInfo;
+};
+
+/** A delivery pricing */
+export type DeliveryPricing = {
+  __typename?: 'DeliveryPricing';
+  /** Created At */
+  createdAt: Scalars['String'];
+  /** Destination Location */
+  destinationLocation: DeliveryLocation;
+  /** Unique ID */
+  id: Scalars['Int'];
+  /** Origin Location */
+  originLocation: DeliveryLocation;
+  /** Price */
+  price: Scalars['Float'];
+  /** Status */
+  status: Scalars['String'];
+  /** Updated At */
+  updatedAt: Scalars['String'];
 };
 
 /** Destination Details */
@@ -705,6 +788,8 @@ export type Mutation = {
   __typename?: 'Mutation';
   /** Add a user as a beneficiary */
   AddAsBeneficiary: Beneficiary;
+  /** Add a new delivery address for the authenticated user */
+  AddDeliveryAddress: DeliveryAddress;
   /** Add a participant to a conversation */
   AddParticipant: Conversation;
   /** Confirm withdrawal */
@@ -723,6 +808,10 @@ export type Mutation = {
   CreateSavedAccount: UserBank;
   /** Delete User */
   DeleteUser: Scalars['Boolean'];
+  /** Get a delivery address by UUID */
+  GetDeliveryAddress?: Maybe<DeliveryAddress>;
+  /** Get all delivery addresses for the authenticated user */
+  GetDeliveryAddresses: DeliveryAddressPaginator;
   /** Initiate Conversasion */
   InitiateConversation: Conversation;
   /** Initiate Flutterwave top-up process */
@@ -765,6 +854,8 @@ export type Mutation = {
   SoftDeleteMessage: Scalars['Boolean'];
   /** Soft delete a P2P payment method by UUID */
   SoftDeleteP2pPaymentMethod: Scalars['Boolean'];
+  /** Update an existing delivery address */
+  UpdateDeliveryAddress: DeliveryAddress;
   UpdateDeliveryStatus?: Maybe<Scalars['Boolean']>;
   /** Update an existing P2P payment method by UUID */
   UpdateP2pPaymentMethod: P2pPaymentMethod;
@@ -786,6 +877,15 @@ export type Mutation = {
 export type MutationAddAsBeneficiaryArgs = {
   metadata: Scalars['String'];
   user_uuid: Scalars['String'];
+};
+
+
+export type MutationAddDeliveryAddressArgs = {
+  delivery_location_id?: InputMaybe<Scalars['String']>;
+  description?: InputMaybe<Scalars['String']>;
+  google_map_link?: InputMaybe<Scalars['String']>;
+  is_default?: InputMaybe<Scalars['Boolean']>;
+  name: Scalars['String'];
 };
 
 
@@ -852,6 +952,17 @@ export type MutationCreateSavedAccountArgs = {
   type: Scalars['String'];
   unique_id: Scalars['String'];
   uploads?: InputMaybe<Array<Scalars['Upload']>>;
+};
+
+
+export type MutationGetDeliveryAddressArgs = {
+  uuid: Scalars['String'];
+};
+
+
+export type MutationGetDeliveryAddressesArgs = {
+  first: Scalars['Int'];
+  page?: InputMaybe<Scalars['Int']>;
 };
 
 
@@ -989,6 +1100,17 @@ export type MutationSoftDeleteMessageArgs = {
 
 export type MutationSoftDeleteP2pPaymentMethodArgs = {
   p2p_payment_method_uuid: Scalars['String'];
+};
+
+
+export type MutationUpdateDeliveryAddressArgs = {
+  delivery_location_id?: InputMaybe<Scalars['String']>;
+  description?: InputMaybe<Scalars['String']>;
+  google_map_link?: InputMaybe<Scalars['String']>;
+  id: Scalars['ID'];
+  is_active?: InputMaybe<Scalars['Boolean']>;
+  is_default?: InputMaybe<Scalars['Boolean']>;
+  name?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -1710,6 +1832,10 @@ export type Query = {
   /** Get country information for verification */
   GetCountryInformation: CountryInformation;
   GetDeliveries: DeliveryPaginator;
+  /** Get all delivery locations */
+  GetDeliveryLocations: DeliveryLocationPaginator;
+  /** Get delivery pricing between two locations */
+  GetDeliveryPricing?: Maybe<DeliveryPricing>;
   /** Get an exchange ads */
   GetExchangeAd?: Maybe<ExchangeAd>;
   /** Get Exchange Ads */
@@ -1852,6 +1978,20 @@ export type QueryGetDeliveriesArgs = {
   orderBy?: InputMaybe<Array<QueryGetDeliveriesOrderByOrderByClause>>;
   page?: InputMaybe<Scalars['Int']>;
   where?: InputMaybe<QueryGetDeliveriesWhereWhereConditions>;
+};
+
+
+export type QueryGetDeliveryLocationsArgs = {
+  first: Scalars['Int'];
+  orderBy?: InputMaybe<Array<QueryGetDeliveryLocationsOrderByOrderByClause>>;
+  page?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<QueryGetDeliveryLocationsWhereWhereConditions>;
+};
+
+
+export type QueryGetDeliveryPricingArgs = {
+  destinationLocationId: Scalars['Int'];
+  originLocationId: Scalars['Int'];
 };
 
 
@@ -2298,6 +2438,58 @@ export type QueryGetDeliveriesWhereWhereConditionsRelation = {
   amount?: InputMaybe<Scalars['Int']>;
   /** Additional condition logic. */
   condition?: InputMaybe<QueryGetDeliveriesWhereWhereConditions>;
+  /** The comparison operator to test against the amount. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The relation that is checked. */
+  relation: Scalars['String'];
+};
+
+/** Allowed column names for Query.GetDeliveryLocations.orderBy. */
+export enum QueryGetDeliveryLocationsOrderByColumn {
+  Area = 'AREA',
+  Country = 'COUNTRY',
+  CreatedAt = 'CREATED_AT'
+}
+
+/** Order by clause for Query.GetDeliveryLocations.orderBy. */
+export type QueryGetDeliveryLocationsOrderByOrderByClause = {
+  /** The column that is used for ordering. */
+  column: QueryGetDeliveryLocationsOrderByColumn;
+  /** The direction that is used for ordering. */
+  order: SortOrder;
+};
+
+/** Allowed column names for Query.GetDeliveryLocations.where. */
+export enum QueryGetDeliveryLocationsWhereColumn {
+  Area = 'AREA',
+  Country = 'COUNTRY',
+  CreatedAt = 'CREATED_AT',
+  Status = 'STATUS',
+  UpdatedAt = 'UPDATED_AT'
+}
+
+/** Dynamic WHERE conditions for the `where` argument of the query `GetDeliveryLocations`. */
+export type QueryGetDeliveryLocationsWhereWhereConditions = {
+  /** A set of conditions that requires all conditions to match. */
+  AND?: InputMaybe<Array<QueryGetDeliveryLocationsWhereWhereConditions>>;
+  /** Check whether a relation exists. Extra conditions or a minimum amount can be applied. */
+  HAS?: InputMaybe<QueryGetDeliveryLocationsWhereWhereConditionsRelation>;
+  /** A set of conditions that requires at least one condition to match. */
+  OR?: InputMaybe<Array<QueryGetDeliveryLocationsWhereWhereConditions>>;
+  /** The column that is used for the condition. */
+  column?: InputMaybe<QueryGetDeliveryLocationsWhereColumn>;
+  /** The operator that is used for the condition. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The value that is used for the condition. */
+  value?: InputMaybe<Scalars['Mixed']>;
+};
+
+/** Dynamic HAS conditions for WHERE conditions for the `where` argument of the query `GetDeliveryLocations`. */
+export type QueryGetDeliveryLocationsWhereWhereConditionsRelation = {
+  /** The amount to test. */
+  amount?: InputMaybe<Scalars['Int']>;
+  /** Additional condition logic. */
+  condition?: InputMaybe<QueryGetDeliveryLocationsWhereWhereConditions>;
   /** The comparison operator to test against the amount. */
   operator?: InputMaybe<SqlOperator>;
   /** The relation that is checked. */

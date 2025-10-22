@@ -14,6 +14,7 @@ import WalletModule from "./Wallet";
 import Product from "./Product";
 import ConstantModule from "./ConstantModule";
 import Messaging from "./Messaging";
+import Cart from "./Cart";
 
 export const Logic = {
   Common: new CommonModule(),
@@ -32,4 +33,5 @@ export const Logic = {
   Wallet: new WalletModule(),
   Constant: new ConstantModule(),
   Messaging: new Messaging(),
+  Cart: new Cart(),
 };

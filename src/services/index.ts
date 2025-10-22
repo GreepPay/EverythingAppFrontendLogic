@@ -1,17 +1,17 @@
-import AuthApi from "./AuthApi";
-import BeneficiaryApi from "./BeneficiaryApi";
-import DeliveryApi from "./DeliveryApi";
-import MarketApi from "./MarketApi";
-import NotificationApi from "./NotificationApi";
-import OrderApi from "./OrderApi";
-import PaymentApi from "./PaymentApi";
-import ProductApi from "./ProductApi";
-import TicketApi from "./TicketApi";
-import TransactionApi from "./TransactionApi";
-import UserApi from "./UserApi";
-import WalletApi from "./WalletApi";
-import ConstantApi from "./ConstantApi";
-import MessagingApi from "./MessagingApi";
+import AuthApi from "./AuthApi"
+import BeneficiaryApi from "./BeneficiaryApi"
+import DeliveryApi from "./DeliveryApi"
+import MarketApi from "./MarketApi"
+import NotificationApi from "./NotificationApi"
+import OrderApi from "./OrderApi"
+import PaymentApi from "./PaymentApi"
+import ProductApi from "./ProductApi"
+import TicketApi from "./TicketApi"
+import TransactionApi from "./TransactionApi"
+import UserApi from "./UserApi"
+import WalletApi from "./WalletApi"
+import ConstantApi from "./ConstantApi"
+import MessagingApi from "./MessagingApi"
 
 export const $api = {
   auth: new AuthApi(),
@@ -28,4 +28,4 @@ export const $api = {
   wallet: new WalletApi(),
   constant: new ConstantApi(),
   messaging: new MessagingApi(),
-};
+}
