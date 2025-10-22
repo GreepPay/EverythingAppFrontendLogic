@@ -110,10 +110,6 @@ export default class CartModule extends Common {
     )
   }
 
-  /* ---------------------------
-   Public Cart Methods
-  ----------------------------*/
-
   // #region Generic
 
   public AddToCart = (
