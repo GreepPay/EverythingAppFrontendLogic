@@ -1,4 +1,6 @@
 import currency from "currency.js"
+import { Category } from "../../gql/graphql"
+
 // types/cart.ts
 export type ProductSource = "market" | "event" | "ticket" | "other"
 export type ProductCategory = "physical" | "ticket" | "event" | "other"

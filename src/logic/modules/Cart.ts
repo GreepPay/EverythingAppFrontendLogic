@@ -116,7 +116,7 @@ export default class CartModule extends Common {
         category,
         productType: item.productType,
         imageUrl: item.imageUrl,
-        selected: false,
+        selected: true,
         meta: item.meta || {},
       }
       this.ItemsInCart[category].push(newItem)
@@ -140,7 +140,6 @@ export default class CartModule extends Common {
     itemId: string | number,
     isIncrement: boolean
   ): void => {
-    console.log("UpdateItemQuantity", category, itemId, isIncrement)
     if (!this.ItemsInCart[category]) return
 
     const itemIndex = this._findCartItemIndex(
@@ -150,17 +149,14 @@ export default class CartModule extends Common {
     if (itemIndex === -1) return
 
     const currentItem = this.ItemsInCart[category][itemIndex]
-    console.log("currentItem", currentItem, isIncrement)
 
     // 🔼 Increment or 🔽 Decrement
     if (isIncrement) {
-      console.log("currentItem.quantity", currentItem.quantity, 6556)
       // prevent going beyond available stock
       if (currentItem.quantity < (currentItem.totalItems || 1)) {
         currentItem.quantity += 1
       }
     } else {
-      console.log("currentItem.quantity", currentItem.quantity)
       // prevent going below 1
       if (currentItem.quantity > 1) currentItem.quantity -= 1
     }
@@ -354,6 +350,24 @@ export default class CartModule extends Common {
       .reduce((sum, item) => sum + item.price * item.quantity, 0)
 
     return subtotal
+  }
+
+  /** 💰 Get subtotal for all selected items across all categories */
+  public GetSelectedItemsSubtotal(): number {
+    let total = 0
+
+    for (const categoryKey of Object.keys(this.ItemsInCart)) {
+      const category = categoryKey as ProductCategory
+      const items = this.ItemsInCart[category] || []
+
+      const selectedSubtotal = items
+        .filter((item) => item.selected)
+        .reduce((sum, item) => sum + item.price * item.quantity, 0)
+
+      total += selectedSubtotal
+    }
+
+    return total
   }
 
   /** Clear a specific category */

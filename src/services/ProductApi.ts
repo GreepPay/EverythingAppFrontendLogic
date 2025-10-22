@@ -251,10 +251,11 @@ export default class ProductApi extends BaseApiService {
           hasMorePages
         }
         data {
-          id
+          slug
           name
-          description
-          parentId
+          id
+          uuid
+          updatedAt
         }
       }
     }

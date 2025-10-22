@@ -17,7 +17,7 @@ export default class Product extends Common {
   // Base Variables
   public ProductsPaginator: ProductPaginator | undefined
   public SingleProduct: GqlProduct | undefined
-  public ProductCategoriesPagination: CategoryPaginator | undefined
+  public CategoriesPagination: CategoryPaginator | undefined
   public ManyShopProducts: ProductPaginator | undefined
   public ManyEventProducts: ProductPaginator | undefined
   public ManyMarketProducts: ProductPaginator | undefined
@@ -33,7 +33,7 @@ export default class Product extends Common {
     this.defineReactiveProperty("SingleProduct", undefined)
     this.defineReactiveProperty("ManyEventProducts", undefined)
     this.defineReactiveProperty("ProductsPaginator", undefined)
-    this.defineReactiveProperty("ProductCategoriesPagination", undefined)
+    this.defineReactiveProperty("CategoriesPagination", undefined)
     this.defineReactiveProperty("ManyMarketProducts", undefined)
     this.defineReactiveProperty("ManyFeaturedProducts", undefined)
     this.defineReactiveProperty("ManyFeaturedEvents", undefined)
@@ -166,8 +166,8 @@ export default class Product extends Common {
     return $api.product
       .GetCategories(first, page, orderBy ?? [])
       .then((response) => {
-        this.ProductCategoriesPagination = response.data?.GetCategories
-        return this.ProductCategoriesPagination
+        this.CategoriesPagination = response.data?.GetCategories
+        return this.CategoriesPagination
       })
       .catch((error: CombinedError) => {
         Logic.Common.showError(

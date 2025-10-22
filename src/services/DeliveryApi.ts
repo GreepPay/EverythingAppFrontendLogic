@@ -2,7 +2,12 @@ import { BaseApiService } from "./common/BaseService"
 import { OperationResult } from "urql"
 import {
   Delivery,
+  DeliveryAddress,
+  DeliveryLocationPaginator,
   DeliveryPaginator,
+  DeliveryPricing,
+  MutationAddDeliveryAddressArgs,
+  MutationUpdateDeliveryAddressArgs,
   QueryGetDeliveriesOrderByOrderByClause,
   QueryGetDeliveriesWhereWhereConditions,
   QueryGetSingleDeliveryWhereWhereConditions,
@@ -98,5 +103,267 @@ export default class DeliveryApi extends BaseApiService {
 
     return response
   }
+
+  public GetDeliveryLocations = (
+    page: number,
+    count: number,
+    orderType = "CREATED_AT",
+    order: "ASC" | "DESC" = "DESC",
+    whereQuery = ""
+  ) => {
+    const requestData = `
+      query GetDeliveryLocations($page: Int!, $count: Int!) {
+        GetDeliveryLocations(
+          first: $count,
+          page: $page,
+          orderBy: {
+            column: ${orderType ? orderType : "CREATED_AT"},
+            order: ${order}
+          }
+          ${whereQuery ? `where: ${whereQuery}` : ""}
+        ) {
+          paginatorInfo {
+            count
+            currentPage
+            firstItem
+            hasMorePages
+            lastItem
+            lastPage
+            perPage
+            total
+          }
+          data {
+            id
+            country
+            area
+            status
+            createdAt
+            updatedAt
+          }
+        }
+      }
+    `
+
+    const response: Promise<
+      OperationResult<{
+        GetDeliveryLocations: DeliveryLocationPaginator
+      }>
+    > = this.query(requestData, {
+      page,
+      count,
+    })
+
+    return response
+  }
+
+  public GetDeliveryPricing = (
+    originLocationId: number,
+    destinationLocationId: number,
+    order: "DESC" | "ASC" = "DESC",
+    whereQuery = ""
+  ) => {
+    const requestData = `
+      query GetDeliveryPricing($originLocationId: Int!, $destinationLocationId: Int!) {
+        GetDeliveryPricing(
+          originLocationId: $originLocationId,
+          destinationLocationId: $destinationLocationId
+          ${whereQuery ? `where: ${whereQuery}` : ""}
+        ) {
+          id
+          originLocation {
+            id
+            country
+            area
+            status
+            createdAt
+            updatedAt
+          }
+          destinationLocation {
+            id
+            country
+            area
+            status
+            createdAt
+            updatedAt
+          }
+          price
+          status
+          createdAt
+          updatedAt
+        }
+      }
+    `
+
+    const response: Promise<
+      OperationResult<{
+        GetDeliveryPricing: DeliveryPricing
+      }>
+    > = this.query(requestData, {
+      originLocationId,
+      destinationLocationId,
+    })
+
+    return response
+  }
+
+  public GetDeliveryAddress = (uuid: string) => {
+    const requestData = `
+    query GetDeliveryAddress($uuid: String!) {
+      GetDeliveryAddress(uuid: $uuid) {
+        id
+        uuid
+        auth_user_id
+        name
+        delivery_location_id
+        google_map_link
+        description
+        is_default
+        is_active
+        created_at
+        updated_at
+      }
+    }
+  `
+
+    const response: Promise<
+      OperationResult<{
+        GetDeliveryAddress: DeliveryAddress
+      }>
+    > = this.query(requestData, { uuid })
+
+    return response
+  }
+
+  public GetDeliveryAddresses = (first: number, page: number) => {
+    const requestData = `
+    query GetDeliveryAddresses($first: Int, $page: Int) {
+      GetDeliveryAddresses(first: $first, page: $page) {
+        data {
+          id
+          uuid
+          auth_user_id
+          name
+          delivery_location_id
+          google_map_link
+          description
+          is_default
+          is_active
+          created_at
+          updated_at
+        }
+        paginatorInfo {
+          count
+          currentPage
+          firstItem
+          hasMorePages
+          lastItem
+          lastPage
+          perPage
+          total
+        }
+      }
+    }
+  `
+
+    const response: Promise<
+      OperationResult<{
+        GetDeliveryAddresses: {
+          data: any[]
+          paginatorInfo: any
+        }
+      }>
+    > = this.query(requestData, { first, page })
+
+    return response
+  }
+
   // #endregion QUERIES
+
+  // #region MUTATIONS
+
+  public AddDeliveryAddress = (data: MutationAddDeliveryAddressArgs) => {
+    const requestData = `
+    mutation AddDeliveryAddress(
+      $name: String!,
+      $deliveryLocationId: Int!,
+      $googleMapLink: String,
+      $description: String,
+      $isDefault: Boolean
+    ) {
+      AddDeliveryAddress(
+        name: $name,
+        delivery_location_id: $deliveryLocationId,
+        google_map_link: $googleMapLink,
+        description: $description,
+        is_default: $isDefault
+      ) {
+        id
+        uuid
+        auth_user_id
+        name
+        delivery_location_id
+        google_map_link
+        description
+        is_default
+        is_active
+        created_at
+        updated_at
+      }
+    }
+  `
+
+    const response: Promise<
+      OperationResult<{
+        AddDeliveryAddress: DeliveryAddress
+      }>
+    > = this.mutation(requestData, data)
+
+    return response
+  }
+
+  public UpdateDeliveryAddress = (data: MutationUpdateDeliveryAddressArgs) => {
+    const requestData = `
+    mutation UpdateDeliveryAddress(
+      $id: Int!,
+      $name: String,
+      $delivery_location_id: Int,
+      $google_map_link: String,
+      $description: String,
+      $is_default: Boolean,
+      $is_active: Boolean
+    ) {
+      UpdateDeliveryAddress(
+        id: $id,
+        name: $name,
+        delivery_location_id: $delivery_location_id,
+        google_map_link: $google_map_link,
+        description: $description,
+        is_default: $is_default,
+        is_active: $is_active
+      ) {
+        id
+        uuid
+        auth_user_id
+        name
+        delivery_location_id
+        google_map_link
+        description
+        is_default
+        is_active
+        created_at
+        updated_at
+      }
+    }
+  `
+
+    const response: Promise<
+      OperationResult<{
+        UpdateDeliveryAddress: DeliveryAddress
+      }>
+    > = this.mutation(requestData, data)
+
+    return response
+  }
+
+  // #endregion MUTATIONS
 }
