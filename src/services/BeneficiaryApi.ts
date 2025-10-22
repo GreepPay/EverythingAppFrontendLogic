@@ -1,12 +1,12 @@
-import { BaseApiService } from "./common/BaseService"
-import { OperationResult } from "urql"
+import { BaseApiService } from "./common/BaseService";
+import { OperationResult } from "urql";
 import {
   MutationAddAsBeneficiaryArgs,
   Beneficiary,
   MutationRemoveAsBeneficiaryArgs,
   BeneficiaryPaginator,
   QueryGetBeneficiariesArgs,
-} from "../gql/graphql"
+} from "../gql/graphql";
 
 export default class BeneficiaryApi extends BaseApiService {
   // #region QUERIES
@@ -24,6 +24,9 @@ export default class BeneficiaryApi extends BaseApiService {
               email
               profile {
                 default_currency
+              }
+              wallet {
+               uuid
               }
             }
             metadata
@@ -55,16 +58,16 @@ export default class BeneficiaryApi extends BaseApiService {
           }
         }
       }
-    `
+    `;
 
     const response: Promise<
       OperationResult<{
-        GetBeneficiaries: BeneficiaryPaginator
+        GetBeneficiaries: BeneficiaryPaginator;
       }>
-    > = this.query(requestData, data)
+    > = this.query(requestData, data);
 
-    return response
-  }
+    return response;
+  };
   // #endregion QUERIES
 
   // #region MUTATIONS
@@ -84,14 +87,14 @@ export default class BeneficiaryApi extends BaseApiService {
         created_at
       }
     }
-  `
+  `;
 
     const response: Promise<
       OperationResult<{ AddAsBeneficiary: Beneficiary }>
-    > = this.mutation(requestData, data)
+    > = this.mutation(requestData, data);
 
-    return response
-  }
+    return response;
+  };
 
   public RemoveAsBeneficiary = (data: MutationRemoveAsBeneficiaryArgs) => {
     const requestData = `
@@ -102,12 +105,12 @@ export default class BeneficiaryApi extends BaseApiService {
         beneficiary_uuid: $beneficiary_uuid
       )
     }
-  `
+  `;
 
     const response: Promise<OperationResult<{ RemoveAsBeneficiary: boolean }>> =
-      this.mutation(requestData, data)
+      this.mutation(requestData, data);
 
-    return response
-  }
+    return response;
+  };
   // #endregion MUTATIONS
 }

@@ -7,7 +7,7 @@ import {
   MutationVerifyUserIdentityArgs,
   QuerySearchBusinessesArgs,
   Business,
-} from "../gql/graphql"
+} from "../gql/graphql";
 
 export default class UserApi extends BaseApiService {
   // #region QUERIES
@@ -25,6 +25,9 @@ export default class UserApi extends BaseApiService {
             default_currency
             country_code
             user_type
+          }
+          wallet {
+            uuid
           }
           businesses {
             uuid
@@ -56,6 +59,9 @@ export default class UserApi extends BaseApiService {
              }
            logo
            default_currency
+           wallet {
+             uuid
+           }
         }
       }
     `;
@@ -99,8 +105,8 @@ export default class UserApi extends BaseApiService {
       }>
     > = this.query(requestData, { uuid });
 
-    return response
-  }
+    return response;
+  };
 
   public SearchBusinesses = (data: QuerySearchBusinessesArgs) => {
     const requestData = `
@@ -113,18 +119,21 @@ export default class UserApi extends BaseApiService {
           user {
             uuid
           }
+          wallet {
+             uuid
+            }
         }
       }
-    `
+    `;
 
     const response: Promise<
       OperationResult<{
-        SearchBusinesses: Business[]
+        SearchBusinesses: Business[];
       }>
-    > = this.query(requestData, data)
+    > = this.query(requestData, data);
 
-    return response
-  }
+    return response;
+  };
 
   // #endregion QUERIES
 

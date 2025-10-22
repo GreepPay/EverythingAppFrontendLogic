@@ -28,6 +28,7 @@ import {
   MutationCreateP2pPaymentMethodArgs,
   MutationUpdateP2pPaymentMethodArgs,
   MutationSoftDeleteP2pPaymentMethodArgs,
+  PaymentDetailsResponse,
 } from "../../gql/graphql";
 import { $api } from "../../services";
 import { CombinedError } from "urql";
@@ -56,6 +57,7 @@ export default class Wallet extends Common {
   public CheckStatusState = reactive({
     active: false,
   });
+  public CurrentPaymentDetail: PaymentDetailsResponse | undefined;
 
   // P2P Variables
   public ManyExchangeAds: ExchangeAdPaginator | undefined;
@@ -111,8 +113,9 @@ export default class Wallet extends Common {
     this.defineReactiveProperty("OnRampChannels", undefined);
     this.defineReactiveProperty("OffRampChannels", undefined);
     this.defineReactiveProperty("OnRampNetwork", undefined);
-     this.defineReactiveProperty("CurrentCryptoTransfer", undefined)
+    this.defineReactiveProperty("CurrentCryptoTransfer", undefined);
     this.defineReactiveProperty("CheckStatusState", { active: false });
+    this.defineReactiveProperty("CurrentPaymentDetail", undefined);
   }
 
   // Queries
@@ -218,6 +221,15 @@ export default class Wallet extends Common {
       return response.data?.GetGlobalExchangeRate;
     });
   };
+
+  public GetPaymentDetails = async (payment_uuid: string) => {
+    return $api.wallet.GetPaymentDetails(payment_uuid).then((response) => {
+      this.CurrentPaymentDetail = response.data?.GetPaymentDetails;
+
+      return response.data?.GetPaymentDetails;
+    });
+  };
+
   public GetOnRampCurrencies = async (): Promise<
     SupportedCurrency[] | undefined
   > => {
@@ -314,6 +326,12 @@ export default class Wallet extends Common {
       });
   };
 
+  public GetSmileIdToken = async (verification_type: string) => {
+    return $api.wallet.GetSmileIdToken(verification_type).then((response) => {
+      return response.data?.GetSmileIdToken;
+    });
+  };
+
   // Mutations
   public CreateSavedAccount = async () => {
     if (this.CreateSavedAccountForm) {
@@ -331,23 +349,26 @@ export default class Wallet extends Common {
     }
   };
 
-  public CreateCrpytoTransfer = async (crypto: string, network: string) => {
+  public CreateCrpytoTransfer = async (
+    crypto: string,
+    network: string,
+    wallet_uuid = ""
+  ) => {
     if (crypto && network) {
       return $api.wallet
-        .CreateCrpytoTransfer(crypto, network)
+        .CreateCrpytoTransfer(crypto, network, wallet_uuid)
         .then((response) => {
           if (response.data?.CreateCrpytoTransfer) {
-            this.CurrentCryptoTransfer = response.data.CreateCrpytoTransfer
-            return response.data.CreateCrpytoTransfer
+            this.CurrentCryptoTransfer = response.data.CreateCrpytoTransfer;
+            return response.data.CreateCrpytoTransfer;
           }
         })
         .catch((error: CombinedError) => {
-          Logic.Common.showError(error, "Oops!", "error-alert")
-          throw error
-        })
+          Logic.Common.showError(error, "Oops!", "error-alert");
+          throw error;
+        });
     }
-  }
-
+  };
 
   public RedeemGRPToken = async () => {
     if (this.RedeemGRPTokenForm) {

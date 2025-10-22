@@ -33,9 +33,11 @@ export default class MessagingApi extends BaseApiService {
             uuid
             from_currency
             to_currency
+            ad_type
             business {
                 uuid
                 id
+                auth_user_id
                 business_name
                 storeLocations {
                 name

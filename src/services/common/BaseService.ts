@@ -5,14 +5,14 @@ import {
   CombinedError,
   fetchExchange,
   OperationResult,
-} from "urql"
-import { multipartFetchExchange } from "@urql/exchange-multipart-fetch"
-import { Logic } from "../../logic/modules"
-import { API_URL } from "../../common/constants"
+} from "urql";
+import { multipartFetchExchange } from "@urql/exchange-multipart-fetch";
+import { Logic } from "../../logic/modules";
+import { API_URL } from "../../common/constants";
 
 export class BaseApiService {
-  private baseUrl: string = API_URL
-  public graphqlInstance: Client | undefined
+  private baseUrl: string = API_URL;
+  public graphqlInstance: Client | undefined;
 
   constructor() {}
 
@@ -22,25 +22,25 @@ export class BaseApiService {
     onProgress: (progress: number) => void
   ) => {
     return new Promise<Response>((resolve, reject) => {
-      const xhr = new XMLHttpRequest()
+      const xhr = new XMLHttpRequest();
 
-      xhr.open(options.method || "POST", url)
+      xhr.open(options.method || "POST", url);
 
       // Set headers from options
       if (options.headers) {
         Object.entries(options.headers).forEach(([key, value]) => {
-          xhr.setRequestHeader(key, value as string)
-        })
+          xhr.setRequestHeader(key, value as string);
+        });
       }
 
       // Track upload progress
       if (xhr.upload && options.body) {
         xhr.upload.onprogress = (event) => {
           if (event.lengthComputable) {
-            const progress = (event.loaded / event.total) * 100
-            onProgress(progress)
+            const progress = (event.loaded / event.total) * 100;
+            onProgress(progress);
           }
-        }
+        };
       }
 
       xhr.onload = () => {
@@ -57,20 +57,20 @@ export class BaseApiService {
                 .map((line) => line.split(": "))
             ),
           })
-        )
-      }
+        );
+      };
 
       xhr.onerror = () => {
-        reject(new Error("Network error"))
-      }
+        reject(new Error("Network error"));
+      };
 
-      xhr.send(options.body as Document | XMLHttpRequestBodyInit | null)
-    })
-  }
+      xhr.send(options.body as Document | XMLHttpRequestBodyInit | null);
+    });
+  };
 
   public query = (query: any, variables: any): Promise<any> => {
     if (Logic.Common.apiUrl) {
-      this.baseUrl = Logic.Common.apiUrl || ""
+      this.baseUrl = Logic.Common.apiUrl || "";
     }
 
     this.graphqlInstance = createClient({
@@ -84,23 +84,23 @@ export class BaseApiService {
             app_version: localStorage.getItem("app_version") || "",
             //   requestUuid: Logic.Auth.RequestUuid || '',
           },
-        }
+        };
       },
       exchanges: [cacheExchange, fetchExchange],
-    })
+    });
 
     return this.graphqlInstance
       .query(query, variables)
       .toPromise()
       .then((response) => {
         if (response.error) {
-          this.handleErrors(response.error)
-          throw response.error
+          this.handleErrors(response.error);
+          throw response.error;
         }
 
-        return response
-      })
-  }
+        return response;
+      });
+  };
 
   public subscription = (
     query: any,
@@ -111,7 +111,7 @@ export class BaseApiService {
     }
   ): any => {
     if (Logic.Common.apiUrl) {
-      this.baseUrl = Logic.Common.apiUrl || ""
+      this.baseUrl = Logic.Common.apiUrl || "";
     }
 
     this.graphqlInstance = createClient({
@@ -125,28 +125,28 @@ export class BaseApiService {
             app_version: localStorage.getItem("app_version") || "",
             //   requestUuid: Logic.Auth.RequestUuid || '',
           },
-        }
+        };
       },
       fetchSubscriptions: true,
       exchanges: [cacheExchange, fetchExchange],
-    })
+    });
 
     return this.graphqlInstance
       .subscription(query, variables)
       .subscribe((result: OperationResult<any, any>) => {
-        handleOnSubscribed()
+        handleOnSubscribed();
         // this.subscribeToEcho(
         // 	// @ts-ignore
         // 	Logic.Common.laravelEcho,
         // 	result.extensions?.lighthouse_subscriptions.channel || null,
         // 	handleSubscription,
         // )
-      })
-  }
+      });
+  };
 
   public mutation = (query: any, variables: any): Promise<any> => {
     if (Logic.Common.apiUrl) {
-      this.baseUrl = Logic.Common.apiUrl || ""
+      this.baseUrl = Logic.Common.apiUrl || "";
     }
     this.graphqlInstance = createClient({
       url: this.baseUrl,
@@ -159,23 +159,23 @@ export class BaseApiService {
             app_version: localStorage.getItem("app_version") || "",
             //   requestUuid: Logic.Auth.RequestUuid || '',
           },
-        }
+        };
       },
       exchanges: [cacheExchange, multipartFetchExchange],
-    })
+    });
 
     return this.graphqlInstance
       .mutation(query, variables)
       .toPromise()
       .then((response) => {
         if (response.error) {
-          this.handleErrors(response.error)
-          throw response.error
+          this.handleErrors(response.error);
+          throw response.error;
         }
 
-        return response
-      })
-  }
+        return response;
+      });
+  };
 
   public mutationWithProgress = (
     query: any,
@@ -183,7 +183,7 @@ export class BaseApiService {
     progressCb: (progress: number) => void
   ): Promise<any> => {
     if (Logic.Common.apiUrl) {
-      this.baseUrl = Logic.Common.apiUrl || ""
+      this.baseUrl = Logic.Common.apiUrl || "";
     }
     this.graphqlInstance = createClient({
       url: this.baseUrl,
@@ -196,26 +196,26 @@ export class BaseApiService {
             app_version: localStorage.getItem("app_version") || "",
             //   requestUuid: Logic.Auth.RequestUuid || '',
           },
-        }
+        };
       },
       exchanges: [cacheExchange, multipartFetchExchange],
       fetch: (url: any, options: any) => {
-        return this.customFetch(url, options, progressCb) as any
+        return this.customFetch(url, options, progressCb) as any;
       },
-    })
+    });
 
     return this.graphqlInstance
       .mutation(query, variables)
       .toPromise()
       .then((response) => {
         if (response.error) {
-          this.handleErrors(response.error)
-          throw response.error
+          this.handleErrors(response.error);
+          throw response.error;
         }
 
-        return response
-      })
-  }
+        return response;
+      });
+  };
 
   public handleErrors(err: CombinedError): void {
     // Note: here you may want to add your errors handling
@@ -227,17 +227,20 @@ export class BaseApiService {
         icon: "error-alert",
         title: "Network error",
         message: "Unable to connect, please check your internet connection.",
-      })
-      return
+      });
+      return;
     }
 
     if (err.graphQLErrors) {
-      if (err.graphQLErrors[0].message == "Unauthenticated." || err.graphQLErrors[0].message == "Authentication failed") {
-        Logic.Common.hideLoader()
+      if (
+        err.graphQLErrors[0].message == "Unauthenticated." ||
+        err.graphQLErrors[0].message == "Authentication failed"
+      ) {
+        Logic.Common.hideLoader();
         // clear this.Storage
         //   Logic.Auth.Storage.clear()
-        localStorage.clear()
-        window.location.href = '/auth/login'
+        localStorage.clear();
+        window.location.href = "/auth/login";
 
         //   if (Logic.Common.currentBuildType() == 'web') {
         // 	window.location.href = '/auth/login'
@@ -245,7 +248,7 @@ export class BaseApiService {
         // 	window.location.href = '/start'
         //   }
 
-        return
+        return;
       }
     }
   }
