@@ -6,20 +6,23 @@ export type ProductSource = "market" | "event" | "ticket" | "other"
 export type ProductCategory = "physical" | "ticket" | "event" | "other"
 
 export interface CartItem {
-  id: string // product id
-  uuid?: string // optional uuid from backend
+  id: string
+  uuid?: string
   name: string
-  price: number // raw numeric price (unformatted)
-  formattedPrice?: string // optional display price (e.g. "$ 12.00")
+  price: number
+  formattedPrice?: string
   currency?: string
   currencySymbol?: string
   quantity: number
   totalItems: number
+  amountInUsd?: number
   imageUrl?: string
   category: ProductCategory
   productType?: ProductSource
   selected?: boolean
   meta?: Record<string, any>
+  totalAmount?: number
+  totalAmountInUsd?: number
 }
 
 export type ItemsInCartType = Record<ProductCategory, CartItem[]> // key is category

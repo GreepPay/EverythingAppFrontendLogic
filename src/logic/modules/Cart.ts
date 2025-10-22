@@ -1,4 +1,4 @@
-import { Order, CreateOrderInput } from "../../gql/graphql"
+import { Order, CreateOrderInput, GlobalExchangeRate } from "../../gql/graphql"
 import { Logic } from ".."
 import Common from "./Common"
 import {
@@ -17,12 +17,14 @@ export default class CartModule extends Common {
     this.TotalItemsInCart = this.GetTotalItemsInCart()
 
     this.defineReactiveProperty("ItemsInCart", this.ItemsInCart)
+    this.defineReactiveProperty("TotalItemsInCart", this.TotalItemsInCart)
   }
 
   // mutations payloads
   public ItemsInCart: ItemsInCartType = {} as ItemsInCartType
   public TotalPrice: number = 0
   public TotalItemsInCart: number = 0
+  public exchangeRatesInCart: GlobalExchangeRate[] = []
 
   /* ---------------------------
    Private Utility Helpers 
@@ -77,6 +79,16 @@ export default class CartModule extends Common {
       console.warn("Failed to persist cart", err)
     }
   }
+  /**
+   * Finds matching exchange rate for given currency
+   */
+  private _getRateForCurrency(
+    currency: string
+  ): GlobalExchangeRate | undefined {
+    return this.exchangeRatesInCart.find(
+      (rate: GlobalExchangeRate) => rate.target === currency
+    )
+  }
 
   /* ---------------------------
    Public Cart Methods
@@ -113,11 +125,14 @@ export default class CartModule extends Common {
         currencySymbol: item.currencySymbol,
         quantity: 1,
         totalItems: item.quantity,
+        amountInUsd: 0, // default to 0
         category,
         productType: item.productType,
         imageUrl: item.imageUrl,
         selected: true,
         meta: item.meta || {},
+        totalAmount: item.price,
+        totalAmountInUsd: 0,
       }
       this.ItemsInCart[category].push(newItem)
       Logic.Common.showAlert({
@@ -304,6 +319,38 @@ export default class CartModule extends Common {
 
     this.TotalItemsInCart = totalItems
     return totalItems
+  }
+
+  /** 💱 Map each category and its items with exchange rate conversions */
+  public mapCartItemsWithExchangeRates(): ItemsInCartType {
+    const mapped: ItemsInCartType = {} as ItemsInCartType
+
+    Object.entries(this.ItemsInCart).forEach(([category, items]) => {
+      mapped[category as ProductCategory] = items.map((item) => {
+        const rate = this._getRateForCurrency(item.currency || "USD")
+        const exchangeRate = rate ? rate.mid : 1 // fallback if no rate found
+
+        const price = item.price || 0
+        const quantity = item.quantity || 1
+
+        const amountInUsd = price / exchangeRate
+        const totalAmount = price * quantity
+        const totalAmountInUsd = amountInUsd * quantity
+
+        return {
+          ...item,
+          amountInUsd,
+          totalAmount,
+          totalAmountInUsd,
+        }
+      })
+    })
+
+    return mapped
+  }
+
+  public setExchangeRates(rates: GlobalExchangeRate[]) {
+    return (this.exchangeRatesInCart = rates)
   }
 
   /** ✅ Get total number of selected items per category */
