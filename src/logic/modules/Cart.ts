@@ -7,6 +7,7 @@ import {
   CheckoutPayload,
   CheckoutItem,
   ProductCategory,
+  SelectedItemOrderFormat,
 } from "../../common/types"
 
 export default class CartModule extends Common {
@@ -138,6 +139,8 @@ export default class CartModule extends Common {
         productType: item.productType,
         imageUrl: item.imageUrl,
         selected: true,
+        sku: item.sku,
+        variant: item.variant,
         meta: item.meta || {},
         usdCurrencySymbol: "$",
         totalAmount: item.price,
@@ -297,6 +300,7 @@ export default class CartModule extends Common {
   public ClearCart = (): void => {
     this.ItemsInCart = {} as ItemsInCartType
     this._persistCart()
+    this.GetTotalItemsInCart()
   }
 
   public BuildCheckoutPayload = (
@@ -349,6 +353,29 @@ export default class CartModule extends Common {
     }
 
     return totalInUsd
+  }
+
+  public GetAllSelectedItemsInOrderFormat(): SelectedItemOrderFormat[] {
+    const selectedItems: SelectedItemOrderFormat[] = []
+
+    for (const categoryKey of Object.keys(this.ItemsInCart)) {
+      const category = categoryKey as ProductCategory
+      const items = this.ItemsInCart[category] || []
+
+      items
+        .filter((item) => item.selected)
+        .forEach((item) => {
+          selectedItems.push({
+            productId: item.id.toString(),
+            sku: item.sku,
+            quantity: item.quantity,
+            price: item.amountInUsd,
+            variantId: item?.variant?.id || item.id.toString(),
+          })
+        })
+    }
+
+    return selectedItems
   }
   // #endregion Generic
 
@@ -427,6 +454,21 @@ export default class CartModule extends Common {
     return totalInUsd
   }
 
+  public GetSelectedItemsByCategoryInOrderFormat(
+    category: ProductCategory
+  ): SelectedItemOrderFormat[] {
+    const items = this.ItemsInCart[category] || []
+
+    return items
+      .filter((item) => item.selected)
+      .map((item) => ({
+        productId: item.id.toString(),
+        sku: item.sku,
+        quantity: item.quantity,
+        price: item.amountInUsd,
+        variantId: item?.variant?.id || item.id.toString(),
+      }))
+  }
   // #endregion By Category
 
   // #region Selected Items

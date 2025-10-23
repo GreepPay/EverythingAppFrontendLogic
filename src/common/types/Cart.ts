@@ -25,6 +25,8 @@ export interface CartItem {
   formattedAmountInUsd?: string
   totalAmount: number
   totalAmountInUsd: number
+  sku: string
+  variant?: any
 }
 
 export type ItemsInCartType = Record<ProductCategory, CartItem[]> // key is category
@@ -73,6 +75,16 @@ export interface EventCartItem extends CartItemBase {
   eventEndDate: string
   venueName: string
 }
+
+
+export interface SelectedItemOrderFormat {
+  productId: string
+  sku: string
+  quantity: number
+  price: number
+  variantId: string
+}
+
 
 export interface FoodCartItem extends CartItemBase {
   category: "food"

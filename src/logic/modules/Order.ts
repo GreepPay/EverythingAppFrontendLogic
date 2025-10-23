@@ -28,7 +28,7 @@ export default class OrderModule extends Common {
   public CreateOrder = async (): Promise<Order | undefined> => {
     if (!this.CreateOrderPayload) return
 
-    console.log("CreateOrderPayload", this. CreateOrderPayload)
+    console.log("CreateOrderPayload", this.CreateOrderPayload)
 
     return $api.order
       .CreateOrder(this.CreateOrderPayload)
