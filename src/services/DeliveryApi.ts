@@ -115,12 +115,7 @@ export default class DeliveryApi extends BaseApiService {
       query GetDeliveryLocations($page: Int!, $count: Int!) {
         GetDeliveryLocations(
           first: $count,
-          page: $page,
-          orderBy: {
-            column: ${orderType ? orderType : "CREATED_AT"},
-            order: ${order}
-          }
-          ${whereQuery ? `where: ${whereQuery}` : ""}
+          page: $page, 
         ) {
           paginatorInfo {
             count
@@ -158,16 +153,13 @@ export default class DeliveryApi extends BaseApiService {
 
   public GetDeliveryPricing = (
     originLocationId: number,
-    destinationLocationId: number,
-    order: "DESC" | "ASC" = "DESC",
-    whereQuery = ""
+    destinationLocationId: number
   ) => {
     const requestData = `
       query GetDeliveryPricing($originLocationId: Int!, $destinationLocationId: Int!) {
         GetDeliveryPricing(
           originLocationId: $originLocationId,
-          destinationLocationId: $destinationLocationId
-          ${whereQuery ? `where: ${whereQuery}` : ""}
+          destinationLocationId: $destinationLocationId 
         ) {
           id
           originLocation {
@@ -236,7 +228,7 @@ export default class DeliveryApi extends BaseApiService {
 
   public GetDeliveryAddresses = (first: number, page: number) => {
     const requestData = `
-    query GetDeliveryAddresses($first: Int, $page: Int) {
+    query GetDeliveryAddresses($first: Int!, $page: Int!) {
       GetDeliveryAddresses(first: $first, page: $page) {
         data {
           id
@@ -285,15 +277,15 @@ export default class DeliveryApi extends BaseApiService {
     const requestData = `
     mutation AddDeliveryAddress(
       $name: String!,
-      $deliveryLocationId: Int!,
-      $googleMapLink: String,
+      $delivery_location_id: String!,
+      $google_map_link: String,
       $description: String,
       $isDefault: Boolean
     ) {
       AddDeliveryAddress(
         name: $name,
-        delivery_location_id: $deliveryLocationId,
-        google_map_link: $googleMapLink,
+        delivery_location_id: $delivery_location_id,
+        google_map_link: $google_map_link,
         description: $description,
         is_default: $isDefault
       ) {
@@ -324,9 +316,9 @@ export default class DeliveryApi extends BaseApiService {
   public UpdateDeliveryAddress = (data: MutationUpdateDeliveryAddressArgs) => {
     const requestData = `
     mutation UpdateDeliveryAddress(
-      $id: Int!,
+      $id: ID!,
       $name: String,
-      $delivery_location_id: Int,
+      $delivery_location_id: String,
       $google_map_link: String,
       $description: String,
       $is_default: Boolean,

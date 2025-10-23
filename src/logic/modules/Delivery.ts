@@ -23,7 +23,7 @@ export default class DeliveryModule extends Common {
     this.defineReactiveProperty("ManyDeliveryLocations", undefined)
     this.defineReactiveProperty("DeliveryPricingData", undefined)
     this.defineReactiveProperty("DeliveryAddress", undefined)
-    this.defineReactiveProperty("DeliveryAddressesPaginator", undefined)
+    this.defineReactiveProperty("ManyDeliveryAddresses", undefined)
   }
 
   // Base Variables
@@ -32,7 +32,10 @@ export default class DeliveryModule extends Common {
   public ManyDeliveryLocations: DeliveryLocationPaginator | undefined
   public DeliveryPricingData: DeliveryPricing | undefined
   public DeliveryAddress: DeliveryAddress | undefined
-  public DeliveryAddressesPaginator: DeliveryAddressPaginator | undefined
+  public ManyDeliveryAddresses: DeliveryAddressPaginator | undefined
+
+  // mutation payloads
+  public AddDeliveryAddressPayload: MutationAddDeliveryAddressArgs | undefined
 
   public GetDeliveries = async (
     first: number,
@@ -82,27 +85,18 @@ export default class DeliveryModule extends Common {
     order: "DESC" | "ASC" = "DESC",
     whereQuery = ""
   ) => {
-    return $api.delivery
-      .GetDeliveryLocations(page, count, orderType, order, whereQuery)
-      .then((response) => {
-        this.ManyDeliveryLocations = response.data?.GetDeliveryLocations
-        return this.ManyDeliveryLocations
-      })
+    return $api.delivery.GetDeliveryLocations(page, count).then((response) => {
+      this.ManyDeliveryLocations = response.data?.GetDeliveryLocations
+      return this.ManyDeliveryLocations
+    })
   }
 
   public GetDeliveryPricing = async (
     originLocationId: number,
-    destinationLocationId: number,
-    order: "DESC" | "ASC" = "DESC",
-    whereQuery = ""
+    destinationLocationId: number
   ) => {
     return $api.delivery
-      .GetDeliveryPricing(
-        originLocationId,
-        destinationLocationId,
-        order,
-        whereQuery
-      )
+      .GetDeliveryPricing(originLocationId, destinationLocationId)
       .then((response) => {
         this.DeliveryPricingData = response.data?.GetDeliveryPricing
         return this.DeliveryPricingData
@@ -118,8 +112,8 @@ export default class DeliveryModule extends Common {
 
   public GetDeliveryAddresses = async (first: number, page: number) => {
     return $api.delivery.GetDeliveryAddresses(first, page).then((response) => {
-      this.DeliveryAddressesPaginator = response.data?.GetDeliveryAddresses
-      return this.DeliveryAddressesPaginator
+      this.ManyDeliveryAddresses = response.data?.GetDeliveryAddresses
+      return this.ManyDeliveryAddresses
     })
   }
   // #endregion Queries
@@ -129,9 +123,12 @@ export default class DeliveryModule extends Common {
     return $api.delivery
       .AddDeliveryAddress(data)
       .then((response) => {
-        // if (response.data?.AddDeliveryAddress) {
-        //   this.NewDeliveryAddress = response.data?.AddDeliveryAddress
-        // }
+        Logic.Common.showAlert({
+          show: true,
+          message: "New delivery address added successfully",
+          type: "info",
+          duration: 2500,
+        })
         Logic.Common.hideLoader()
         return response.data?.AddDeliveryAddress
       })
@@ -146,9 +143,12 @@ export default class DeliveryModule extends Common {
     return $api.delivery
       .UpdateDeliveryAddress(data)
       .then((response) => {
-        // if (response.data?.UpdateDeliveryAddress) {
-        //   this.UpdatedDeliveryAddress = response.data?.UpdateDeliveryAddress
-        // }
+        Logic.Common.showAlert({
+          show: true,
+          message: "Delivery address updated successfully.",
+          type: "info",
+          duration: 2500,
+        })
         Logic.Common.hideLoader()
         return response.data?.UpdateDeliveryAddress
       })
