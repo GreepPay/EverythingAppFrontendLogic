@@ -10,19 +10,23 @@ export interface CartItem {
   uuid?: string
   name: string
   price: number
-  formattedPrice?: string
-  currency?: string
-  currencySymbol?: string
+  formattedPrice: string
+  currency: string
+  currencySymbol: string
   quantity: number
   totalItems: number
-  amountInUsd?: number
+  amountInUsd: number
   imageUrl?: string
   category: ProductCategory
   productType?: ProductSource
-  selected?: boolean
+  selected: boolean
   meta?: Record<string, any>
-  totalAmount?: number
-  totalAmountInUsd?: number
+  usdCurrencySymbol?: string
+  formattedAmountInUsd?: string
+  totalAmount: number
+  totalAmountInUsd: number
+  sku: string
+  variant?: any
 }
 
 export type ItemsInCartType = Record<ProductCategory, CartItem[]> // key is category
@@ -71,6 +75,16 @@ export interface EventCartItem extends CartItemBase {
   eventEndDate: string
   venueName: string
 }
+
+
+export interface SelectedItemOrderFormat {
+  productId: string
+  sku: string
+  quantity: number
+  price: number
+  variantId: string
+}
+
 
 export interface FoodCartItem extends CartItemBase {
   category: "food"
