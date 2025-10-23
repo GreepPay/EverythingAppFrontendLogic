@@ -26,15 +26,11 @@ export default class CartModule extends Common {
   public TotalItemsInCart: number = 0
   public exchangeRatesInCart: GlobalExchangeRate[] = []
 
-  /* ---------------------------
-   Private Utility Helpers 
-  ----------------------------*/
-  /** Flatten all category arrays into a single list of items */
+  //  #region Private Utility Helpers
   private _flattenCart(cart: ItemsInCartType): CartItem[] {
     return Object.values(cart || {}).flat()
   }
 
-  /** Get total price for a single category */
   private _getTotalForCategory(
     cart: ItemsInCartType,
     category: ProductCategory
@@ -43,7 +39,6 @@ export default class CartModule extends Common {
     return items.reduce((acc, it) => acc + it.price * it.quantity, 0)
   }
 
-  /** Get grand total across all categories */
   private _getGrandTotal(cart: ItemsInCartType): number {
     return this._flattenCart(cart).reduce(
       (acc, it) => acc + it.price * it.quantity,
@@ -71,12 +66,10 @@ export default class CartModule extends Common {
     return Array.from(uniqueCurrencies.values())
   }
 
-  /** Find an item in a category array by ID */
   private _findCartItemIndex(arr: CartItem[], id: string | number): number {
     return arr.findIndex((it) => String(it.id) === String(id))
   }
 
-  /** Local storage getters/setters */
   private _getLocal(key: string) {
     try {
       const v = localStorage.getItem(key)
@@ -99,9 +92,7 @@ export default class CartModule extends Common {
       console.warn("Failed to persist cart", err)
     }
   }
-  /**
-   * Finds matching exchange rate for given currency
-   */
+
   private _getRateForCurrency(
     currency: string
   ): GlobalExchangeRate | undefined {
@@ -109,9 +100,9 @@ export default class CartModule extends Common {
       (rate: GlobalExchangeRate) => rate.target === currency
     )
   }
+  // #endregion Private Utility Helpers
 
   // #region Generic
-
   public AddToCart = (
     item: CartItem,
     forceAdd = false,
@@ -148,6 +139,7 @@ export default class CartModule extends Common {
         imageUrl: item.imageUrl,
         selected: true,
         meta: item.meta || {},
+        usdCurrencySymbol: "$",
         totalAmount: item.price,
         totalAmountInUsd: 0,
       }
@@ -156,7 +148,7 @@ export default class CartModule extends Common {
         show: true,
         message: "New product added to cart.",
         type: "info",
-        duration: 2000,
+        duration: 1000,
       })
     }
 
@@ -265,16 +257,17 @@ export default class CartModule extends Common {
     return this._extractUniqueCurrencies(allItems)
   }
 
-  public setExchangeRates(rates: GlobalExchangeRate[]) {
+  public SetExchangeRates(rates: GlobalExchangeRate[]) {
     return (this.exchangeRatesInCart = rates)
   }
 
-  public mapCartItemsWithExchangeRates(): ItemsInCartType {
+  public MapCartItemsWithExchangeRates(): ItemsInCartType {
     const mapped: ItemsInCartType = {} as ItemsInCartType
 
     Object.entries(this.ItemsInCart).forEach(([category, items]) => {
       mapped[category as ProductCategory] = items.map((item) => {
         const rate = this._getRateForCurrency(item.currency || "USD")
+
         const exchangeRate = rate ? rate.mid : 1 // fallback if no rate found
 
         const price = item.price || 0
@@ -292,6 +285,11 @@ export default class CartModule extends Common {
         }
       })
     })
+
+    this.ItemsInCart = mapped
+
+    this._persistCart()
+    this.GetTotalItemsInCart()
 
     return mapped
   }
@@ -335,6 +333,23 @@ export default class CartModule extends Common {
       metadata: {},
     }
   }
+
+  public GetTotalSelectedItemsInUsd(): number {
+    let totalInUsd = 0
+
+    for (const categoryKey of Object.keys(this.ItemsInCart)) {
+      const category = categoryKey as ProductCategory
+      const items = this.ItemsInCart[category] || []
+      const selectedItems = items.filter((item) => item.selected)
+
+      totalInUsd += selectedItems.reduce(
+        (sum, item) => sum + (item.totalAmountInUsd || 0),
+        0
+      )
+    }
+
+    return totalInUsd
+  }
   // #endregion Generic
 
   // #region By Category
@@ -363,7 +378,7 @@ export default class CartModule extends Common {
 
     const subtotal = items
       .filter((item) => item.selected)
-      .reduce((sum, item) => sum + item.price * item.quantity, 0)
+      .reduce((sum, item) => sum + item.totalAmountInUsd, 0)
 
     return subtotal
   }
@@ -397,6 +412,21 @@ export default class CartModule extends Common {
     const items = this.ItemsInCart[category] || []
     return this._extractUniqueCurrencies(items)
   }
+
+  public GetTotalSelectedItemsInUsdByCategory(
+    category: ProductCategory
+  ): number {
+    const items = this.ItemsInCart[category] || []
+    const selectedItems = items.filter((item) => item.selected)
+
+    const totalInUsd = selectedItems.reduce(
+      (sum, item) => sum + (item.totalAmountInUsd || 0),
+      0
+    )
+
+    return totalInUsd
+  }
+
   // #endregion By Category
 
   // #region Selected Items

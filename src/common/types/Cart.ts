@@ -10,19 +10,21 @@ export interface CartItem {
   uuid?: string
   name: string
   price: number
-  formattedPrice?: string
-  currency?: string
-  currencySymbol?: string
+  formattedPrice: string
+  currency: string
+  currencySymbol: string
   quantity: number
   totalItems: number
-  amountInUsd?: number
+  amountInUsd: number
   imageUrl?: string
   category: ProductCategory
   productType?: ProductSource
-  selected?: boolean
+  selected: boolean
   meta?: Record<string, any>
-  totalAmount?: number
-  totalAmountInUsd?: number
+  usdCurrencySymbol?: string
+  formattedAmountInUsd?: string
+  totalAmount: number
+  totalAmountInUsd: number
 }
 
 export type ItemsInCartType = Record<ProductCategory, CartItem[]> // key is category

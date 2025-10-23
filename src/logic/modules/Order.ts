@@ -28,6 +28,8 @@ export default class OrderModule extends Common {
   public CreateOrder = async (): Promise<Order | undefined> => {
     if (!this.CreateOrderPayload) return
 
+    console.log("CreateOrderPayload", this. CreateOrderPayload)
+
     return $api.order
       .CreateOrder(this.CreateOrderPayload)
       .then((response) => {
@@ -89,47 +91,47 @@ export default class OrderModule extends Common {
         return this.SingleOrder
       })
       .catch((error: CombinedError) => {
-        Logic.Common.showError(error, "Failed to fetch order", "error-alert");
-        return undefined;
-      });
-  };
+        Logic.Common.showError(error, "Failed to fetch order", "error-alert")
+        return undefined
+      })
+  }
 
   public UpdateDeliveryStatus = async (
     deliveryId: string,
     status: string
   ): Promise<boolean | undefined> => {
     if (!deliveryId || !status) {
-      return false;
+      return false
     }
 
     Logic.Common.showLoader({
       loading: true,
       show: true,
       message: "Updating delivery status...",
-    });
+    })
 
     return $api.order
       .UpdateDeliveryStatus(deliveryId, status)
       .then((response) => {
-        Logic.Common.hideLoader();
+        Logic.Common.hideLoader()
         if (response.data?.UpdateDeliveryStatus) {
           Logic.Common.showAlert({
             show: true,
             message: "Delivery status updated successfully",
             type: "success",
-          });
-          return true;
+          })
+          return true
         }
-        return false;
+        return false
       })
       .catch((error: CombinedError) => {
-        Logic.Common.hideLoader();
+        Logic.Common.hideLoader()
         Logic.Common.showError(
           error,
           "Failed to update delivery status",
           "error-alert"
-        );
-        return false;
-      });
-  };
+        )
+        return false
+      })
+  }
 }
