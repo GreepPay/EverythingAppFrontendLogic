@@ -38,6 +38,7 @@ import {
   MutationSoftDeleteP2pPaymentMethodArgs,
   ExchangeOrder,
   PaymentDetailsResponse,
+  ExchangeOrderPaginator,
 } from "../gql/graphql";
 
 export default class WalletsApi extends BaseApiService {
@@ -181,6 +182,81 @@ export default class WalletsApi extends BaseApiService {
     const response: Promise<
       OperationResult<{
         GetTransactions: TransactionPaginator;
+      }>
+    > = this.query(requestData, {
+      page,
+      count,
+    });
+
+    return response;
+  };
+
+  public GetManyP2POrders = (
+    page: number,
+    count: number,
+    orderType = "CREATED_AT",
+    order: "ASC" | "DESC",
+    whereQuery = ""
+  ) => {
+    const requestData = `
+      query GetMyP2POrders(
+        $page: Int!,
+        $count: Int!
+      ){
+        GetMyP2POrders(
+          first: $count,
+          page: $page,
+          orderBy: {
+            column: ${orderType ? orderType : "CREATED_AT"},
+            order: ${order}
+          }
+          ${whereQuery ? `where: ${whereQuery}` : ""}
+        ) {
+          paginatorInfo {
+            total
+            perPage
+            lastPage
+            lastItem
+            hasMorePages
+            firstItem
+            currentPage
+            count
+          }
+          data {
+            id
+          uuid
+          amount
+          expected_amount
+          status
+          payment_type
+          payout_option
+          pickup_location_address_line
+          pickup_location_city
+          pickup_location_country
+          conversation_uuid
+          conversation_uuid
+          created_at
+          updated_at
+          expired_at
+          ad {
+            uuid
+            from_currency
+            to_currency
+            rate
+            status
+            business {
+              uuid
+              business_name
+              logo
+            }
+          }
+        }
+      }
+      }
+    `;
+    const response: Promise<
+      OperationResult<{
+        GetMyP2POrders: ExchangeOrderPaginator;
       }>
     > = this.query(requestData, {
       page,
@@ -1022,6 +1098,7 @@ export default class WalletsApi extends BaseApiService {
             business {
               uuid
               business_name
+              logo
             }
           }
         }

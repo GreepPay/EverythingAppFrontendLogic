@@ -217,6 +217,8 @@ export type Conversation = {
   name: Scalars['String'];
   /** Owner ID */
   owner_id: Scalars['Int'];
+  /** P2P Order */
+  p2p_order?: Maybe<ExchangeOrder>;
   /** Participants */
   participants: Array<Participant>;
   /** Stage */
@@ -342,6 +344,8 @@ export type DeliveryAddress = {
   auth_user_id: Scalars['Int'];
   /** When the address was created */
   created_at: Scalars['DateTime'];
+  /** Delivery location */
+  delivery_location?: Maybe<DeliveryLocation>;
   /** Custom location identifier */
   delivery_location_id?: Maybe<Scalars['String']>;
   /** Additional description */
@@ -808,10 +812,6 @@ export type Mutation = {
   CreateSavedAccount: UserBank;
   /** Delete User */
   DeleteUser: Scalars['Boolean'];
-  /** Get a delivery address by UUID */
-  GetDeliveryAddress?: Maybe<DeliveryAddress>;
-  /** Get all delivery addresses for the authenticated user */
-  GetDeliveryAddresses: DeliveryAddressPaginator;
   /** Initiate Conversasion */
   InitiateConversation: Conversation;
   /** Initiate Flutterwave top-up process */
@@ -952,17 +952,6 @@ export type MutationCreateSavedAccountArgs = {
   type: Scalars['String'];
   unique_id: Scalars['String'];
   uploads?: InputMaybe<Array<Scalars['Upload']>>;
-};
-
-
-export type MutationGetDeliveryAddressArgs = {
-  uuid: Scalars['String'];
-};
-
-
-export type MutationGetDeliveryAddressesArgs = {
-  first: Scalars['Int'];
-  page?: InputMaybe<Scalars['Int']>;
 };
 
 
@@ -1277,17 +1266,17 @@ export type Order = {
   /** Order Created At */
   createdAt: Scalars['String'];
   /** Currency */
-  currency: Scalars['String'];
+  currency?: Maybe<Scalars['String']>;
   /** Customer ID */
-  customerId: Scalars['Int'];
+  customerId?: Maybe<Scalars['Int']>;
   /** Deliveries */
   deliveries: Array<Delivery>;
   /** Discount Amount */
-  discountAmount: Scalars['Float'];
+  discountAmount?: Maybe<Scalars['Float']>;
   /** Unique ID */
   id: Scalars['Int'];
   /** Items */
-  items: Scalars['String'];
+  items?: Maybe<Scalars['String']>;
   /** Order Number */
   orderNumber: Scalars['String'];
   /** Payment Details */
@@ -1295,7 +1284,7 @@ export type Order = {
   /** Payment Method */
   paymentMethod?: Maybe<Scalars['String']>;
   /** Payment Status */
-  paymentStatus: Scalars['String'];
+  paymentStatus?: Maybe<Scalars['String']>;
   /** Refund Details */
   refundDetails?: Maybe<Scalars['String']>;
   /** Sale */
@@ -1307,13 +1296,13 @@ export type Order = {
   /** Status History */
   statusHistory: Scalars['String'];
   /** Subtotal Amount */
-  subtotalAmount: Scalars['Float'];
+  subtotalAmount?: Maybe<Scalars['Float']>;
   /** Tax Amount */
-  taxAmount: Scalars['Float'];
+  taxAmount?: Maybe<Scalars['Float']>;
   /** Tax Details */
   taxDetails?: Maybe<Scalars['String']>;
   /** Total Amount */
-  totalAmount: Scalars['Float'];
+  totalAmount?: Maybe<Scalars['Float']>;
   /** Order Updated At */
   updatedAt: Scalars['String'];
   /** The attached user */
@@ -1832,6 +1821,10 @@ export type Query = {
   /** Get country information for verification */
   GetCountryInformation: CountryInformation;
   GetDeliveries: DeliveryPaginator;
+  /** Get a delivery address by UUID */
+  GetDeliveryAddress?: Maybe<DeliveryAddress>;
+  /** Get all delivery addresses for the authenticated user */
+  GetDeliveryAddresses: DeliveryAddressPaginator;
   /** Get all delivery locations */
   GetDeliveryLocations: DeliveryLocationPaginator;
   /** Get delivery pricing between two locations */
@@ -1981,6 +1974,17 @@ export type QueryGetDeliveriesArgs = {
 };
 
 
+export type QueryGetDeliveryAddressArgs = {
+  uuid: Scalars['String'];
+};
+
+
+export type QueryGetDeliveryAddressesArgs = {
+  first: Scalars['Int'];
+  page?: InputMaybe<Scalars['Int']>;
+};
+
+
 export type QueryGetDeliveryLocationsArgs = {
   first: Scalars['Int'];
   orderBy?: InputMaybe<Array<QueryGetDeliveryLocationsOrderByOrderByClause>>;
@@ -2035,7 +2039,9 @@ export type QueryGetMarketsArgs = {
 
 export type QueryGetMyP2POrdersArgs = {
   first: Scalars['Int'];
+  orderBy?: InputMaybe<Array<QueryGetMyP2POrdersOrderByOrderByClause>>;
   page?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<QueryGetMyP2POrdersWhereWhereConditions>;
 };
 
 
@@ -2589,6 +2595,58 @@ export type QueryGetMarketsWhereWhereConditionsRelation = {
   amount?: InputMaybe<Scalars['Int']>;
   /** Additional condition logic. */
   condition?: InputMaybe<QueryGetMarketsWhereWhereConditions>;
+  /** The comparison operator to test against the amount. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The relation that is checked. */
+  relation: Scalars['String'];
+};
+
+/** Allowed column names for Query.GetMyP2POrders.orderBy. */
+export enum QueryGetMyP2POrdersOrderByColumn {
+  CreatedAt = 'CREATED_AT',
+  UpdatedAt = 'UPDATED_AT'
+}
+
+/** Order by clause for Query.GetMyP2POrders.orderBy. */
+export type QueryGetMyP2POrdersOrderByOrderByClause = {
+  /** The column that is used for ordering. */
+  column: QueryGetMyP2POrdersOrderByColumn;
+  /** The direction that is used for ordering. */
+  order: SortOrder;
+};
+
+/** Allowed column names for Query.GetMyP2POrders.where. */
+export enum QueryGetMyP2POrdersWhereColumn {
+  Amount = 'AMOUNT',
+  CreatedAt = 'CREATED_AT',
+  FromCurrency = 'FROM_CURRENCY',
+  Status = 'STATUS',
+  ToCurrency = 'TO_CURRENCY',
+  UpdatedAt = 'UPDATED_AT'
+}
+
+/** Dynamic WHERE conditions for the `where` argument of the query `GetMyP2POrders`. */
+export type QueryGetMyP2POrdersWhereWhereConditions = {
+  /** A set of conditions that requires all conditions to match. */
+  AND?: InputMaybe<Array<QueryGetMyP2POrdersWhereWhereConditions>>;
+  /** Check whether a relation exists. Extra conditions or a minimum amount can be applied. */
+  HAS?: InputMaybe<QueryGetMyP2POrdersWhereWhereConditionsRelation>;
+  /** A set of conditions that requires at least one condition to match. */
+  OR?: InputMaybe<Array<QueryGetMyP2POrdersWhereWhereConditions>>;
+  /** The column that is used for the condition. */
+  column?: InputMaybe<QueryGetMyP2POrdersWhereColumn>;
+  /** The operator that is used for the condition. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The value that is used for the condition. */
+  value?: InputMaybe<Scalars['Mixed']>;
+};
+
+/** Dynamic HAS conditions for WHERE conditions for the `where` argument of the query `GetMyP2POrders`. */
+export type QueryGetMyP2POrdersWhereWhereConditionsRelation = {
+  /** The amount to test. */
+  amount?: InputMaybe<Scalars['Int']>;
+  /** Additional condition logic. */
+  condition?: InputMaybe<QueryGetMyP2POrdersWhereWhereConditions>;
   /** The comparison operator to test against the amount. */
   operator?: InputMaybe<SqlOperator>;
   /** The relation that is checked. */
