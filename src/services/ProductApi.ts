@@ -304,6 +304,11 @@ export default class ProductApi extends BaseApiService {
       MarketProducts(
         first: $count,
         page: $page, 
+        orderBy: {
+          column: ${orderType ? orderType : "CREATED_AT"},
+          order: ${order}
+        }
+        ${whereQuery ? `where: ${whereQuery}` : ""}
         ) {
         paginatorInfo {
           count
@@ -380,6 +385,8 @@ export default class ProductApi extends BaseApiService {
       page,
       count,
     })
+
+    console.log("response", response)
 
     return response
   }

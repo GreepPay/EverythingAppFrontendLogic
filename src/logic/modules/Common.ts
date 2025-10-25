@@ -249,7 +249,7 @@ export default class Common {
     })
   }
 
-  TruncateText = (
+  public TruncateText = (
     str: string,
     expanded: boolean = false,
     maxLength: number = 350,

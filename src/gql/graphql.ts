@@ -840,6 +840,8 @@ export type Mutation = {
   ResendEmailOTP: Scalars['Boolean'];
   /** Reset password for user */
   ResetPassword: Scalars['Boolean'];
+  /** Retrigger verification status check against Smile ID */
+  RetriggerVerification: VerificationRetriggerResponse;
   /** Save a push notification token for the authenticated user. */
   SavePushNotificationToken?: Maybe<Scalars['Boolean']>;
   /** send rest password OTP */
@@ -1873,6 +1875,8 @@ export type Query = {
   GetRecommendedExchangeAds: ExchangeAdPaginator;
   /** Get a paginated list of saved accounts for the authenticated user */
   GetSavedAccounts: UserBankPaginator;
+  /** Get Single business */
+  GetSingleBusiness?: Maybe<Business>;
   GetSingleDelivery?: Maybe<Delivery>;
   /** Get a single point transaction by UUID */
   GetSinglePointTransaction?: Maybe<PointTransaction>;
@@ -2145,6 +2149,11 @@ export type QueryGetRecommendedExchangeAdsArgs = {
 export type QueryGetSavedAccountsArgs = {
   first: Scalars['Int'];
   page?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type QueryGetSingleBusinessArgs = {
+  uuid: Scalars['String'];
 };
 
 
@@ -3237,6 +3246,12 @@ export enum ShippingClass {
   Standard = 'STANDARD'
 }
 
+export type SmileIdResult = {
+  __typename?: 'SmileIdResult';
+  description?: Maybe<Scalars['String']>;
+  status: Scalars['String'];
+};
+
 /** Directions for ordering a list of records. */
 export enum SortOrder {
   /** Sort records in ascending order. */
@@ -3516,6 +3531,16 @@ export type Verification = {
   user_type: Scalars['String'];
   /** Verification Data (optional) */
   verification_data?: Maybe<Scalars['String']>;
+};
+
+export type VerificationRetriggerResponse = {
+  __typename?: 'VerificationRetriggerResponse';
+  auth_user_id: Scalars['Int'];
+  current_status: Scalars['String'];
+  previous_status: Scalars['String'];
+  smile_id_result?: Maybe<SmileIdResult>;
+  status_changed: Scalars['Boolean'];
+  verification_id: Scalars['Int'];
 };
 
 export type VerifyChecksInput = {
