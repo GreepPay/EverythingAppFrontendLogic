@@ -1858,6 +1858,8 @@ export type Query = {
   /** Get a order by UUID */
   GetOrder?: Maybe<Order>;
   GetOrders: OrderPaginator;
+  /** Get p2p delivery addresses */
+  GetP2PDeliveryAddresses: DeliveryAddressPaginator;
   /** Get a single P2P payment method by UUID */
   GetP2pPaymentMethod?: Maybe<P2pPaymentMethod>;
   /** Get Payment Details */
@@ -2090,6 +2092,14 @@ export type QueryGetOrdersArgs = {
   orderBy?: InputMaybe<Array<QueryGetOrdersOrderByOrderByClause>>;
   page?: InputMaybe<Scalars['Int']>;
   where?: InputMaybe<QueryGetOrdersWhereWhereConditions>;
+};
+
+
+export type QueryGetP2PDeliveryAddressesArgs = {
+  first: Scalars['Int'];
+  orderBy?: InputMaybe<Array<QueryGetP2PDeliveryAddressesOrderByOrderByClause>>;
+  page?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<QueryGetP2PDeliveryAddressesWhereWhereConditions>;
 };
 
 
@@ -2745,6 +2755,56 @@ export type QueryGetOrdersWhereWhereConditionsRelation = {
   amount?: InputMaybe<Scalars['Int']>;
   /** Additional condition logic. */
   condition?: InputMaybe<QueryGetOrdersWhereWhereConditions>;
+  /** The comparison operator to test against the amount. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The relation that is checked. */
+  relation: Scalars['String'];
+};
+
+/** Allowed column names for Query.GetP2PDeliveryAddresses.orderBy. */
+export enum QueryGetP2PDeliveryAddressesOrderByColumn {
+  CreatedAt = 'CREATED_AT',
+  UpdatedAt = 'UPDATED_AT'
+}
+
+/** Order by clause for Query.GetP2PDeliveryAddresses.orderBy. */
+export type QueryGetP2PDeliveryAddressesOrderByOrderByClause = {
+  /** The column that is used for ordering. */
+  column: QueryGetP2PDeliveryAddressesOrderByColumn;
+  /** The direction that is used for ordering. */
+  order: SortOrder;
+};
+
+/** Allowed column names for Query.GetP2PDeliveryAddresses.where. */
+export enum QueryGetP2PDeliveryAddressesWhereColumn {
+  AuthUserId = 'AUTH_USER_ID',
+  CreatedAt = 'CREATED_AT',
+  IsDefault = 'IS_DEFAULT',
+  UpdatedAt = 'UPDATED_AT'
+}
+
+/** Dynamic WHERE conditions for the `where` argument of the query `GetP2PDeliveryAddresses`. */
+export type QueryGetP2PDeliveryAddressesWhereWhereConditions = {
+  /** A set of conditions that requires all conditions to match. */
+  AND?: InputMaybe<Array<QueryGetP2PDeliveryAddressesWhereWhereConditions>>;
+  /** Check whether a relation exists. Extra conditions or a minimum amount can be applied. */
+  HAS?: InputMaybe<QueryGetP2PDeliveryAddressesWhereWhereConditionsRelation>;
+  /** A set of conditions that requires at least one condition to match. */
+  OR?: InputMaybe<Array<QueryGetP2PDeliveryAddressesWhereWhereConditions>>;
+  /** The column that is used for the condition. */
+  column?: InputMaybe<QueryGetP2PDeliveryAddressesWhereColumn>;
+  /** The operator that is used for the condition. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The value that is used for the condition. */
+  value?: InputMaybe<Scalars['Mixed']>;
+};
+
+/** Dynamic HAS conditions for WHERE conditions for the `where` argument of the query `GetP2PDeliveryAddresses`. */
+export type QueryGetP2PDeliveryAddressesWhereWhereConditionsRelation = {
+  /** The amount to test. */
+  amount?: InputMaybe<Scalars['Int']>;
+  /** Additional condition logic. */
+  condition?: InputMaybe<QueryGetP2PDeliveryAddressesWhereWhereConditions>;
   /** The comparison operator to test against the amount. */
   operator?: InputMaybe<SqlOperator>;
   /** The relation that is checked. */
