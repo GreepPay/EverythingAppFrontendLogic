@@ -1,8 +1,9 @@
-import { BaseApiService } from "./common/BaseService"
-import { OperationResult } from "urql"
+import { BaseApiService } from "./common/BaseService";
+import { OperationResult } from "urql";
 import {
   Delivery,
   DeliveryAddress,
+  DeliveryAddressPaginator,
   DeliveryLocationPaginator,
   DeliveryPaginator,
   DeliveryPricing,
@@ -10,8 +11,7 @@ import {
   MutationUpdateDeliveryAddressArgs,
   QueryGetDeliveriesOrderByOrderByClause,
   QueryGetDeliveriesWhereWhereConditions,
-  QueryGetSingleDeliveryWhereWhereConditions,
-} from "../gql/graphql"
+} from "../gql/graphql";
 
 export default class DeliveryApi extends BaseApiService {
   // #region QUERIES
@@ -54,20 +54,18 @@ export default class DeliveryApi extends BaseApiService {
         }
       }
     }
-  `
+  `;
 
     const response: Promise<
       OperationResult<{
-        GetDeliveries: DeliveryPaginator
+        GetDeliveries: DeliveryPaginator;
       }>
-    > = this.query(requestData, { first, page, orderBy, where })
+    > = this.query(requestData, { first, page, orderBy, where });
 
-    return response
-  }
+    return response;
+  };
 
-  public GetSingleDelivery = (
-    where: QueryGetSingleDeliveryWhereWhereConditions
-  ) => {
+  public GetSingleDelivery = (where: any) => {
     const requestData = `
     query GetSingleDelivery($where: QueryGetSingleDeliveryWhereWhereConditions) {
       GetSingleDelivery(where: $where) {
@@ -93,16 +91,16 @@ export default class DeliveryApi extends BaseApiService {
         recipientSignature
       }
     }
-  `
+  `;
 
     const response: Promise<
       OperationResult<{
-        GetSingleDelivery: Delivery
+        GetSingleDelivery: Delivery;
       }>
-    > = this.query(requestData, { where })
+    > = this.query(requestData, { where });
 
-    return response
-  }
+    return response;
+  };
 
   public GetDeliveryLocations = (
     page: number,
@@ -137,19 +135,19 @@ export default class DeliveryApi extends BaseApiService {
           }
         }
       }
-    `
+    `;
 
     const response: Promise<
       OperationResult<{
-        GetDeliveryLocations: DeliveryLocationPaginator
+        GetDeliveryLocations: DeliveryLocationPaginator;
       }>
     > = this.query(requestData, {
       page,
       count,
-    })
+    });
 
-    return response
-  }
+    return response;
+  };
 
   public GetDeliveryPricing = (
     originLocationId: number,
@@ -184,19 +182,19 @@ export default class DeliveryApi extends BaseApiService {
           updatedAt
         }
       }
-    `
+    `;
 
     const response: Promise<
       OperationResult<{
-        GetDeliveryPricing: DeliveryPricing
+        GetDeliveryPricing: DeliveryPricing;
       }>
     > = this.query(requestData, {
       originLocationId,
       destinationLocationId,
-    })
+    });
 
-    return response
-  }
+    return response;
+  };
 
   public GetDeliveryAddress = (uuid: string) => {
     const requestData = `
@@ -215,16 +213,16 @@ export default class DeliveryApi extends BaseApiService {
         updated_at
       }
     }
-  `
+  `;
 
     const response: Promise<
       OperationResult<{
-        GetDeliveryAddress: DeliveryAddress
+        GetDeliveryAddress: DeliveryAddress;
       }>
-    > = this.query(requestData, { uuid })
+    > = this.query(requestData, { uuid });
 
-    return response
-  }
+    return response;
+  };
 
   public GetDeliveryAddresses = (first: number, page: number) => {
     const requestData = `
@@ -255,19 +253,69 @@ export default class DeliveryApi extends BaseApiService {
         }
       }
     }
-  `
+  `;
 
     const response: Promise<
       OperationResult<{
         GetDeliveryAddresses: {
-          data: any[]
-          paginatorInfo: any
-        }
+          data: any[];
+          paginatorInfo: any;
+        };
       }>
-    > = this.query(requestData, { first, page })
+    > = this.query(requestData, { first, page });
 
-    return response
-  }
+    return response;
+  };
+
+  public GetP2PDeliveryAddresses = (
+    first: number,
+    page: number,
+    orderType = "CREATED_AT",
+    order: "ASC" | "DESC" = "DESC",
+    whereQuery = ""
+  ) => {
+    const requestData = `
+    query GetP2PDeliveryAddresses($first: Int!, $page: Int!) {
+      GetP2PDeliveryAddresses(first: $first, page: $page, orderBy: {
+            column: ${orderType ? orderType : "CREATED_AT"},
+            order: ${order}
+          }
+          ${whereQuery ? `where: ${whereQuery}` : ""}) {
+        data {
+          id
+          uuid
+          auth_user_id
+          name
+          delivery_location_id
+          google_map_link
+          description
+          is_default
+          is_active
+          created_at
+          updated_at
+        }
+        paginatorInfo {
+          count
+          currentPage
+          firstItem
+          hasMorePages
+          lastItem
+          lastPage
+          perPage
+          total
+        }
+      }
+    }
+  `;
+
+    const response: Promise<
+      OperationResult<{
+        GetP2PDeliveryAddresses: DeliveryAddressPaginator;
+      }>
+    > = this.query(requestData, { first, page });
+
+    return response;
+  };
 
   // #endregion QUERIES
 
@@ -302,16 +350,16 @@ export default class DeliveryApi extends BaseApiService {
         updated_at
       }
     }
-  `
+  `;
 
     const response: Promise<
       OperationResult<{
-        AddDeliveryAddress: DeliveryAddress
+        AddDeliveryAddress: DeliveryAddress;
       }>
-    > = this.mutation(requestData, data)
+    > = this.mutation(requestData, data);
 
-    return response
-  }
+    return response;
+  };
 
   public UpdateDeliveryAddress = (data: MutationUpdateDeliveryAddressArgs) => {
     const requestData = `
@@ -346,16 +394,16 @@ export default class DeliveryApi extends BaseApiService {
         updated_at
       }
     }
-  `
+  `;
 
     const response: Promise<
       OperationResult<{
-        UpdateDeliveryAddress: DeliveryAddress
+        UpdateDeliveryAddress: DeliveryAddress;
       }>
-    > = this.mutation(requestData, data)
+    > = this.mutation(requestData, data);
 
-    return response
-  }
+    return response;
+  };
 
   // #endregion MUTATIONS
 }
