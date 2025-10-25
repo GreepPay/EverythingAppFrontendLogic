@@ -1,6 +1,6 @@
 import { BaseApiService } from "./common/BaseService"
 import { OperationResult } from "urql"
-import { BusinessPaginator } from "../gql/graphql"
+import { BusinessPaginator, Business } from "../gql/graphql"
 
 export default class MarketApi extends BaseApiService {
   // #region QUERIES
@@ -219,6 +219,47 @@ export default class MarketApi extends BaseApiService {
     > = this.query(requestData, {
       page,
       count,
+    })
+
+    return response
+  }
+
+  public GetSingleBusiness = (uuid: string) => {
+    const requestData = `
+        query GetSingleBusiness($uuid: String!) {
+          GetSingleBusiness(uuid: $uuid) {
+            id
+            uuid
+            business_name
+            auth_user_id
+            logo
+            banner
+            description
+            default_currency
+            user {
+              id
+              uuid
+              first_name
+              last_name
+              username
+              email
+              phone
+              email_verified_at
+              phone_verified_at
+              status 
+              created_at
+              updated_at
+            } 
+            website  
+          }
+        }
+      `
+    const response: Promise<
+      OperationResult<{
+        GetSingleBusiness: Business
+      }>
+    > = this.query(requestData, {
+      uuid,
     })
 
     return response

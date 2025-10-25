@@ -1,4 +1,4 @@
-import { BusinessPaginator } from "../../gql/graphql"
+import { BusinessPaginator, Business as GqlBusiness } from "../../gql/graphql"
 import { $api } from "../../services"
 import { CombinedError } from "@urql/core"
 import Common from "./Common"
@@ -10,12 +10,14 @@ export default class MarketModule extends Common {
     this.defineReactiveProperty("ManyFeaturedShops", undefined)
     this.defineReactiveProperty("ManyMarketShops", undefined)
     this.defineReactiveProperty("BusinessesPaginator", undefined)
+    this.defineReactiveProperty("SingleBusiness", undefined)
   }
 
   // Base Variable
   public ManyMarketShops: BusinessPaginator | undefined
   public ManyFeaturedShops: BusinessPaginator | undefined
   public BusinessesPaginator: BusinessPaginator | undefined
+  public SingleBusiness: GqlBusiness | undefined
 
   // Get paginated markets
   public GetMarkets = async (
@@ -49,5 +51,11 @@ export default class MarketModule extends Common {
     })
   }
 
+  public GetSingleBusiness = async (uuid: string) => {
+    return $api.market.GetSingleBusiness(uuid).then((response) => {
+      this.SingleBusiness = response.data?.GetSingleBusiness
+      return response.data?.GetSingleBusiness
+    })
+  }
   //
 }
