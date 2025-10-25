@@ -21,6 +21,7 @@ export default class Product extends Common {
   public ManyShopProducts: ProductPaginator | undefined
   public ManyEventProducts: ProductPaginator | undefined
   public ManyMarketProducts: ProductPaginator | undefined
+  public BusinessMarketProducts: ProductPaginator | undefined
   public ManyFeaturedProducts: ProductPaginator | undefined
   public ManyFeaturedEvents: ProductPaginator | undefined
 
@@ -37,6 +38,7 @@ export default class Product extends Common {
     this.defineReactiveProperty("ManyMarketProducts", undefined)
     this.defineReactiveProperty("ManyFeaturedProducts", undefined)
     this.defineReactiveProperty("ManyFeaturedEvents", undefined)
+    this.defineReactiveProperty("BusinessMarketProducts", undefined)
   }
 
   public GetShopProducts = async (
@@ -184,13 +186,19 @@ export default class Product extends Common {
     count: number,
     orderType = "CREATED_AT",
     order = "DESC" as "DESC" | "ASC",
-    whereQuery = ""
+    whereQuery = "",
+    forBusiness = false
   ) => {
     return $api.product
       .GetMarketProducts(page, count, orderType, order, whereQuery)
       .then((response) => {
-        this.ManyMarketProducts = response.data?.MarketProducts
-        return this.ManyMarketProducts
+        forBusiness ?
+          (this.BusinessMarketProducts = response.data?.MarketProducts)
+        : (this.ManyMarketProducts = response.data?.MarketProducts)
+
+        return forBusiness ?
+            this.BusinessMarketProducts
+          : this.ManyMarketProducts
       })
   }
 
