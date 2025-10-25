@@ -184,13 +184,14 @@ export default class Product extends Common {
     count: number,
     orderType = "CREATED_AT",
     order = "DESC" as "DESC" | "ASC",
-    searchQuery = "",
-    isSearch = false
+    whereQuery = ""
   ) => {
-    return $api.product.GetMarketProducts(page, count).then((response) => {
-      this.ManyMarketProducts = response.data?.MarketProducts
-      return this.ManyMarketProducts
-    })
+    return $api.product
+      .GetMarketProducts(page, count, orderType, order, whereQuery)
+      .then((response) => {
+        this.ManyMarketProducts = response.data?.MarketProducts
+        return this.ManyMarketProducts
+      })
   }
 
   public GetFeaturedProducts = async (page: number, count: number) => {
