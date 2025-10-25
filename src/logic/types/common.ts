@@ -102,3 +102,10 @@ export interface FetchRule {
 export interface RouteMiddleware {
   fetchRules: FetchRule[]
 }
+
+export type TruncatePosition = "start" | "end" | "middle"
+
+export interface TruncateResult {
+  truncated: string
+  readMore: boolean
+}

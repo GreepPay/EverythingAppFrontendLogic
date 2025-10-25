@@ -41,11 +41,88 @@ export default class ProductApi extends BaseApiService {
             count
           }
           data {
+            uuid
+            id
+            businessId
+            business {
+              id
+              uuid
+              business_name
+              auth_user_id
+              logo
+              banner
+              description
+            }
+            sku
+            name
+            slug
+            description
+            price
+            currency
+            taxCode
+            type
+            status
+            variants
+            inventoryCount
+            stockThreshold
+            isBackorderAllowed
+            downloadUrl
+            downloadLimit
+            license
+            fileInfo
+            dimensions
+            weight
+            billingInterval
+            trialPeriodDays
+            gracePeriod
+            renewal
+            features
+            eventType
+            eventStartDate
+            eventEndDate
+            venueName
+            eventOnlineUrl
+            eventLocation
+            eventCapacity
+            eventRegisteredCount
+            eventWaitlistEnabled
+            metaTitle
+            metaDescription
+            isVisible
+            images
+            createdAt
+            updatedAt
+          }
+        }
+      }
+    `
+    const response: Promise<
+      OperationResult<{
+        GetProducts: ProductPaginator
+      }>
+    > = this.query(requestData, {
+      page,
+      count,
+    })
+
+    return response
+  }
+
+  public GetProduct = (uuid: string) => {
+    const requestData = `
+      query GetProduct($uuid: String!) {
+        GetProduct(uuid: $uuid) {
           uuid
           id
           businessId
           business {
             id
+            uuid
+            business_name
+            auth_user_id
+            logo
+            banner
+            description
           }
           sku
           name
@@ -86,73 +163,6 @@ export default class ProductApi extends BaseApiService {
           images
           createdAt
           updatedAt
-          }
-        }
-      }
-    `
-    const response: Promise<
-      OperationResult<{
-        GetProducts: ProductPaginator
-      }>
-    > = this.query(requestData, {
-      page,
-      count,
-    })
-
-    return response
-  }
-
-  public GetProduct = (uuid: string) => {
-    const requestData = `
-      query GetProduct($uuid: String!) {
-        GetProduct(uuid: $uuid) {
-        uuid
-        id
-        businessId
-        business {
-          id
-          business_name
-          logo
-        }
-        sku
-        name
-        slug
-        description
-        price
-        currency
-        taxCode
-        type
-        status
-        variants
-        inventoryCount
-        stockThreshold
-        isBackorderAllowed
-        downloadUrl
-        downloadLimit
-        license
-        fileInfo
-        dimensions
-        weight
-        billingInterval
-        trialPeriodDays
-        gracePeriod
-        renewal
-        features
-        eventType
-        eventStartDate
-        eventEndDate
-        venueName
-        eventOnlineUrl
-        eventLocation
-        eventCapacity
-        eventRegisteredCount
-        eventWaitlistEnabled
-        metaTitle
-        metaDescription
-        isVisible
-        images
-        createdAt
-        updatedAt
         }
       }
     `
@@ -171,51 +181,57 @@ export default class ProductApi extends BaseApiService {
     const requestData = `
     query GetSingleProduct($where: QueryGetSingleProductWhereWhereConditions) {
       GetSingleProduct(where: $where) {
-         uuid
-        id
-        businessId
-        business {
+          uuid
           id
-        }
-        sku
-        name
-        slug
-        description
-        price
-        currency
-        taxCode
-        type
-        status
-        variants
-        inventoryCount
-        stockThreshold
-        isBackorderAllowed
-        downloadUrl
-        downloadLimit
-        license
-        fileInfo
-        dimensions
-        weight
-        billingInterval
-        trialPeriodDays
-        gracePeriod
-        renewal
-        features
-        eventType
-        eventStartDate
-        eventEndDate
-        venueName
-        eventOnlineUrl
-        eventLocation
-        eventCapacity
-        eventRegisteredCount
-        eventWaitlistEnabled
-        metaTitle
-        metaDescription
-        isVisible
-        images
-        createdAt
-        updatedAt
+          businessId
+          business {
+            id
+            uuid
+            business_name
+            auth_user_id
+            logo
+            banner
+            description
+          }
+          sku
+          name
+          slug
+          description
+          price
+          currency
+          taxCode
+          type
+          status
+          variants
+          inventoryCount
+          stockThreshold
+          isBackorderAllowed
+          downloadUrl
+          downloadLimit
+          license
+          fileInfo
+          dimensions
+          weight
+          billingInterval
+          trialPeriodDays
+          gracePeriod
+          renewal
+          features
+          eventType
+          eventStartDate
+          eventEndDate
+          venueName
+          eventOnlineUrl
+          eventLocation
+          eventCapacity
+          eventRegisteredCount
+          eventWaitlistEnabled
+          metaTitle
+          metaDescription
+          isVisible
+          images
+          createdAt
+          updatedAt
       }
     }
   `
@@ -300,9 +316,18 @@ export default class ProductApi extends BaseApiService {
           total
         }
         data {
-          id
           uuid
-          businessId 
+          id
+          businessId
+          business {
+            id
+            uuid
+            business_name
+            auth_user_id
+            logo
+            banner
+            description
+          }
           sku
           name
           slug
@@ -380,18 +405,17 @@ export default class ProductApi extends BaseApiService {
           total
         }
         data {
-          id
           uuid
+          id
           businessId
           business {
             id
             uuid
             business_name
+            auth_user_id
             logo
             banner
             description
-            default_currency
-            website
           }
           sku
           name

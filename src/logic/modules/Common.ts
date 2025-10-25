@@ -9,7 +9,14 @@ import {
   Router,
 } from "vue-router"
 import { Logic } from ".."
-import { AlertSetup, FetchRule, LoaderSetup, ModalSetup } from "../types/common"
+import {
+  AlertSetup,
+  FetchRule,
+  LoaderSetup,
+  ModalSetup,
+  TruncatePosition,
+  TruncateResult,
+} from "../types/common"
 import CryptoJS from "crypto-js"
 import { Haptics, ImpactStyle } from "@capacitor/haptics"
 import { Observable } from "./Observable"
@@ -240,6 +247,31 @@ export default class Common {
       message: "Copied to clipboard",
       type: "success",
     })
+  }
+
+  TruncateText = (
+    str: string,
+    expanded: boolean = false,
+    maxLength: number = 350,
+    extensionCharacter: string = "...",
+    position: TruncatePosition = "end"
+  ): TruncateResult => {
+    if (!str) return { truncated: "", readMore: false }
+
+    const isTruncated = str.length > maxLength
+    if (expanded || !isTruncated) return { truncated: str, readMore: false }
+
+    let truncated: string
+    if (position === "start") {
+      truncated = `${extensionCharacter}${str.slice(-(maxLength - extensionCharacter.length))}`
+    } else if (position === "end") {
+      truncated = `${str.slice(0, maxLength - extensionCharacter.length)}${extensionCharacter}`
+    } else {
+      const partLength = Math.floor((maxLength - extensionCharacter.length) / 2)
+      truncated = `${str.slice(0, partLength)}${extensionCharacter}${str.slice(-partLength)}`
+    }
+
+    return { truncated, readMore: isTruncated }
   }
 
   public goBack = () => {
