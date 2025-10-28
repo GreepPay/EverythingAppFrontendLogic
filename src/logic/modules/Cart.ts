@@ -1,48 +1,56 @@
 import { Order, CreateOrderInput, GlobalExchangeRate } from "../../gql/graphql"
 import { Logic } from ".."
-import Common from "./Common"
+import Common from "./Common" 
 import {
-  ItemsInCartType,
+  BusinessesInCartType,
   CartItem,
   CheckoutPayload,
   CheckoutItem,
   ProductCategory,
   SelectedItemOrderFormat,
+  BusinessDetails,
+  BusinessCart,
+  BusinessId,
+  MerchantProduct,
 } from "../../common/types"
 
 export default class CartModule extends Common {
   constructor() {
     super()
     const persisted = this._getLocal("greep_cart_v1")
-    this.ItemsInCart = persisted || {}
+    this.BusinessesInCart = persisted || {}
     this.TotalItemsInCart = this.GetTotalItemsInCart()
 
-    this.defineReactiveProperty("ItemsInCart", this.ItemsInCart)
+    this.defineReactiveProperty("BusinessesInCart", this.BusinessesInCart)
     this.defineReactiveProperty("TotalItemsInCart", this.TotalItemsInCart)
   }
 
   // mutations payloads
-  public ItemsInCart: ItemsInCartType = {} as ItemsInCartType
-  public TotalPrice: number = 0
+  public BusinessesInCart: BusinessesInCartType = {} as BusinessesInCartType
   public TotalItemsInCart: number = 0
   public exchangeRatesInCart: GlobalExchangeRate[] = []
 
   //  #region Private Utility Helpers
-  private _flattenCart(cart: ItemsInCartType): CartItem[] {
-    return Object.values(cart || {}).flat()
+  private _flattenCart(cart: BusinessesInCartType): CartItem[] {
+    return Object.values(cart || {}).flatMap(
+      (businessCart) => businessCart.items || []
+    )
   }
-
-  private _getTotalForCategory(
-    cart: ItemsInCartType,
-    category: ProductCategory
+  private _getTotalForBusiness(
+    cart: BusinessesInCartType,
+    businessId: BusinessId
   ): number {
-    const items = cart?.[category] || []
-    return items.reduce((acc, it) => acc + it.price * it.quantity, 0)
-  }
+    const businessCart = cart?.[businessId]
+    if (!businessCart) return 0
 
-  private _getGrandTotal(cart: ItemsInCartType): number {
+    return businessCart.items.reduce(
+      (acc, item) => acc + item.price * item.quantity,
+      0
+    )
+  }
+  private _getGrandTotal(cart: BusinessesInCartType): number {
     return this._flattenCart(cart).reduce(
-      (acc, it) => acc + it.price * it.quantity,
+      (acc, item) => acc + item.price * item.quantity,
       0
     )
   }
@@ -67,8 +75,20 @@ export default class CartModule extends Common {
     return Array.from(uniqueCurrencies.values())
   }
 
-  private _findCartItemIndex(arr: CartItem[], id: string | number): number {
-    return arr.findIndex((it) => String(it.id) === String(id))
+  private _findBusinessInCartByIndex(
+    cart: BusinessesInCartType,
+    businessId: string | number
+  ): boolean {
+    return !!cart[businessId]
+  }
+
+  private _findItemInBusinessCart(
+    businessCart: BusinessCart,
+    itemId: string | number
+  ): number {
+    return businessCart.items.findIndex(
+      (it) => String(it.id) === String(itemId)
+    )
   }
 
   private _getLocal(key: string) {
@@ -88,7 +108,7 @@ export default class CartModule extends Common {
 
   private _persistCart() {
     try {
-      this._setLocal("greep_cart_v1", this.ItemsInCart)
+      this._setLocal("greep_cart_v1", this.BusinessesInCart)
     } catch (err) {
       console.warn("Failed to persist cart", err)
     }
@@ -104,102 +124,129 @@ export default class CartModule extends Common {
   // #endregion Private Utility Helpers
 
   // #region Generic
-  public AddToCart = (
-    item: CartItem,
-    forceAdd = false,
-    incrementQuantity = 1
-  ): CartItem[] | [] => {
-    if (!this.ItemsInCart) this.ItemsInCart = {} as ItemsInCartType
-    const category: ProductCategory = item.category || "physical"
+  public AddToCart = (product: MerchantProduct): BusinessCart | null => {
+    if (!this.BusinessesInCart)
+      this.BusinessesInCart = {} as BusinessesInCartType
 
-    if (!this.ItemsInCart[category]) this.ItemsInCart[category] = []
+    const businessId: BusinessId = product.businessId
 
-    const existingIdx = this._findCartItemIndex(
-      this.ItemsInCart[category],
-      item.id
+    // Check if business exists in cart; if not, initialize it
+    if (!this._findBusinessInCartByIndex(this.BusinessesInCart, businessId)) {
+      const businessDetails: BusinessDetails = {
+        businessId,
+        businessUuid: product.businessUuid,
+        businessName: product.businessName,
+        businessLogo: product.businessLogo,
+        businessBanner: product.businessBanner,
+        businessDescription: product.businessDescription,
+      }
+
+      this.BusinessesInCart[businessId] = {
+        details: businessDetails,
+        items: [],
+      }
+    }
+
+    const businessCart = this.BusinessesInCart[businessId]
+    const existingItemIndex = this._findItemInBusinessCart(
+      businessCart,
+      product.id
     )
 
-    if (existingIdx > -1 && !forceAdd) {
-      this.ItemsInCart[category][existingIdx].quantity += incrementQuantity
-      if (this.ItemsInCart[category][existingIdx].selected === undefined)
-        this.ItemsInCart[category][existingIdx].selected = true
-    } else {
-      const newItem: CartItem = {
-        id: String(item.id),
-        uuid: item.uuid,
-        name: item.name,
-        price: Number(item.price || 0),
-        formattedPrice: item.formattedPrice,
-        currency: item.currency,
-        currencySymbol: item.currencySymbol,
-        quantity: 1,
-        totalItems: item.quantity,
-        amountInUsd: 0, // default to 0
-        category,
-        productType: item.productType,
-        imageUrl: item.imageUrl,
-        selected: true,
-        sku: item.sku,
-        variant: item.variant,
-        meta: item.meta || {},
-        usdCurrencySymbol: "$",
-        totalAmount: item.price,
-        totalAmountInUsd: 0,
-      }
-      this.ItemsInCart[category].push(newItem)
+    // If item already exists, return early (no increment)
+    if (existingItemIndex > -1) {
       Logic.Common.showAlert({
         show: true,
-        message: "New product added to cart.",
+        message: "Item already in cart.",
         type: "info",
-        duration: 1000,
+        duration: 700,
       })
+      return this.BusinessesInCart[businessId]
     }
 
-    this.ItemsInCart = { ...this.ItemsInCart }
+    // Create new item
+    const newProductInCart: CartItem = {
+      id: String(product.id),
+      uuid: product.uuid,
+      name: product.name,
+      price: Number(product.price || 0),
+      formattedPrice: product.formattedPrice,
+      currency: product.currency,
+      currencySymbol: product.currencySymbol,
+      quantity: 1,
+      totalItems: product.quantity,
+      amountInUsd: 0,
+      category: product.category,
+      productType: product.productType,
+      imageUrl: product.imageUrl,
+      selected: true,
+      sku: product.sku,
+      variant: product.variant,
+      meta: product.meta || {},
+      usdCurrencySymbol: "$",
+      totalAmount: product.price,
+      totalAmountInUsd: 0,
+    }
+
+    // Add new item under the business
+    businessCart.items.push(newProductInCart)
+
+    Logic.Common.showAlert({
+      show: true,
+      message: "New product added to cart.",
+      type: "info",
+      duration: 700,
+    })
+
+    // Persist and recalculate
+    this.BusinessesInCart = { ...this.BusinessesInCart }
     this._persistCart()
     this.GetTotalItemsInCart()
-    return this.ItemsInCart[category]
-  }
 
+    return this.BusinessesInCart[businessId]
+  }
   public RemoveItemFromCart = (
-    category: ProductCategory,
+    businessId: BusinessId,
     itemId: string | number
   ): void => {
-    if (!this.ItemsInCart[category]) return
+    if (!this.BusinessesInCart || !this.BusinessesInCart[businessId]) return
+
+    const businessCart = this.BusinessesInCart[businessId]
 
     // Remove the specific item
-    this.ItemsInCart[category] = this.ItemsInCart[category].filter(
-      (item) => item.id !== itemId
+    businessCart.items = businessCart.items.filter(
+      (item) => String(item.id) !== String(itemId)
     )
 
-    // If category becomes empty, delete it
-    if (this.ItemsInCart[category].length === 0) {
-      delete this.ItemsInCart[category]
+    // If business has no more items, remove the business entry
+    if (businessCart.items.length === 0) {
+      delete this.BusinessesInCart[businessId]
+    } else {
+      this.BusinessesInCart[businessId] = { ...businessCart }
     }
 
-    this.ItemsInCart = { ...this.ItemsInCart }
+    this.BusinessesInCart = { ...this.BusinessesInCart }
     this._persistCart()
     this.GetTotalItemsInCart()
   }
-
   public UpdateItemQuantity = (
-    category: ProductCategory,
+    businessId: BusinessId,
     itemId: string | number,
     isIncrement: boolean
   ): void => {
-    if (!this.ItemsInCart[category]) return
+    if (!this.BusinessesInCart || !this.BusinessesInCart[businessId]) return
 
-    const itemIndex = this._findCartItemIndex(
-      this.ItemsInCart[category],
-      itemId
+    const businessCart = this.BusinessesInCart[businessId]
+    const itemIndex = businessCart.items.findIndex(
+      (item) => String(item.id) === String(itemId)
     )
     if (itemIndex === -1) return
 
-    const currentItem = this.ItemsInCart[category][itemIndex]
+    const currentItem = businessCart.items[itemIndex]
 
     // 🔼 Increment or 🔽 Decrement
     if (isIncrement) {
-      // prevent going beyond available stock
+      // prevent exceeding total available items (if applicable)
       if (currentItem.quantity < (currentItem.totalItems || 1)) {
         currentItem.quantity += 1
       }
@@ -209,54 +256,49 @@ export default class CartModule extends Common {
     }
 
     // ✅ Keep reactivity
-    this.ItemsInCart[category].splice(itemIndex, 1, { ...currentItem })
-    this.ItemsInCart = { ...this.ItemsInCart }
+    businessCart.items.splice(itemIndex, 1, { ...currentItem })
+    this.BusinessesInCart[businessId] = { ...businessCart }
+    this.BusinessesInCart = { ...this.BusinessesInCart }
 
     // 🔁 Persist changes
     this._persistCart()
     this.GetTotalItemsInCart()
   }
 
-  public ToggleItemSelection = (
-    category: ProductCategory,
+  public ToggleItemSelection(
+    businessId: string | number,
     itemId: string | number
-  ): void => {
-    if (!this.ItemsInCart[category]) return
+  ): void {
+    const businessCart = this.BusinessesInCart[businessId]
+    if (!businessCart) return
 
-    const itemIndex = this._findCartItemIndex(
-      this.ItemsInCart[category],
-      itemId
-    )
-    if (itemIndex === -1) return
+    const items = businessCart.items
+    const index = items.findIndex((item) => String(item.id) === String(itemId))
+    if (index === -1) return
 
-    const currentItem = this.ItemsInCart[category][itemIndex]
+    const updatedItem = { ...items[index], selected: !items[index].selected }
+    items.splice(index, 1, updatedItem)
 
-    // Toggle the selected state
-    currentItem.selected = !currentItem.selected
+    this.BusinessesInCart[businessId] = { ...businessCart, items: [...items] }
+    this.BusinessesInCart = { ...this.BusinessesInCart }
 
-    // Replace the item
-    this.ItemsInCart[category].splice(itemIndex, 1, { ...currentItem })
-
-    // ✅ Trigger reactivity by replacing entire object
-    this.ItemsInCart = { ...this.ItemsInCart }
-
-    // Persist changes
     this._persistCart()
   }
 
   public IsItemInCart(
-    category: ProductCategory,
+    businessId: string | number,
     itemId: string | number
   ): boolean {
-    if (!this.ItemsInCart || !this.ItemsInCart[category]) return false
-    const exists = this.ItemsInCart[category].some(
-      (item) => String(item.id) === String(itemId)
-    )
-    return exists
+    const businessCart = this.BusinessesInCart[businessId]
+    if (!businessCart) return false
+
+    return businessCart.items.some((item) => String(item.id) === String(itemId))
   }
 
   public GetCurrenciesInCart(): { code: string; symbol?: string }[] {
-    const allItems = Object.values(this.ItemsInCart).flat()
+    const allItems = Object.values(this.BusinessesInCart).flatMap(
+      (business) => business.items
+    )
     return this._extractUniqueCurrencies(allItems)
   }
 
@@ -264,33 +306,38 @@ export default class CartModule extends Common {
     return (this.exchangeRatesInCart = rates)
   }
 
-  public MapCartItemsWithExchangeRates(): ItemsInCartType {
-    const mapped: ItemsInCartType = {} as ItemsInCartType
+  public MapCartItemsWithExchangeRates(): BusinessesInCartType {
+    const mapped: BusinessesInCartType = {} as BusinessesInCartType
 
-    Object.entries(this.ItemsInCart).forEach(([category, items]) => {
-      mapped[category as ProductCategory] = items.map((item) => {
-        const rate = this._getRateForCurrency(item.currency || "USD")
+    Object.entries(this.BusinessesInCart).forEach(
+      ([businessId, businessCart]) => {
+        const updatedItems = businessCart.items.map((item) => {
+          const rate = this._getRateForCurrency(item.currency || "USD")
+          const exchangeRate = rate ? rate.mid : 1 // fallback if no rate found
 
-        const exchangeRate = rate ? rate.mid : 1 // fallback if no rate found
+          const price = item.price || 0
+          const quantity = item.quantity || 1
 
-        const price = item.price || 0
-        const quantity = item.quantity || 1
+          const amountInUsd = price / exchangeRate
+          const totalAmount = price * quantity
+          const totalAmountInUsd = amountInUsd * quantity
 
-        const amountInUsd = price / exchangeRate
-        const totalAmount = price * quantity
-        const totalAmountInUsd = amountInUsd * quantity
+          return {
+            ...item,
+            amountInUsd,
+            totalAmount,
+            totalAmountInUsd,
+          }
+        })
 
-        return {
-          ...item,
-          amountInUsd,
-          totalAmount,
-          totalAmountInUsd,
+        mapped[businessId] = {
+          ...businessCart,
+          items: updatedItems,
         }
-      })
-    })
+      }
+    )
 
-    this.ItemsInCart = mapped
-
+    this.BusinessesInCart = mapped
     this._persistCart()
     this.GetTotalItemsInCart()
 
@@ -298,13 +345,13 @@ export default class CartModule extends Common {
   }
 
   public ClearCart = (): void => {
-    this.ItemsInCart = {} as ItemsInCartType
+    this.BusinessesInCart = {} as BusinessesInCartType
     this._persistCart()
     this.GetTotalItemsInCart()
   }
 
   public BuildCheckoutPayload = (
-    category?: ProductCategory,
+    businessId?: BusinessId,
     includeUnselected = false
   ): CheckoutPayload => {
     const items: CheckoutItem[] = []
@@ -320,14 +367,18 @@ export default class CartModule extends Common {
       })
     }
 
-    if (category) {
-      const categoryItems = this.GetCategoryItems(category)
-      categoryItems.forEach((it) => {
-        if (includeUnselected || it.selected) addItem(it)
-      })
+    if (businessId) {
+      const businessCart = this.BusinessesInCart[businessId]
+      if (businessCart?.items?.length) {
+        businessCart.items.forEach((it) => {
+          if (includeUnselected || it.selected) addItem(it)
+        })
+      }
     } else {
-      this.GetAllItems().forEach((it) => {
-        if (includeUnselected || it.selected) addItem(it)
+      Object.values(this.BusinessesInCart).forEach((businessCart) => {
+        businessCart.items.forEach((it) => {
+          if (includeUnselected || it.selected) addItem(it)
+        })
       })
     }
 
@@ -341,11 +392,11 @@ export default class CartModule extends Common {
   public GetTotalSelectedItemsInUsd(): number {
     let totalInUsd = 0
 
-    for (const categoryKey of Object.keys(this.ItemsInCart)) {
-      const category = categoryKey as ProductCategory
-      const items = this.ItemsInCart[category] || []
-      const selectedItems = items.filter((item) => item.selected)
+    for (const businessId in this.BusinessesInCart) {
+      const businessCart = this.BusinessesInCart[businessId]
+      if (!businessCart?.items?.length) continue
 
+      const selectedItems = businessCart.items.filter((item) => item.selected)
       totalInUsd += selectedItems.reduce(
         (sum, item) => sum + (item.totalAmountInUsd || 0),
         0
@@ -358,11 +409,11 @@ export default class CartModule extends Common {
   public GetAllSelectedItemsInOrderFormat(): SelectedItemOrderFormat[] {
     const selectedItems: SelectedItemOrderFormat[] = []
 
-    for (const categoryKey of Object.keys(this.ItemsInCart)) {
-      const category = categoryKey as ProductCategory
-      const items = this.ItemsInCart[category] || []
+    for (const businessId in this.BusinessesInCart) {
+      const businessCart = this.BusinessesInCart[businessId]
+      if (!businessCart?.items?.length) continue
 
-      items
+      businessCart.items
         .filter((item) => item.selected)
         .forEach((item) => {
           selectedItems.push({
@@ -370,7 +421,7 @@ export default class CartModule extends Common {
             sku: item.sku,
             quantity: item.quantity,
             price: item.amountInUsd,
-            variantId: item?.variant?.id || item.id.toString(),
+            variantId: item?.variant?.id?.toString() || item.id.toString(),
           })
         })
     }
@@ -379,19 +430,20 @@ export default class CartModule extends Common {
   }
   // #endregion Generic
 
-  // #region By Category
-  public GetCategoryItems = (category: ProductCategory): CartItem[] => {
-    return this.ItemsInCart?.[category] || []
+  // // #region By Category
+  public GetBusinessItems(businessId: BusinessId): CartItem[] {
+    return this.BusinessesInCart?.[businessId]?.items || []
   }
 
-  public GetTotalItemsByCategory(
-    category: ProductCategory,
+  public GetTotalItemsByBusiness(
+    businessId: BusinessId,
     useQuantity: boolean = false
   ): number {
-    const items = this.ItemsInCart[category] || []
+    const business = this.BusinessesInCart[businessId]
+    if (!business) return 0
 
-    // If useQuantity is true → sum of quantities
-    // If false → just count number of items
+    const items = business.items || []
+
     const total =
       useQuantity ?
         items.reduce((sum, item) => sum + (item.quantity || 0), 0)
@@ -400,30 +452,32 @@ export default class CartModule extends Common {
     return total
   }
 
-  public GetCategorySubtotal(category: ProductCategory): number {
-    const items = this.ItemsInCart[category] || []
+  public GetBusinessSubtotal(businessId: BusinessId): number {
+    const business = this.BusinessesInCart[businessId]
+    if (!business) return 0
 
-    const subtotal = items
+    const subtotal = business.items
       .filter((item) => item.selected)
-      .reduce((sum, item) => sum + item.totalAmountInUsd, 0)
+      .reduce((sum, item) => sum + (item.totalAmountInUsd || 0), 0)
 
     return subtotal
   }
 
-  public ClearCategory = (category: ProductCategory) => {
-    if (!this.ItemsInCart) return
-    delete this.ItemsInCart[category]
-    this.ItemsInCart = { ...this.ItemsInCart }
+  public ClearBusiness = (businessId: BusinessId): void => {
+    if (!this.BusinessesInCart) return
+    delete this.BusinessesInCart[businessId]
+    this.BusinessesInCart = { ...this.BusinessesInCart }
     this._persistCart()
   }
 
-  public GetSelectedItemsByCategory(
-    category: ProductCategory,
+  public GetSelectedItemsByBusiness(
+    businessId: BusinessId,
     useQuantity: boolean = false
   ): number {
-    const items = this.ItemsInCart[category] || []
+    const business = this.BusinessesInCart[businessId]
+    if (!business) return 0
 
-    const selectedItems = items.filter((item) => item.selected)
+    const selectedItems = business.items.filter((item) => item.selected)
 
     const total =
       useQuantity ?
@@ -433,19 +487,19 @@ export default class CartModule extends Common {
     return total
   }
 
-  public GetCurrenciesInCartByCategory(
-    category: ProductCategory
+  public GetCurrenciesInCartByBusiness(
+    businessId: BusinessId
   ): { code: string; symbol?: string }[] {
-    const items = this.ItemsInCart[category] || []
-    return this._extractUniqueCurrencies(items)
+    const business = this.BusinessesInCart[businessId]
+    if (!business) return []
+    return this._extractUniqueCurrencies(business.items)
   }
 
-  public GetTotalSelectedItemsInUsdByCategory(
-    category: ProductCategory
-  ): number {
-    const items = this.ItemsInCart[category] || []
-    const selectedItems = items.filter((item) => item.selected)
+  public GetTotalSelectedItemsInUsdByBusiness(businessId: BusinessId): number {
+    const business = this.BusinessesInCart[businessId]
+    if (!business) return 0
 
+    const selectedItems = business.items.filter((item) => item.selected)
     const totalInUsd = selectedItems.reduce(
       (sum, item) => sum + (item.totalAmountInUsd || 0),
       0
@@ -454,10 +508,11 @@ export default class CartModule extends Common {
     return totalInUsd
   }
 
-  public GetSelectedItemsByCategoryInOrderFormat(
-    category: ProductCategory
+  public GetSelectedItemsByBusinessInOrderFormat(
+    businessId: string | number
   ): SelectedItemOrderFormat[] {
-    const items = this.ItemsInCart[category] || []
+    const businessCart = this.BusinessesInCart[businessId]
+    const items = businessCart?.items || []
 
     return items
       .filter((item) => item.selected)
@@ -469,42 +524,40 @@ export default class CartModule extends Common {
         variantId: item?.variant?.id || item.id.toString(),
       }))
   }
+
   // #endregion By Category
 
-  // #region Selected Items
-  public GetSelectedItemsInCart(): Partial<
-    Record<ProductCategory, CartItem[]>
-  > {
-    const selectedItemsInCart: Partial<Record<ProductCategory, CartItem[]>> = {}
+  // // #region Selected Items
+  public GetSelectedItemsInCart(): Partial<Record<BusinessId, CartItem[]>> {
+    const selectedItemsInCart: Partial<Record<BusinessId, CartItem[]>> = {}
 
-    for (const [categoryKey, items] of Object.entries(this.ItemsInCart)) {
-      const category = categoryKey as ProductCategory
-      const selectedItems = items.filter((item) => item.selected)
+    for (const [businessId, businessCart] of Object.entries(
+      this.BusinessesInCart
+    )) {
+      const selectedItems = businessCart.items.filter((item) => item.selected)
 
       if (selectedItems.length > 0) {
-        selectedItemsInCart[category] = selectedItems
+        selectedItemsInCart[businessId] = selectedItems
       }
     }
 
     return selectedItemsInCart
   }
-
-  public GetCategoriesWithSelectedItemsCount(): number {
-    return Object.keys(this.ItemsInCart).reduce((count, categoryKey) => {
-      const category = categoryKey as ProductCategory
-      const items = this.ItemsInCart[category] || []
-      const hasSelected = items.some((item) => item.selected)
-      return count + (hasSelected ? 1 : 0)
-    }, 0)
+  public GetBusinessesWithSelectedItemsCount(): number {
+    return Object.values(this.BusinessesInCart).reduce(
+      (count, businessCart) => {
+        const hasSelected = businessCart.items.some((item) => item.selected)
+        return count + (hasSelected ? 1 : 0)
+      },
+      0
+    )
   }
 
   public GetTotalSelectedItems(useQuantity: boolean = false): number {
     let total = 0
 
-    for (const categoryKey of Object.keys(this.ItemsInCart)) {
-      const category = categoryKey as ProductCategory
-      const items = this.ItemsInCart[category] || []
-      const selectedItems = items.filter((item) => item.selected)
+    for (const businessCart of Object.values(this.BusinessesInCart)) {
+      const selectedItems = businessCart.items.filter((item) => item.selected)
 
       total +=
         useQuantity ?
@@ -518,11 +571,8 @@ export default class CartModule extends Common {
   public GetSelectedItemsSubtotal(): number {
     let total = 0
 
-    for (const categoryKey of Object.keys(this.ItemsInCart)) {
-      const category = categoryKey as ProductCategory
-      const items = this.ItemsInCart[category] || []
-
-      const selectedSubtotal = items
+    for (const businessCart of Object.values(this.BusinessesInCart)) {
+      const selectedSubtotal = businessCart.items
         .filter((item) => item.selected)
         .reduce((sum, item) => sum + item.price * item.quantity, 0)
 
@@ -534,23 +584,28 @@ export default class CartModule extends Common {
 
   // #endregion Selected Items
 
-  // #region all items
-  public GetAllItems = (): CartItem[] => {
-    return this._flattenCart(this.ItemsInCart || {})
-  }
-
   public GetTotalItemsInCart(useQuantity: boolean = false): number {
-    const totalItems: number = Object.keys(this.ItemsInCart).reduce(
-      (total, category) => {
-        const cat = category as ProductCategory
-        const items = this.ItemsInCart[cat] || []
+    if (
+      !this.BusinessesInCart ||
+      Object.keys(this.BusinessesInCart).length === 0
+    ) {
+      this.TotalItemsInCart = 0
+      return 0
+    }
 
-        const categoryTotal =
+    const totalItems = Object.values(this.BusinessesInCart).reduce(
+      (total, businessCart) => {
+        if (!businessCart || !Array.isArray(businessCart.items)) return total
+
+        const businessTotal =
           useQuantity ?
-            items.reduce((sum, item) => sum + (item.quantity || 0), 0)
-          : items.length
+            businessCart.items.reduce(
+              (sum, item) => sum + (item.quantity || 0),
+              0
+            )
+          : businessCart.items.length
 
-        return total + categoryTotal
+        return total + businessTotal
       },
       0
     )
@@ -558,109 +613,4 @@ export default class CartModule extends Common {
     this.TotalItemsInCart = totalItems
     return totalItems
   }
-
-  // #endregion all items
-
-  /** 🟢 Toggle item selection on checkout */
-
-  /** ✅ Check if an item already exists in cart */
-
-  /** ✅ Get number of categories that have at least one selected item */
-
-  /** ✅ Get only selected categories and their selected items */
-
-  /** Get items for a specific category */
-
-  /** Get all items across all categories */
-
-  // ✅ Get total number of items by category
-
-  // ✅ Get total number of all items in cart (across categories)
-
-  /** 💱 Map each category and its items with exchange rate conversions */
-
-  /** ✅ Get total number of selected items per category */
-
-  /** ✅ Get total number of selected items across all categories */
-
-  /** 💰 Get subtotal for a specific category (only selected items) */
-
-  /** 💰 Get subtotal for all selected items across all categories */
-
-  /** Clear a specific category */
-
-  /** Clear entire cart */
-
-  /* ---------------------------
-   Checkout Helpers
-  ----------------------------*/
-
-  /** Build checkout payload */
-
-  /** Checkout a single category */
-  // public CheckoutCategory = async (
-  //   category: string,
-  //   includeUnselected = false
-  // ): Promise<Order | undefined> => {
-  //   const payload = this.BuildCheckoutPayload(category, includeUnselected)
-
-  //   if (!payload.items.length) {
-  //     Logic.Common.showError(null, "No items selected for checkout", "info")
-  //     return undefined
-  //   }
-
-  //   this.CreateOrderPayload = {
-  //     items: payload.items.map((it) => ({
-  //       productId: it.id,
-  //       quantity: it.quantity,
-  //       price: it.price,
-  //       meta: it.meta || {},
-  //     })),
-  //     metadata: payload.metadata,
-  //   } as unknown as CreateOrderInput
-
-  //   const order = await this.CreateOrder()
-  //   if (order) {
-  //     const remaining = this.ItemsInCart?.[category] || []
-  //     const stillKeep = remaining.filter((it) => !it.selected)
-  //     if (stillKeep.length) this.ItemsInCart[category] = stillKeep
-  //     else delete this.ItemsInCart[category]
-  //     this.ItemsInCart = { ...this.ItemsInCart }
-  //     this._persistCart()
-  //   }
-
-  //   return order
-  // }
-
-  /** Checkout all selected items across all categories */
-  // public CheckoutSelected = async (): Promise<Order | undefined> => {
-  //   const payload = this.BuildCheckoutPayload(undefined, false)
-  //   if (!payload.items.length) {
-  //     Logic.Common.showError(null, "No items selected for checkout", "info")
-  //     return undefined
-  //   }
-
-  //   this.CreateOrderPayload = {
-  //     items: payload.items.map((it) => ({
-  //       productId: it.id,
-  //       quantity: it.quantity,
-  //       price: it.price,
-  //       meta: it.meta || {},
-  //     })),
-  //     metadata: payload.metadata,
-  //   } as unknown as CreateOrderInput
-
-  //   const order = await this.CreateOrder()
-  //   if (order) {
-  //     const newCart: ItemsInCartType = {}
-  //     Object.keys(this.ItemsInCart || {}).forEach((cat) => {
-  //       const keep = (this.ItemsInCart[cat] || []).filter((it) => !it.selected)
-  //       if (keep.length) newCart[cat] = keep
-  //     })
-  //     this.ItemsInCart = newCart
-  //     this._persistCart()
-  //   }
-
-  //   return order
-  // }
 }
