@@ -4,8 +4,6 @@ import Common from "./Common"
 import {
   BusinessesInCartType,
   CartItem,
-  CheckoutPayload,
-  CheckoutItem,
   SelectedItemOrderFormat,
   BusinessDetails,
   BusinessCart,
@@ -459,7 +457,6 @@ export default class CartModule extends Common {
     return this._extractUniqueCurrencies(business.items)
   }
 
- 
   public GetTotalSelectedItemsInUsdByBusiness(businessId: BusinessId): number {
     const business = this.BusinessesInCart[businessId]
     if (!business) return 0
