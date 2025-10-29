@@ -16,6 +16,7 @@ export default class User extends Common {
     this.defineReactiveProperty("SearchedBusinesses", undefined);
     this.defineReactiveProperty("SingleUser", undefined);
     this.defineReactiveProperty("ManyP2PDeliveryAddresses", undefined);
+    this.defineReactiveProperty("VerificationRetryInfo", undefined);
   }
 
   // Base variables
@@ -23,6 +24,19 @@ export default class User extends Common {
   public SingleUser: UserModel | undefined;
   public SearchedBusinesses: BusinessModel[] | undefined;
   public ManyP2PDeliveryAddresses: DeliveryAddressPaginator | undefined;
+  public VerificationRetryInfo:
+    | {
+        auth_user_id: number;
+        verification_id: number;
+        previous_status: string;
+        current_status: string;
+        status_changed: boolean;
+        smile_id_result: {
+          status: string;
+          description: string;
+        };
+      }
+    | undefined;
 
   //
   public UpdateProfileForm: MutationUpdateProfileArgs | undefined;
@@ -90,5 +104,22 @@ export default class User extends Common {
           throw error;
         });
     }
+  };
+
+  public RetriggerVerification = async () => {
+    return $api.user
+      .RetriggerVerification()
+      .then((response) => {
+        this.VerificationRetryInfo = response.data?.RetriggerVerification;
+        return response.data?.RetriggerVerification;
+      })
+      .catch((error: CombinedError) => {
+        Logic.Common.showError(
+          error,
+          "Failed to check verification status",
+          "error-alert"
+        );
+        throw error;
+      });
   };
 }

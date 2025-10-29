@@ -191,5 +191,41 @@ export default class UserApi extends BaseApiService {
 
     return response;
   };
+
+  public RetriggerVerification = () => {
+    const requestData = `
+      mutation RetriggerVerification {
+        RetriggerVerification {
+          auth_user_id
+          verification_id
+          previous_status
+          current_status
+          status_changed
+          smile_id_result {
+            status
+            description
+          }
+        }
+      }
+    `;
+
+    const response: Promise<
+      OperationResult<{
+        RetriggerVerification: {
+          auth_user_id: number;
+          verification_id: number;
+          previous_status: string;
+          current_status: string;
+          status_changed: boolean;
+          smile_id_result: {
+            status: string;
+            description: string;
+          };
+        };
+      }>
+    > = this.mutation(requestData, {});
+
+    return response;
+  };
   // #endregion MUTATIONS
 }
