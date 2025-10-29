@@ -75,11 +75,12 @@ export default class CartModule extends Common {
     return Array.from(uniqueCurrencies.values())
   }
 
-  private _findBusinessInCartByIndex(
-    cart: BusinessesInCartType,
-    businessId: string | number
-  ): boolean {
-    return !!cart[businessId]
+  private _checkIfBusinessExist(businessId: string | number): boolean {
+    return !!this.BusinessesInCart[businessId]
+  }
+
+  private _findCartItemIndex(arr: CartItem[], id: string | number): number {
+    return arr.findIndex((it) => String(it.id) === String(id))
   }
 
   private _findItemInBusinessCart(
@@ -108,7 +109,7 @@ export default class CartModule extends Common {
 
   private _persistCart() {
     try {
-      this._setLocal("greep_cart_v1", this.BusinessesInCart)
+      this._setLocal("greep_cart_v2", this.BusinessesInCart)
     } catch (err) {
       console.warn("Failed to persist cart", err)
     }
@@ -125,13 +126,14 @@ export default class CartModule extends Common {
 
   // #region Generic
   public AddToCart = (product: MerchantProduct): BusinessCart | null => {
+    console.log("Adding product to cart:", product)
+
     if (!this.BusinessesInCart)
       this.BusinessesInCart = {} as BusinessesInCartType
 
     const businessId: BusinessId = product.businessId
 
-    // Check if business exists in cart; if not, initialize it
-    if (!this._findBusinessInCartByIndex(this.BusinessesInCart, businessId)) {
+    if (!this.BusinessesInCart[businessId]) {
       const businessDetails: BusinessDetails = {
         businessId,
         businessUuid: product.businessUuid,
@@ -143,18 +145,18 @@ export default class CartModule extends Common {
 
       this.BusinessesInCart[businessId] = {
         details: businessDetails,
-        items: [],
+        items: [] as CartItem[],
       }
     }
 
-    const businessCart = this.BusinessesInCart[businessId]
-    const existingItemIndex = this._findItemInBusinessCart(
-      businessCart,
+    const existingItemInCartIdx = this._findItemInBusinessCart(
+      this.BusinessesInCart[businessId],
       product.id
     )
 
-    // If item already exists, return early (no increment)
-    if (existingItemIndex > -1) {
+    //
+    if (existingItemInCartIdx > -1) {
+      console.log("Product already in cart:", product)
       Logic.Common.showAlert({
         show: true,
         message: "Item already in cart.",
@@ -162,48 +164,47 @@ export default class CartModule extends Common {
         duration: 700,
       })
       return this.BusinessesInCart[businessId]
+    } else {
+      const newProductInCart: CartItem = {
+        id: String(product.id),
+        uuid: product.uuid,
+        name: product.name,
+        price: Number(product.price || 0),
+        formattedPrice: product.formattedPrice,
+        currency: product.currency,
+        currencySymbol: product.currencySymbol,
+        quantity: 1,
+        totalItems: product.quantity,
+        amountInUsd: 0,
+        category: product.category,
+        productType: product.productType,
+        imageUrl: product.imageUrl,
+        selected: true,
+        sku: product.sku,
+        variant: product.variant,
+        meta: product.meta || {},
+        usdCurrencySymbol: "$",
+        totalAmount: product.price,
+        totalAmountInUsd: 0,
+      }
+
+      // Add new item under the business
+      this.BusinessesInCart[businessId].items.push(newProductInCart)
+
+      Logic.Common.showAlert({
+        show: true,
+        message: "New product added to cart.",
+        type: "info",
+        duration: 700,
+      })
+
+      // Persist and recalculate
+      this.BusinessesInCart = { ...this.BusinessesInCart }
+      this._persistCart()
+      this.GetTotalItemsInCart()
+
+      return this.BusinessesInCart[businessId]
     }
-
-    // Create new item
-    const newProductInCart: CartItem = {
-      id: String(product.id),
-      uuid: product.uuid,
-      name: product.name,
-      price: Number(product.price || 0),
-      formattedPrice: product.formattedPrice,
-      currency: product.currency,
-      currencySymbol: product.currencySymbol,
-      quantity: 1,
-      totalItems: product.quantity,
-      amountInUsd: 0,
-      category: product.category,
-      productType: product.productType,
-      imageUrl: product.imageUrl,
-      selected: true,
-      sku: product.sku,
-      variant: product.variant,
-      meta: product.meta || {},
-      usdCurrencySymbol: "$",
-      totalAmount: product.price,
-      totalAmountInUsd: 0,
-    }
-
-    // Add new item under the business
-    businessCart.items.push(newProductInCart)
-
-    Logic.Common.showAlert({
-      show: true,
-      message: "New product added to cart.",
-      type: "info",
-      duration: 700,
-    })
-
-    // Persist and recalculate
-    this.BusinessesInCart = { ...this.BusinessesInCart }
-    this._persistCart()
-    this.GetTotalItemsInCart()
-
-    return this.BusinessesInCart[businessId]
   }
 
   public RemoveItemFromCart = (
@@ -212,18 +213,14 @@ export default class CartModule extends Common {
   ): void => {
     if (!this.BusinessesInCart || !this.BusinessesInCart[businessId]) return
 
-    const businessCart = this.BusinessesInCart[businessId]
-
     // Remove the specific item
-    businessCart.items = businessCart.items.filter(
-      (item) => String(item.id) !== String(productId)
-    )
+    this.BusinessesInCart[businessId].items = this.BusinessesInCart[
+      businessId
+    ].items.filter((item) => String(item.id) !== String(productId))
 
     // If business has no more items, remove the business entry
-    if (businessCart.items.length === 0) {
+    if (this.BusinessesInCart[businessId].items.length === 0) {
       delete this.BusinessesInCart[businessId]
-    } else {
-      this.BusinessesInCart[businessId] = { ...businessCart }
     }
 
     this.BusinessesInCart = { ...this.BusinessesInCart }
@@ -293,10 +290,10 @@ export default class CartModule extends Common {
     businessId: string | number,
     productId: string | number
   ): boolean {
-    const businessCart = this.BusinessesInCart[businessId]
-    if (!businessCart) return false
+    if (!this.BusinessesInCart || !this.BusinessesInCart[businessId])
+      return false
 
-    return businessCart.items.some(
+    return this.BusinessesInCart[businessId].items.some(
       (item) => String(item.id) === String(productId)
     )
   }
@@ -462,6 +459,7 @@ export default class CartModule extends Common {
     return this._extractUniqueCurrencies(business.items)
   }
 
+ 
   public GetTotalSelectedItemsInUsdByBusiness(businessId: BusinessId): number {
     const business = this.BusinessesInCart[businessId]
     if (!business) return 0

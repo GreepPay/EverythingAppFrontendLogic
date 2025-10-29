@@ -7,7 +7,7 @@ import {
   CheckoutPayload,
   CheckoutItem,
   ProductCategory,
-  SelectedItemOrderFormat, 
+  SelectedItemOrderFormat,
 } from "../../common/types"
 
 export default class CartModule extends Common {
@@ -71,7 +71,7 @@ export default class CartModule extends Common {
     return arr.findIndex((it) => String(it.id) === String(id))
   }
 
-  private _getLocal(key: string) {
+  private _getLocal(key: string) { 
     try {
       const v = localStorage.getItem(key)
       return v ? JSON.parse(v) : undefined
@@ -117,7 +117,7 @@ export default class CartModule extends Common {
     const existingIdx = this._findCartItemIndex(
       this.ItemsInCart[category],
       item.id
-    ) 
+    )
 
     if (existingIdx > -1 && !forceAdd) {
       this.ItemsInCart[category][existingIdx].quantity += incrementQuantity
