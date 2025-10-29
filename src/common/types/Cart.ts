@@ -1,6 +1,4 @@
-import currency from "currency.js"
-import { Category } from "../../gql/graphql"
-
+ 
 // types/cart.ts
 export type ProductSource = "market" | "event" | "ticket" | "other"
 export type ProductCategory = "physical" | "ticket" | "event" | "other"
@@ -27,9 +25,7 @@ export interface CartItem {
   totalAmountInUsd: number
   sku: string
   variant?: any
-}
-
-export type ItemsInCartType = Record<ProductCategory, CartItem[]> // key is category
+} 
 
 // payload used to create order from cart
 export interface CheckoutItem {
@@ -51,31 +47,49 @@ export interface CheckoutPayload {
 
 export type CartCategory = "product" | "event" | "food" | "service"
 
-export interface CartItemBase {
-  id: string
-  uuid: string
+export interface BusinessDetails {
+  businessId: number | string
+  businessUuid?: string
+  businessName?: string
+  businessLogo?: string
+  businessBanner?: string | null
+  businessDescription?: string
+}
+
+export interface BusinessCart {
+  details: BusinessDetails
+  items: CartItem[]
+}
+
+export type BusinessId = number | string
+
+export type BusinessesInCartType = Record<BusinessId, BusinessCart>
+
+export interface MerchantProduct {
+  id: string | number
+  uuid?: string
   name: string
-  price: number
-  quantity: number
-  total: number // computed: price * quantity
-  category: CartCategory
-  image?: string
-}
-
-export interface ProductCartItem extends CartItemBase {
-  category: "product"
-  productId: string
+  price: number 
+  formattedPrice: string 
   currency: string
+  currencySymbol: string
+  imageUrl: string
+  quantity: number
+  category: ProductCategory
+  productType?: ProductSource
+  selected?: boolean
+  description: string
+  sku: string
+  variant?: any
+  images: { url: string }[]
+  meta?: Record<string, any>
+  businessId: number | string
+  businessUuid?: string
+  businessName?: string
+  businessLogo?: string
+  businessBanner?: string | null
+  businessDescription?: string
 }
-
-export interface EventCartItem extends CartItemBase {
-  category: "event"
-  eventId: string
-  eventStartDate: string
-  eventEndDate: string
-  venueName: string
-}
-
 
 export interface SelectedItemOrderFormat {
   productId: string
@@ -83,35 +97,4 @@ export interface SelectedItemOrderFormat {
   quantity: number
   price: number
   variantId: string
-}
-
-
-export interface FoodCartItem extends CartItemBase {
-  category: "food"
-  menuId: string
-  options?: { name: string; value: string }[] // e.g. size: large
-}
-
-export interface ServiceCartItem extends CartItemBase {
-  category: "service"
-  serviceId: string
-  duration?: string
-}
-
-// export type CartItem =
-//   | ProductCartItem
-//   | EventCartItem
-//   | FoodCartItem
-//   | ServiceCartItem
-
-export interface CartTotals {
-  overall: number
-  totalItems: number
-  byCategory: Record<
-    string,
-    {
-      totalItems: number
-      totalPrice: number
-    }
-  >
 }
