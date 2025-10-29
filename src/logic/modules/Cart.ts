@@ -1,12 +1,11 @@
 import { Order, CreateOrderInput, GlobalExchangeRate } from "../../gql/graphql"
 import { Logic } from ".."
-import Common from "./Common" 
+import Common from "./Common"
 import {
   BusinessesInCartType,
   CartItem,
   CheckoutPayload,
   CheckoutItem,
-  ProductCategory,
   SelectedItemOrderFormat,
   BusinessDetails,
   BusinessCart,
@@ -17,7 +16,7 @@ import {
 export default class CartModule extends Common {
   constructor() {
     super()
-    const persisted = this._getLocal("greep_cart_v1")
+    const persisted = this._getLocal("greep_cart_v2")
     this.BusinessesInCart = persisted || {}
     this.TotalItemsInCart = this.GetTotalItemsInCart()
 
@@ -48,6 +47,7 @@ export default class CartModule extends Common {
       0
     )
   }
+
   private _getGrandTotal(cart: BusinessesInCartType): number {
     return this._flattenCart(cart).reduce(
       (acc, item) => acc + item.price * item.quantity,
@@ -84,10 +84,10 @@ export default class CartModule extends Common {
 
   private _findItemInBusinessCart(
     businessCart: BusinessCart,
-    itemId: string | number
+    productId: string | number
   ): number {
     return businessCart.items.findIndex(
-      (it) => String(it.id) === String(itemId)
+      (it) => String(it.id) === String(productId)
     )
   }
 
@@ -205,9 +205,10 @@ export default class CartModule extends Common {
 
     return this.BusinessesInCart[businessId]
   }
+
   public RemoveItemFromCart = (
     businessId: BusinessId,
-    itemId: string | number
+    productId: string | number
   ): void => {
     if (!this.BusinessesInCart || !this.BusinessesInCart[businessId]) return
 
@@ -215,7 +216,7 @@ export default class CartModule extends Common {
 
     // Remove the specific item
     businessCart.items = businessCart.items.filter(
-      (item) => String(item.id) !== String(itemId)
+      (item) => String(item.id) !== String(productId)
     )
 
     // If business has no more items, remove the business entry
@@ -229,16 +230,17 @@ export default class CartModule extends Common {
     this._persistCart()
     this.GetTotalItemsInCart()
   }
+
   public UpdateItemQuantity = (
     businessId: BusinessId,
-    itemId: string | number,
+    productId: string | number,
     isIncrement: boolean
   ): void => {
     if (!this.BusinessesInCart || !this.BusinessesInCart[businessId]) return
 
     const businessCart = this.BusinessesInCart[businessId]
     const itemIndex = businessCart.items.findIndex(
-      (item) => String(item.id) === String(itemId)
+      (item) => String(item.id) === String(productId)
     )
     if (itemIndex === -1) return
 
@@ -267,13 +269,15 @@ export default class CartModule extends Common {
 
   public ToggleItemSelection(
     businessId: string | number,
-    itemId: string | number
+    productId: string | number
   ): void {
     const businessCart = this.BusinessesInCart[businessId]
     if (!businessCart) return
 
     const items = businessCart.items
-    const index = items.findIndex((item) => String(item.id) === String(itemId))
+    const index = items.findIndex(
+      (item) => String(item.id) === String(productId)
+    )
     if (index === -1) return
 
     const updatedItem = { ...items[index], selected: !items[index].selected }
@@ -287,12 +291,14 @@ export default class CartModule extends Common {
 
   public IsItemInCart(
     businessId: string | number,
-    itemId: string | number
+    productId: string | number
   ): boolean {
     const businessCart = this.BusinessesInCart[businessId]
     if (!businessCart) return false
 
-    return businessCart.items.some((item) => String(item.id) === String(itemId))
+    return businessCart.items.some(
+      (item) => String(item.id) === String(productId)
+    )
   }
 
   public GetCurrenciesInCart(): { code: string; symbol?: string }[] {
@@ -350,45 +356,6 @@ export default class CartModule extends Common {
     this.GetTotalItemsInCart()
   }
 
-  public BuildCheckoutPayload = (
-    businessId?: BusinessId,
-    includeUnselected = false
-  ): CheckoutPayload => {
-    const items: CheckoutItem[] = []
-
-    const addItem = (it: CartItem) => {
-      items.push({
-        id: String(it.id),
-        uuid: it.uuid,
-        quantity: it.quantity,
-        price: it.price,
-        productType: it.productType,
-        meta: it.meta,
-      })
-    }
-
-    if (businessId) {
-      const businessCart = this.BusinessesInCart[businessId]
-      if (businessCart?.items?.length) {
-        businessCart.items.forEach((it) => {
-          if (includeUnselected || it.selected) addItem(it)
-        })
-      }
-    } else {
-      Object.values(this.BusinessesInCart).forEach((businessCart) => {
-        businessCart.items.forEach((it) => {
-          if (includeUnselected || it.selected) addItem(it)
-        })
-      })
-    }
-
-    return {
-      items,
-      userId: Logic.Auth.AuthUser?.id,
-      metadata: {},
-    }
-  }
-
   public GetTotalSelectedItemsInUsd(): number {
     let totalInUsd = 0
 
@@ -430,7 +397,7 @@ export default class CartModule extends Common {
   }
   // #endregion Generic
 
-  // // #region By Category
+  // #region By Category
   public GetBusinessItems(businessId: BusinessId): CartItem[] {
     return this.BusinessesInCart?.[businessId]?.items || []
   }
@@ -463,7 +430,7 @@ export default class CartModule extends Common {
     return subtotal
   }
 
-  public ClearBusiness = (businessId: BusinessId): void => {
+  public ClearBusinessCart = (businessId: BusinessId): void => {
     if (!this.BusinessesInCart) return
     delete this.BusinessesInCart[businessId]
     this.BusinessesInCart = { ...this.BusinessesInCart }
@@ -527,7 +494,7 @@ export default class CartModule extends Common {
 
   // #endregion By Category
 
-  // // #region Selected Items
+  // #region Selected Items
   public GetSelectedItemsInCart(): Partial<Record<BusinessId, CartItem[]>> {
     const selectedItemsInCart: Partial<Record<BusinessId, CartItem[]>> = {}
 

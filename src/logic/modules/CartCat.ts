@@ -117,7 +117,7 @@ export default class CartModule extends Common {
     const existingIdx = this._findCartItemIndex(
       this.ItemsInCart[category],
       item.id
-    )
+    ) 
 
     if (existingIdx > -1 && !forceAdd) {
       this.ItemsInCart[category][existingIdx].quantity += incrementQuantity
