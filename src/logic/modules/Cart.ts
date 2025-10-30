@@ -192,7 +192,7 @@ export default class CartModule extends Common {
       Logic.Common.showAlert({
         show: true,
         message: "New product added to cart.",
-        type: "info",
+        type: "success",
         duration: 700,
       })
 

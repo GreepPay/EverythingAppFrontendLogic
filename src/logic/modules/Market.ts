@@ -39,8 +39,8 @@ export default class MarketModule extends Common {
   //
   public GetMarketShops = async (page: number, count: number) => {
     return $api.market.GetMarketShops(page, count).then((response) => {
-      this.BusinessesPaginator = response.data?.MarketShops
-      return this.BusinessesPaginator
+      this.ManyMarketShops = response.data?.MarketShops
+      return this.ManyMarketShops
     })
   }
 
