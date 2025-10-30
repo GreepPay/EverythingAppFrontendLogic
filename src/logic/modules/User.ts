@@ -114,11 +114,11 @@ export default class User extends Common {
         return response.data?.RetriggerVerification;
       })
       .catch((error: CombinedError) => {
-        Logic.Common.showError(
-          error,
-          "Failed to check verification status",
-          "error-alert"
-        );
+        // Logic.Common.showError(
+        //   error,
+        //   "Failed to check verification status",
+        //   "error-alert"
+        // );
         throw error;
       });
   };
