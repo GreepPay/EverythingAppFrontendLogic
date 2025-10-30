@@ -139,6 +139,8 @@ export type Business = {
   banner?: Maybe<Scalars['String']>;
   /** Business name. */
   business_name?: Maybe<Scalars['String']>;
+  /** Business category. */
+  category?: Maybe<Scalars['String']>;
   /** Default Currency */
   default_currency?: Maybe<Scalars['String']>;
   /** Business description. */
@@ -1896,7 +1898,7 @@ export type Query = {
   GetWithdrawInfo: WithdrawInfo;
   /** Get yellow card networks */
   GetYellowCardNetwork: Array<YellowcardNetwork>;
-  /** Get markt events */
+  /** Get market events */
   MarketProducts: ProductPaginator;
   /** Get market shops */
   MarketShops: BusinessPaginator;
@@ -1913,6 +1915,7 @@ export type QueryFeaturedEventsArgs = {
   first: Scalars['Int'];
   orderBy?: InputMaybe<Array<QueryFeaturedEventsOrderByOrderByClause>>;
   page?: InputMaybe<Scalars['Int']>;
+  status?: InputMaybe<Scalars['String']>;
   where?: InputMaybe<QueryFeaturedEventsWhereWhereConditions>;
 };
 
@@ -1921,6 +1924,7 @@ export type QueryFeaturedProductsArgs = {
   first: Scalars['Int'];
   orderBy?: InputMaybe<Array<QueryFeaturedProductsOrderByOrderByClause>>;
   page?: InputMaybe<Scalars['Int']>;
+  status?: InputMaybe<Scalars['String']>;
   where?: InputMaybe<QueryFeaturedProductsWhereWhereConditions>;
 };
 
@@ -2218,6 +2222,7 @@ export type QueryMarketProductsArgs = {
   first: Scalars['Int'];
   orderBy?: InputMaybe<Array<QueryMarketProductsOrderByOrderByClause>>;
   page?: InputMaybe<Scalars['Int']>;
+  status?: InputMaybe<Scalars['String']>;
   where?: InputMaybe<QueryMarketProductsWhereWhereConditions>;
 };
 
@@ -2887,8 +2892,10 @@ export type QueryGetProductsOrderByOrderByClause = {
 /** Allowed column names for Query.GetProducts.where. */
 export enum QueryGetProductsWhereColumn {
   BusinessId = 'BUSINESS_ID',
+  Description = 'DESCRIPTION',
   Id = 'ID',
   Name = 'NAME',
+  Status = 'STATUS',
   Type = 'TYPE'
 }
 
