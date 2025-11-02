@@ -1,6 +1,8 @@
 import {
   MutationSavePushNotificationTokenArgs,
+  Notification,
   NotificationPaginator,
+  PaginatorInfo,
   QueryGetNotificationsArgs,
 } from "../../gql/graphql"
 import { $api } from "../../services"
@@ -17,7 +19,8 @@ export default class NotificationModule extends Common {
 
   // Base Variables
   public UnreadNotification = 0
-  public ManyNotifications: NotificationPaginator | undefined
+  public NotificationsPaginationInfo: PaginatorInfo | undefined
+  public ManyNotifications: Notification[] | undefined
   public GetBitificationsPayload: QueryGetNotificationsArgs | undefined
 
   // Mutation Variables
@@ -35,12 +38,23 @@ export default class NotificationModule extends Common {
     orderType = "CREATED_AT",
     order: "DESC" | "ASC" = "DESC",
     whereQuery = "",
-    channel: "email" | "push" | "all" = "email"
+    channel: "email" | "push" | "all" = "email",
+    isLoadMore = false
   ) => {
     return $api.notification
       .GetNotifications(page, count, orderType, order, whereQuery, channel)
       .then((response) => {
-        this.ManyNotifications = response.data?.GetNotifications
+        if (!isLoadMore) {
+          this.ManyNotifications = response.data?.GetNotifications?.data || []
+        } else {
+          this.ManyNotifications?.push(
+            ...(response.data?.GetNotifications?.data || [])
+          )
+        }
+
+        this.NotificationsPaginationInfo =
+          response.data?.GetNotifications?.paginatorInfo || undefined
+
         return this.ManyNotifications
       })
   }
