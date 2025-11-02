@@ -1,5 +1,6 @@
 import {
   MutationSavePushNotificationTokenArgs,
+  Notification,
   NotificationPaginator,
   PaginatorInfo,
   QueryGetNotificationsArgs,
@@ -18,7 +19,9 @@ export default class NotificationModule extends Common {
 
   // Base Variables
   public UnreadNotification = 0
-  public ManyNotifications: NotificationPaginator | undefined
+  public NotificationsPaginationInfo: PaginatorInfo | undefined
+  public ManyNotifications: Notification[] | undefined
+  public ManyNotificationsWithPaginationInfo: NotificationPaginator | undefined
   public GetBitificationsPayload: QueryGetNotificationsArgs | undefined
 
   // Mutation Variables
@@ -44,21 +47,84 @@ export default class NotificationModule extends Common {
       .then((response) => {
         if (response) {
           if (!isLoadMore) {
-            this.ManyNotifications = response.data?.GetNotifications
+            this.ManyNotificationsWithPaginationInfo =
+              response.data?.GetNotifications
+
+            this.ManyNotifications = response.data?.GetNotifications?.data || []
+            // console.log(
+            //   "this.ManyNotificationsWithPaginationInfo  wewewe",
+            //   this.ManyNotificationsWithPaginationInfo
+            // )
           } else {
-            const existingData: NotificationPaginator = JSON.parse(
-              JSON.stringify(this.ManyNotifications)
+            console.log(
+              " this.ManyNotificationsWithPaginationInfo bnefore push",
+              this.ManyNotificationsWithPaginationInfo
             )
+            console.log(
+              "response.data?.GetNotifications",
+              response.data?.GetNotifications
+            )
+            // const newItems = JSON.parse(
+            //   JSON.stringify(response.data?.GetNotifications?.data || [])
+            // )
+
+            // this.ManyNotificationsWithPaginationInfo?.data.push(
+            //   ...(response.data?.GetNotifications?.data || [])
+            // )
+
+            const existingData: NotificationPaginator = JSON.parse(
+              JSON.stringify(this.ManyNotificationsWithPaginationInfo)
+            )
+
             existingData.data = existingData.data.concat(
               response.data?.GetNotifications?.data || []
             )
+
             existingData.paginatorInfo =
               response.data.GetNotifications?.paginatorInfo
 
-            this.ManyNotifications = existingData
+            this.ManyNotificationsWithPaginationInfo = existingData
+
+            // this.ManyNotifications?.push(
+            //   ...(response.data?.GetNotifications?.data || [])
+            // )
+
+            console.log(
+              " this.ManyNotificationsWithPaginationInfo AFTER push",
+              this.ManyNotificationsWithPaginationInfo
+            )
           }
 
-          return this.ManyNotifications
+          // if (response.data?.GetNotifications?.paginatorInfo) {
+          //   this.ManyNotificationsWithPaginationInfo?.paginatorInfo = {
+          //     ...response.data?.GetNotifications?.paginatorInfo,
+          //   }
+          //   this.NotificationsPaginationInfo = {
+          //     ...response.data?.GetNotifications?.paginatorInfo,
+          //   }
+
+          //   // console.log(
+          //   //   "response.data?.GetNotifications?.paginatorInfo",
+          //   //   response.data?.GetNotifications?.paginatorInfo
+          //   // )
+          //   // console.log(
+          //   //   "response.data?.GetNotifications",
+          //   //   response.data?.GetNotifications
+          //   // )
+          //   // console.log(
+          //   //   " this.ManyNotificationsWithPaginationInfo 2",
+          //   //   this.ManyNotificationsWithPaginationInfo
+          //   // )
+          // }
+
+          // this.NotificationsPaginationInfo =
+          //   response.data?.GetNotifications?.paginatorInfo || undefined
+
+          console.log(
+            " this.ManyNotificationsWithPaginationInfo FINAL",
+            this.ManyNotificationsWithPaginationInfo
+          )
+          return this.ManyNotificationsWithPaginationInfo
         }
       })
   }
