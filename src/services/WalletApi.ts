@@ -132,6 +132,30 @@ export default class WalletsApi extends BaseApiService {
     return response;
   };
 
+  public GetBankBranchesByBankId = (bank_id: number) => {
+    const requestData = `
+        query GetBankBranchesByBankId($bank_id: String!) {
+          GetBankBranchesByBankId(bank_id: $bank_id) {
+             id
+             branch_code
+             branch_name
+             swift_code
+             bic
+             bank_id
+          }
+        }
+      `;
+
+    const response: Promise<
+      OperationResult<{
+        GetBankBranchesByBankId: FlutterwaveBankBranch[];
+      }>
+    > = this.query(requestData, {
+      bank_id,
+    });
+
+    return response;
+  };
   
   public GetBanksByCountry = (country: string) => {
     const requestData = `
