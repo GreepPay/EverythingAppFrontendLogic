@@ -134,7 +134,7 @@ export default class WalletsApi extends BaseApiService {
 
   public GetBankBranchesByBankId = (bank_id: number) => {
     const requestData = `
-        query GetBankBranchesByBankId($bank_id: String!) {
+        query GetBankBranchesByBankId($bank_id: Int!) {
           GetBankBranchesByBankId(bank_id: $bank_id) {
              id
              branch_code
