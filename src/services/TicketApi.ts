@@ -1,10 +1,10 @@
-import { BaseApiService } from "./common/BaseService";
-import { OperationResult } from "urql";
-import { Ticket, TicketPaginator } from "../gql/graphql";
+import { BaseApiService } from "./common/BaseService"
+import { OperationResult } from "urql"
+import { Ticket, TicketPaginator } from "../gql/graphql"
 
 export default class TicketApi extends BaseApiService {
   // #region QUERIES
-  public GetMyTickets = (first: number, page: number) => {
+  public GetMyTickets = (page: number, first: number) => {
     const requestData = `
     query GetMyTickets($first: Int!, $page: Int!) {
       GetMyTickets(first: $first, page: $page) {
@@ -81,16 +81,16 @@ export default class TicketApi extends BaseApiService {
         }
       }
     }
-  `;
+  `
 
     const response: Promise<
       OperationResult<{
-        GetMyTickets: TicketPaginator;
+        GetMyTickets: TicketPaginator
       }>
-    > = this.query(requestData, { first, page });
+    > = this.query(requestData, { first, page })
 
-    return response;
-  };
+    return response
+  }
 
   public GetSingleTicket = (uuid: string) => {
     const requestData = `
@@ -158,15 +158,15 @@ export default class TicketApi extends BaseApiService {
         updatedAt
       }
     }
-  `;
+  `
 
     const response: Promise<
       OperationResult<{
-        GetSingleTicket: Ticket;
+        GetSingleTicket: Ticket
       }>
-    > = this.query(requestData, { uuid });
+    > = this.query(requestData, { uuid })
 
-    return response;
-  };
+    return response
+  }
   // #endregion QUERIES
 }
