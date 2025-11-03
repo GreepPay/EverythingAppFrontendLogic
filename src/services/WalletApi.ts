@@ -3,9 +3,12 @@ import { OperationResult } from "urql";
 import {
   MutationInitiateTopupArgs,
   MutationMakePaymentArgs,
+  BankAccountNameResponse,
   MutationRedeemGrpTokenArgs,
   ExchangeRate,
   QueryGetExchangeRateArgs,
+  FlutterwaveBank,
+  FlutterwaveBankBranch,
   TransactionPaginator,
   QueryGetTransactionsArgs,
   Transaction,
@@ -129,6 +132,29 @@ export default class WalletsApi extends BaseApiService {
     return response;
   };
 
+  
+  public GetBanksByCountry = (country: string) => {
+    const requestData = `
+        query GetBanksByCountry($country: String!) {
+          GetBanksByCountry(country: $country) {
+             id
+             code
+             name
+             provider_type
+          }
+        }
+      `;
+
+    const response: Promise<
+      OperationResult<{
+        GetBanksByCountry: FlutterwaveBank[];
+      }>
+    > = this.query(requestData, {
+      country,
+    });
+
+    return response;
+  };
   public GetTransactions = (
     page: number,
     count: number,
@@ -432,6 +458,31 @@ export default class WalletsApi extends BaseApiService {
       OperationResult<{ GetFinancialSummary: FinancialSummaryResponse }>
     > = this.query(requestData, {
       input,
+    });
+
+    return response;
+  };
+  
+  public ResolveBankAccountName = (
+    account_number: string,
+    bank_code: string
+  ) => {
+    const requestData = `
+        query ResolveBankAccountName($account_number: String!, $bank_code: String!) {
+          ResolveBankAccountName(account_number: $account_number, bank_code: $bank_code) {
+             account_number
+             account_name
+          }
+        }
+      `;
+
+    const response: Promise<
+      OperationResult<{
+        ResolveBankAccountName: BankAccountNameResponse;
+      }>
+    > = this.query(requestData, {
+      account_number,
+      bank_code,
     });
 
     return response;
