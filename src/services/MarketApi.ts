@@ -1,6 +1,6 @@
-import { BaseApiService } from "./common/BaseService"
-import { OperationResult } from "urql"
-import { BusinessPaginator, Business } from "../gql/graphql"
+import { BaseApiService } from "./common/BaseService";
+import { OperationResult } from "urql";
+import { BusinessPaginator, Business } from "../gql/graphql";
 
 export default class MarketApi extends BaseApiService {
   // #region QUERIES
@@ -49,16 +49,16 @@ export default class MarketApi extends BaseApiService {
         }
       }
     }
-  `
+  `;
 
     const response: Promise<
       OperationResult<{
-        GetMarkets: BusinessPaginator
+        GetMarkets: BusinessPaginator;
       }>
-    > = this.query(requestData, { first, page })
+    > = this.query(requestData, { first, page });
 
-    return response
-  }
+    return response;
+  };
 
   public GetMarketShops = (page: number, count: number) => {
     const requestData = `
@@ -87,6 +87,7 @@ export default class MarketApi extends BaseApiService {
           logo
           banner
           description
+          category
           default_currency
           user {
             id
@@ -97,25 +98,7 @@ export default class MarketApi extends BaseApiService {
             phone
           }
           website
-          products {
-            id
-            uuid
-            name
-            price
-            currency
-            images
-            description
-          }
-          eventProducts {
-            id
-            uuid
-            name
-            eventStartDate
-            eventEndDate
-            venueName
-            price
-            images
-          } 
+          
           featuredProduct {
             id
             uuid
@@ -128,19 +111,19 @@ export default class MarketApi extends BaseApiService {
         }
       }
     }
-  `
+  `;
 
     const response: Promise<
       OperationResult<{
-        MarketShops: BusinessPaginator
+        MarketShops: BusinessPaginator;
       }>
     > = this.query(requestData, {
       page,
       count,
-    })
+    });
 
-    return response
-  }
+    return response;
+  };
 
   public GetFeaturedShops = (page: number, count: number) => {
     const requestData = `
@@ -169,6 +152,7 @@ export default class MarketApi extends BaseApiService {
           logo
           banner
           description
+          category
           default_currency
           user {
             id
@@ -179,25 +163,7 @@ export default class MarketApi extends BaseApiService {
             phone
           }
           website
-          products {
-            id
-            uuid
-            name
-            price
-            currency
-            images
-            description
-          }
-          eventProducts {
-            id
-            uuid
-            name
-            eventStartDate
-            eventEndDate
-            venueName
-            price
-            images
-          } 
+          
           featuredProduct {
             id
             uuid
@@ -210,19 +176,19 @@ export default class MarketApi extends BaseApiService {
         }
       }
     }
-  `
+  `;
 
     const response: Promise<
       OperationResult<{
-        FeaturedShops: BusinessPaginator
+        FeaturedShops: BusinessPaginator;
       }>
     > = this.query(requestData, {
       page,
       count,
-    })
+    });
 
-    return response
-  }
+    return response;
+  };
 
   public GetSingleBusiness = (uuid: string) => {
     const requestData = `
@@ -235,6 +201,7 @@ export default class MarketApi extends BaseApiService {
             logo
             banner
             description
+            category
             default_currency
             user {
               id
@@ -253,17 +220,17 @@ export default class MarketApi extends BaseApiService {
             website  
           }
         }
-      `
+      `;
     const response: Promise<
       OperationResult<{
-        GetSingleBusiness: Business
+        GetSingleBusiness: Business;
       }>
     > = this.query(requestData, {
       uuid,
-    })
+    });
 
-    return response
-  }
+    return response;
+  };
 
   // #endregion QUERIES
 }
