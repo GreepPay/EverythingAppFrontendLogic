@@ -110,10 +110,30 @@ export default class DeliveryModule extends Common {
     })
   }
 
-  public GetDeliveryAddresses = async (first: number, page: number) => {
-    return $api.delivery.GetDeliveryAddresses(first, page).then((response) => {
-      this.ManyDeliveryAddresses = response.data?.GetDeliveryAddresses
-      return this.ManyDeliveryAddresses
+  public GetDeliveryAddresses = async (
+    page: number,
+    first: number,
+    isLoadMore = false
+  ) => {
+    return $api.delivery.GetDeliveryAddresses(page, first).then((response) => {
+      if (response) {
+        if (!isLoadMore) {
+          this.ManyDeliveryAddresses = response.data?.GetDeliveryAddresses
+        } else {
+          const existingData: DeliveryAddressPaginator = JSON.parse(
+            JSON.stringify(this.ManyDeliveryAddresses)
+          )
+          existingData.data = existingData.data.concat(
+            response.data?.GetDeliveryAddresses?.data || []
+          )
+          existingData.paginatorInfo =
+            response.data.GetDeliveryAddresses?.paginatorInfo
+
+          this.ManyDeliveryAddresses = existingData
+        }
+
+        return this.ManyDeliveryAddresses
+      }
     })
   }
   // #endregion Queries

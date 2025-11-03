@@ -30,7 +30,7 @@
 	  "src/**/*.vue",
 	  "tests/**/*.ts",
 	  "tests/**/*.tsx"
-, "src/logic/modules/Cart.ts.bak"	],
+, "src/logic/modules/Cart.ts.bak", "src/logic/modules/Notification.ts.bak"	],
 	"exclude": [
 	  "node_modules"
 	]
