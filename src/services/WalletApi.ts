@@ -134,7 +134,7 @@ export default class WalletsApi extends BaseApiService {
 
   public GetBankBranchesByBankId = (bank_id: number) => {
     const requestData = `
-        query GetBankBranchesByBankId($bank_id: String!) {
+        query GetBankBranchesByBankId($bank_id: Int!) {
           GetBankBranchesByBankId(bank_id: $bank_id) {
              id
              branch_code
@@ -156,7 +156,7 @@ export default class WalletsApi extends BaseApiService {
 
     return response;
   };
-  
+
   public GetBanksByCountry = (country: string) => {
     const requestData = `
         query GetBanksByCountry($country: String!) {
@@ -486,7 +486,7 @@ export default class WalletsApi extends BaseApiService {
 
     return response;
   };
-  
+
   public ResolveBankAccountName = (
     account_number: string,
     bank_code: string

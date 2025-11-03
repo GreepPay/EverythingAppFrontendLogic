@@ -221,7 +221,7 @@ export default class Wallet extends Common {
       return this.ManySavedAccounts;
     });
   };
-  
+
   public GetBanksByCountry = async (
     country: string
   ): Promise<FlutterwaveBank[] | undefined> => {
@@ -231,7 +231,6 @@ export default class Wallet extends Common {
     });
   };
 
-  
   public GetPointFinancialSummary = async (from = "", to = "") => {
     const input: FinancialSummaryInput = { type: "point", from, to };
     return $api.wallet.GetFinancialSummary(input).then((response) => {
@@ -239,7 +238,7 @@ export default class Wallet extends Common {
       return this.PointFinancialSummary;
     });
   };
-  
+
   public ResolveBankAccountName = async (
     account_number: string,
     bank_code: string
@@ -251,7 +250,6 @@ export default class Wallet extends Common {
         return this.ResolvedBankAccountName;
       });
   };
-
 
   public GetGlobalExchangeRate = async (
     base = "USD",
@@ -372,17 +370,17 @@ export default class Wallet extends Common {
         return response.data?.GetBankAccountDetails;
       });
   };
-  
-  
+
   public GetBankBranchesByBankId = async (
     bank_id: number
   ): Promise<FlutterwaveBankBranch[] | undefined> => {
-    return $api.wallet.GetBankBranchesByBankId(bank_id).then((response) => {
-      this.ManyBankBranches = response.data?.GetBankBranchesByBankId;
-      return this.ManyBankBranches;
-    });
+    return $api.wallet
+      .GetBankBranchesByBankId(parseInt(bank_id.toString()))
+      .then((response) => {
+        this.ManyBankBranches = response.data?.GetBankBranchesByBankId;
+        return this.ManyBankBranches;
+      });
   };
-
 
   public GetSmileIdToken = async (verification_type: string) => {
     return $api.wallet.GetSmileIdToken(verification_type).then((response) => {
