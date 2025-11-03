@@ -51,6 +51,7 @@ export default class Wallet extends Common {
   public SingleTransaction: Transaction | undefined;
   public CurrentGlobalExchangeRate: GlobalExchangeRate | undefined;
   public CurrentOfframp: OffRamp | undefined;
+  public ManyBankBranches: FlutterwaveBankBranch[] | undefined;
   public ResolvedBankAccountName: BankAccountNameResponse | undefined;
   public CurrentWithdrawalInfo: WithdrawInfo | undefined;
   public NormalFinancialSummary: FinancialSummaryResponse | undefined;
@@ -371,6 +372,17 @@ export default class Wallet extends Common {
         return response.data?.GetBankAccountDetails;
       });
   };
+  
+  
+  public GetBankBranchesByBankId = async (
+    bank_id: number
+  ): Promise<FlutterwaveBankBranch[] | undefined> => {
+    return $api.wallet.GetBankBranchesByBankId(bank_id).then((response) => {
+      this.ManyBankBranches = response.data?.GetBankBranchesByBankId;
+      return this.ManyBankBranches;
+    });
+  };
+
 
   public GetSmileIdToken = async (verification_type: string) => {
     return $api.wallet.GetSmileIdToken(verification_type).then((response) => {
