@@ -1,44 +1,41 @@
 import {
-  QueryGetProductsOrderByOrderByClause,
-  QueryGetProductsWhereWhereConditions,
   QueryGetCategoriesOrderByOrderByClause,
   Product as GqlProduct,
   ProductPaginator,
-  Category,
   CategoryPaginator,
-} from "../../gql/graphql";
+} from "../../gql/graphql"
 
-import { $api } from "../../services";
-import { CombinedError } from "urql";
-import Common from "./Common";
-import { Logic } from "..";
+import { $api } from "../../services"
+import { CombinedError } from "urql"
+import Common from "./Common"
+import { Logic } from ".."
 
 export default class Product extends Common {
   // Base Variables
-  public ProductsPaginator: ProductPaginator | undefined;
-  public SingleProduct: GqlProduct | undefined;
-  public CategoriesPagination: CategoryPaginator | undefined;
-  public ManyShopProducts: ProductPaginator | undefined;
-  public ManyEventProducts: ProductPaginator | undefined;
-  public ManyMarketProducts: ProductPaginator | undefined;
-  public BusinessMarketProducts: ProductPaginator | undefined;
-  public ManyFeaturedProducts: ProductPaginator | undefined;
-  public ManyFeaturedEvents: ProductPaginator | undefined;
+  public ProductsPaginator: ProductPaginator | undefined
+  public SingleProduct: GqlProduct | undefined
+  public CategoriesPagination: CategoryPaginator | undefined
+  public ManyShopProducts: ProductPaginator | undefined
+  public ManyEventProducts: ProductPaginator | undefined
+  public ManyMarketProducts: ProductPaginator | undefined
+  public BusinessMarketProducts: ProductPaginator | undefined
+  public ManyFeaturedProducts: ProductPaginator | undefined
+  public ManyFeaturedEvents: ProductPaginator | undefined
 
-  public ProductsInCart: ProductPaginator | undefined;
+  public ProductsInCart: ProductPaginator | undefined
 
   constructor() {
-    super();
+    super()
 
-    this.defineReactiveProperty("ManyShopProducts", undefined);
-    this.defineReactiveProperty("SingleProduct", undefined);
-    this.defineReactiveProperty("ManyEventProducts", undefined);
-    this.defineReactiveProperty("ProductsPaginator", undefined);
-    this.defineReactiveProperty("CategoriesPagination", undefined);
-    this.defineReactiveProperty("ManyMarketProducts", undefined);
-    this.defineReactiveProperty("ManyFeaturedProducts", undefined);
-    this.defineReactiveProperty("ManyFeaturedEvents", undefined);
-    this.defineReactiveProperty("BusinessMarketProducts", undefined);
+    this.defineReactiveProperty("ManyShopProducts", undefined)
+    this.defineReactiveProperty("SingleProduct", undefined)
+    this.defineReactiveProperty("ManyEventProducts", undefined)
+    this.defineReactiveProperty("ProductsPaginator", undefined)
+    this.defineReactiveProperty("CategoriesPagination", undefined)
+    this.defineReactiveProperty("ManyMarketProducts", undefined)
+    this.defineReactiveProperty("ManyFeaturedProducts", undefined)
+    this.defineReactiveProperty("ManyFeaturedEvents", undefined)
+    this.defineReactiveProperty("BusinessMarketProducts", undefined)
   }
 
   public GetShopProducts = async (
@@ -49,7 +46,7 @@ export default class Product extends Common {
     searchQuery = "",
     isSearch = false
   ) => {
-    let whereQuery = "";
+    let whereQuery = ""
 
     if (searchQuery) {
       whereQuery = `{
@@ -66,7 +63,7 @@ export default class Product extends Common {
               value: "digital"
             }
           }
-        }`;
+        }`
     } else {
       whereQuery = `{
           column: TYPE
@@ -77,18 +74,18 @@ export default class Product extends Common {
             operator: EQ
             value: "digital"
           }
-        }`;
+        }`
     }
 
     return $api.product
       .GetProducts(page, count, orderType, order, whereQuery)
       .then((response) => {
         if (!isSearch) {
-          this.ManyShopProducts = response.data?.GetProducts;
+          this.ManyShopProducts = response.data?.GetProducts
         }
-        return response.data?.GetProducts;
-      });
-  };
+        return response.data?.GetProducts
+      })
+  }
 
   public GetEventProducts = async (
     page: number,
@@ -98,7 +95,7 @@ export default class Product extends Common {
     searchQuery = "",
     isSearch = false
   ) => {
-    let whereQuery = "";
+    let whereQuery = ""
 
     if (searchQuery) {
       whereQuery = `{
@@ -115,7 +112,7 @@ export default class Product extends Common {
             operator: EQ
             value: "active"
           }
-        }`;
+        }`
     } else {
       whereQuery = `{
           column: TYPE
@@ -126,25 +123,25 @@ export default class Product extends Common {
           operator: EQ
           value: "active"
           }
-        }`;
+        }`
     }
 
     return $api.product
       .GetProducts(page, count, orderType, order, whereQuery)
       .then((response) => {
         if (!isSearch) {
-          this.ManyEventProducts = response.data?.GetProducts;
+          this.ManyEventProducts = response.data?.GetProducts
         }
-        return response.data?.GetProducts;
-      });
-  };
+        return response.data?.GetProducts
+      })
+  }
 
   public GetProduct = async (uuid: string) => {
     return $api.product.GetProduct(uuid).then((response) => {
-      this.SingleProduct = response.data?.GetProduct;
-      return response.data?.GetProduct;
-    });
-  };
+      this.SingleProduct = response.data?.GetProduct
+      return response.data?.GetProduct
+    })
+  }
 
   public GetSingleProduct = async (
     product_id: string | number
@@ -153,22 +150,22 @@ export default class Product extends Common {
       column: "ID",
       operator: "EQ",
       value: String(product_id),
-    };
+    }
     return $api.product
       .GetSingleProduct(where)
       .then((response) => {
-        this.SingleProduct = response.data?.GetSingleProduct;
-        return this.SingleProduct;
+        this.SingleProduct = response.data?.GetSingleProduct
+        return this.SingleProduct
       })
       .catch((error: CombinedError) => {
         Logic.Common.showError(
           error,
           "Failed to fetch product details",
           "error-alert"
-        );
-        return undefined;
-      });
-  };
+        )
+        return undefined
+      })
+  }
 
   public GetCategories = async (
     first: number,
@@ -178,18 +175,18 @@ export default class Product extends Common {
     return $api.product
       .GetCategories(first, page, orderBy ?? [])
       .then((response) => {
-        this.CategoriesPagination = response.data?.GetCategories;
-        return this.CategoriesPagination;
+        this.CategoriesPagination = response.data?.GetCategories
+        return this.CategoriesPagination
       })
       .catch((error: CombinedError) => {
         Logic.Common.showError(
           error,
           "Failed to fetch categories",
           "error-alert"
-        );
-        return undefined;
-      });
-  };
+        )
+        return undefined
+      })
+  }
 
   public GetMarketProducts = async (
     page: number,
@@ -197,32 +194,45 @@ export default class Product extends Common {
     orderType = "CREATED_AT",
     order = "DESC" as "DESC" | "ASC",
     whereQuery = "",
-    forBusiness = false
+    forBusiness = false,
+    isLoadMore = false
   ) => {
     return $api.product
       .GetMarketProducts(page, count, orderType, order, whereQuery)
       .then((response) => {
-        forBusiness
-          ? (this.BusinessMarketProducts = response.data?.MarketProducts)
-          : (this.ManyMarketProducts = response.data?.MarketProducts);
+        if (!isLoadMore) {
+          forBusiness ?
+            (this.BusinessMarketProducts = response.data?.MarketProducts)
+          : (this.ManyMarketProducts = response.data?.MarketProducts)
 
-        return forBusiness
-          ? this.BusinessMarketProducts
-          : this.ManyMarketProducts;
-      });
-  };
+          return forBusiness ?
+              this.BusinessMarketProducts
+            : this.ManyMarketProducts
+        } else {
+          const MarketProducts: ProductPaginator | undefined =
+            forBusiness ? this.BusinessMarketProducts : this.ManyMarketProducts
+
+          const existingData: ProductPaginator = JSON.parse(
+            JSON.stringify(MarketProducts)
+          )
+            existingData.data = existingData.data.concat(
+              response.data?.GetMarketProducts?.data || []
+            )
+        }
+      })
+  }
 
   public GetFeaturedProducts = async (page: number, count: number) => {
     return $api.product.GetFeaturedProducts(page, count).then((response) => {
-      this.ManyFeaturedProducts = response.data?.FeaturedProducts;
-      return this.ManyFeaturedProducts;
-    });
-  };
+      this.ManyFeaturedProducts = response.data?.FeaturedProducts
+      return this.ManyFeaturedProducts
+    })
+  }
 
   public GetFeaturedEvents = async (page: number, count: number) => {
     return $api.product.GetFeaturedEvents(page, count).then((response) => {
-      this.ManyFeaturedEvents = response.data?.FeaturedEvents;
-      return this.ManyFeaturedEvents;
-    });
-  };
+      this.ManyFeaturedEvents = response.data?.FeaturedEvents
+      return this.ManyFeaturedEvents
+    })
+  }
 }
