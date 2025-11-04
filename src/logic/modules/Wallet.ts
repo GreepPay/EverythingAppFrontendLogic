@@ -1,8 +1,11 @@
 import {
+  BankAccountNameResponse,
   MutationInitiateTopupArgs,
   MutationMakePaymentArgs,
   MutationRedeemGrpTokenArgs,
   ExchangeRate,
+  FlutterwaveBank,
+  FlutterwaveBankBranch,
   QueryGetExchangeRateArgs,
   TransactionPaginator,
   Transaction,
@@ -48,10 +51,13 @@ export default class Wallet extends Common {
   public SingleTransaction: Transaction | undefined;
   public CurrentGlobalExchangeRate: GlobalExchangeRate | undefined;
   public CurrentOfframp: OffRamp | undefined;
+  public ManyBankBranches: FlutterwaveBankBranch[] | undefined;
+  public ResolvedBankAccountName: BankAccountNameResponse | undefined;
   public CurrentWithdrawalInfo: WithdrawInfo | undefined;
   public NormalFinancialSummary: FinancialSummaryResponse | undefined;
   public CurrentYellowCardNetworks: YellowcardNetwork[] | undefined;
   public OnRampChannels: PaymentChannel[] | undefined;
+  public ManyBanksByCountry: FlutterwaveBank[] | undefined;
   public OffRampChannels: PaymentChannel[] | undefined;
   public OnRampNetwork: PaymentNetwork[] | undefined;
   public PointFinancialSummary: FinancialSummaryResponse | undefined;
@@ -117,6 +123,8 @@ export default class Wallet extends Common {
     this.defineReactiveProperty("CurrentCryptoTransfer", undefined);
     this.defineReactiveProperty("CheckStatusState", { active: false });
     this.defineReactiveProperty("CurrentPaymentDetail", undefined);
+    this.defineReactiveProperty("ManyBanksByCountry", undefined);
+    this.defineReactiveProperty("ManyBankBranches", undefined);
   }
 
   // Queries
@@ -214,12 +222,33 @@ export default class Wallet extends Common {
     });
   };
 
+  public GetBanksByCountry = async (
+    country: string
+  ): Promise<FlutterwaveBank[] | undefined> => {
+    return $api.wallet.GetBanksByCountry(country).then((response) => {
+      this.ManyBanksByCountry = response.data?.GetBanksByCountry;
+      return this.ManyBanksByCountry;
+    });
+  };
+
   public GetPointFinancialSummary = async (from = "", to = "") => {
     const input: FinancialSummaryInput = { type: "point", from, to };
     return $api.wallet.GetFinancialSummary(input).then((response) => {
       this.PointFinancialSummary = response.data?.GetFinancialSummary;
       return this.PointFinancialSummary;
     });
+  };
+
+  public ResolveBankAccountName = async (
+    account_number: string,
+    bank_code: string
+  ): Promise<BankAccountNameResponse | undefined> => {
+    return $api.wallet
+      .ResolveBankAccountName(account_number, bank_code)
+      .then((response) => {
+        this.ResolvedBankAccountName = response.data?.ResolveBankAccountName;
+        return this.ResolvedBankAccountName;
+      });
   };
 
   public GetGlobalExchangeRate = async (
@@ -339,6 +368,17 @@ export default class Wallet extends Common {
       .GetBankAccountDetails(accountNumber, networkId)
       .then((response) => {
         return response.data?.GetBankAccountDetails;
+      });
+  };
+
+  public GetBankBranchesByBankId = async (
+    bank_id: number
+  ): Promise<FlutterwaveBankBranch[] | undefined> => {
+    return $api.wallet
+      .GetBankBranchesByBankId(parseInt(bank_id.toString()))
+      .then((response) => {
+        this.ManyBankBranches = response.data?.GetBankBranchesByBankId;
+        return this.ManyBankBranches;
       });
   };
 
