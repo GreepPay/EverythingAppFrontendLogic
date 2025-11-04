@@ -139,8 +139,12 @@ export type Business = {
   banner?: Maybe<Scalars['String']>;
   /** Business name. */
   business_name?: Maybe<Scalars['String']>;
+  /** Business Type */
+  business_type?: Maybe<Scalars['String']>;
   /** Business category. */
   category?: Maybe<Scalars['String']>;
+  /** Customers */
+  customers?: Maybe<Scalars['Int']>;
   /** Default Currency */
   default_currency?: Maybe<Scalars['String']>;
   /** Business description. */
