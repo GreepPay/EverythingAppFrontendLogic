@@ -1,14 +1,14 @@
-import currency from "currency.js"
-import moment from "moment"
-import { CombinedError } from "urql"
-import { reactive } from "vue"
+import currency from "currency.js";
+import moment from "moment";
+import { CombinedError } from "urql";
+import { reactive } from "vue";
 import {
   NavigationGuardNext,
   RouteLocationNormalized,
   RouteLocationNormalizedLoaded,
   Router,
-} from "vue-router"
-import { Logic } from ".."
+} from "vue-router";
+import { Currency, Logic } from "..";
 import {
   AlertSetup,
   FetchRule,
@@ -16,41 +16,41 @@ import {
   ModalSetup,
   TruncatePosition,
   TruncateResult,
-} from "../types/common"
-import CryptoJS from "crypto-js"
-import { Haptics, ImpactStyle } from "@capacitor/haptics"
-import { Observable } from "./Observable"
-import Echo from "laravel-echo"
-import Pusher from "pusher-js"
+} from "../types/common";
+import CryptoJS from "crypto-js";
+import { Haptics, ImpactStyle } from "@capacitor/haptics";
+import { Observable } from "./Observable";
+import Echo from "laravel-echo";
+import Pusher from "pusher-js";
 
 // @ts-ignore
-window.Pusher = Pusher
+window.Pusher = Pusher;
 
 export interface WebSocketConfig {
-  pusherKey: string
-  pusherHost: string
-  pusherPort: string
-  pusherCluster: string
-  socketAuthUrl: string
+  pusherKey: string;
+  pusherHost: string;
+  pusherPort: string;
+  pusherCluster: string;
+  socketAuthUrl: string;
 }
 
 export default class Common {
-  public router: Router | undefined = undefined
+  public router: Router | undefined = undefined;
 
-  public route: RouteLocationNormalizedLoaded | undefined = undefined
-  private _observables = new Map<string, Observable<any>>()
+  public route: RouteLocationNormalizedLoaded | undefined = undefined;
+  private _observables = new Map<string, Observable<any>>();
 
-  public apiUrl: string | undefined = undefined
+  public apiUrl: string | undefined = undefined;
 
-  public laravelEcho: Echo<any> | undefined
+  public laravelEcho: Echo<any> | undefined;
 
-  public watchInterval: number | undefined = undefined
+  public watchInterval: number | undefined = undefined;
 
-  public forcePageTransparency = false
+  public forcePageTransparency = false;
 
-  public loadingState = false
+  public loadingState = false;
 
-  public showBottomNav = false
+  public showBottomNav = false;
 
   public currentLayout = reactive({
     name: "",
@@ -59,15 +59,15 @@ export default class Common {
       name: "",
       path: "",
     },
-  })
+  });
 
   public SetRouter = (router: Router) => {
-    this.router = router
-  }
+    this.router = router;
+  };
 
   public SetRoute = (route: RouteLocationNormalizedLoaded) => {
-    this.route = route
-  }
+    this.route = route;
+  };
 
   public loaderSetup: LoaderSetup = reactive({
     show: false,
@@ -79,7 +79,7 @@ export default class Common {
     ctaFunction: () => {},
     icon: "success-thumb",
     title: "",
-  })
+  });
 
   public modalSetup: ModalSetup = reactive({
     show: false,
@@ -87,84 +87,699 @@ export default class Common {
     type: "",
     actionLabel: "",
     action: () => {},
-  })
+  });
 
   public SetApiUrl = (apiUrl: string) => {
-    this.apiUrl = apiUrl
-  }
+    this.apiUrl = apiUrl;
+  };
 
   public GoToRoute = (path: string, forceReload = false) => {
     if (forceReload) {
       window.location.href =
         window.location.origin +
         `${path === "/" ? "" : path}` +
-        "?isForceReload=true"
+        "?isForceReload=true";
     } else {
-      this.router?.push(path)
+      this.router?.push(path);
     }
-  }
+  };
+
+  public availableCurrencies = reactive<Currency[]>([
+    {
+      code: "NGN",
+      name: "Nigerian Naira",
+      country_name: "Nigeria",
+      symbol: "₦",
+      country_code: "NG",
+      use_country_code: true,
+      loading: false,
+      payin_fees: [
+        {
+          type: "percentage",
+          min: 55,
+          value: 0.5,
+          method: "bank_transfer",
+        },
+      ],
+      payout_fees: [
+        {
+          type: "fixed",
+          min: 100,
+          value: 100,
+          method: "bank_transfer",
+        },
+      ],
+    },
+    {
+      code: "KES",
+      name: "Kenyan Shilling",
+      country_name: "Kenya",
+      symbol: "KSh",
+      country_code: "KE",
+      use_country_code: true,
+      loading: false,
+      payin_fees: [
+        {
+          type: "percentage",
+          min: 1,
+          value: 0.5,
+          method: "bank_transfer",
+        },
+        {
+          type: "percentage",
+          min: 1,
+          value: 2,
+          method: "momo",
+        },
+      ],
+      payout_fees: [
+        {
+          type: "fixed",
+          min: 200,
+          value: 0.5,
+          method: "bank_transfer",
+        },
+        {
+          type: "percentage",
+          min: 1,
+          value: 2,
+          method: "momo",
+        },
+      ],
+    },
+    {
+      code: "UGX",
+      name: "Ugandan Shilling",
+      country_name: "Uganda",
+      symbol: "USh",
+      country_code: "UG",
+      use_country_code: true,
+      loading: false,
+      payin_fees: [
+        {
+          type: "percentage",
+          min: 1,
+          value: 1,
+          method: "bank_transfer",
+        },
+        {
+          type: "percentage",
+          min: 1,
+          value: 1.5,
+          method: "momo",
+        },
+      ],
+      payout_fees: [
+        {
+          type: "percentage",
+          min: 5000,
+          value: 0.5,
+          method: "bank_transfer",
+        },
+        {
+          type: "percentage",
+          min: 1,
+          value: 1.5,
+          method: "momo",
+        },
+      ],
+    },
+    {
+      code: "GHS",
+      name: "Ghanaian Cedi",
+      country_name: "Ghana",
+      symbol: "₵",
+      country_code: "GH",
+      use_country_code: true,
+      loading: false,
+      payin_fees: [
+        {
+          type: "percentage",
+          min: 1,
+          value: 2,
+          method: "momo",
+        },
+      ],
+    },
+    {
+      code: "ZAR",
+      name: "South African Rand",
+      country_name: "South Africa",
+      symbol: "R",
+      country_code: "ZA",
+      use_country_code: true,
+      loading: false,
+      payin_fees: [
+        {
+          type: "percentage",
+          min: 1,
+          value: 2,
+          method: "bank_transfer",
+        },
+      ],
+      payout_fees: [
+        {
+          type: "percentage",
+          min: 20,
+          value: 0.5,
+          method: "bank_transfer",
+        },
+      ],
+    },
+    {
+      code: "RWF",
+      name: "Rwandan Franc",
+      country_name: "Rwanda",
+      symbol: "RF",
+      country_code: "RW",
+      loading: false,
+      use_country_code: true,
+      payin_fees: [
+        {
+          type: "percentage",
+          min: 1,
+          value: 1,
+          method: "bank_transfer",
+        },
+      ],
+      payout_fees: [
+        {
+          type: "percentage",
+          min: 1000,
+          value: 0.5,
+          method: "bank_transfer",
+        },
+      ],
+    },
+    {
+      code: "XAF",
+      name: "Cameroon CFA Franc",
+      country_name: "Cameroon",
+      symbol: "FCFA",
+      country_code: "CM",
+      loading: false,
+      use_country_code: true,
+      payin_fees: [
+        {
+          type: "percentage",
+          min: 1,
+          value: 1.75,
+          method: "momo",
+        },
+      ],
+      payout_fees: [
+        {
+          type: "percentage",
+          min: 1,
+          value: 1.5,
+          method: "momo",
+        },
+      ],
+    },
+    {
+      code: "XAF",
+      name: "Central African Republic CFA Franc",
+      country_name: "Central African Republic",
+      symbol: "FCFA",
+      country_code: "CF",
+      use_country_code: true,
+      loading: false,
+      payin_fees: [
+        {
+          type: "percentage",
+          min: 1,
+          value: 2,
+          method: "momo",
+        },
+      ],
+    },
+    {
+      code: "XAF",
+      name: "Chad CFA Franc",
+      country_name: "Chad",
+      symbol: "FCFA",
+      country_code: "TD",
+      use_country_code: true,
+      loading: false,
+      payin_fees: [
+        {
+          type: "percentage",
+          min: 1,
+          value: 2,
+          method: "momo",
+        },
+      ],
+    },
+    {
+      code: "XAF",
+      name: "Congo-Brazzaville CFA Franc",
+      country_name: "Congo-Brazzaville",
+      symbol: "FCFA",
+      country_code: "CG",
+      use_country_code: true,
+      loading: false,
+      payin_fees: [
+        {
+          type: "percentage",
+          min: 1,
+          value: 2,
+          method: "momo",
+        },
+      ],
+    },
+    {
+      code: "CDF",
+      name: "DR Congo CDF",
+      country_name: "Democratic Republic of the Congo",
+      symbol: "FC",
+      country_code: "CD",
+      use_country_code: true,
+      loading: false,
+      payin_fees: [
+        {
+          type: "percentage",
+          min: 1,
+          value: 2,
+          method: "momo",
+        },
+      ],
+    },
+    {
+      code: "SLE",
+      name: "Sierra Leonean Leone",
+      country_name: "Sierra Leone",
+      symbol: "Le",
+      country_code: "SL",
+      use_country_code: true,
+      loading: false,
+      payin_fees: [
+        {
+          type: "percentage",
+          min: 1,
+          value: 2,
+          method: "momo",
+        },
+      ],
+    },
+    {
+      code: "XAF",
+      name: "Equatorial Guinea CFA Franc",
+      country_name: "Equatorial Guinea",
+      symbol: "FCFA",
+      country_code: "GQ",
+      use_country_code: true,
+      loading: false,
+      payin_fees: [
+        {
+          type: "percentage",
+          min: 1,
+          value: 2,
+          method: "momo",
+        },
+      ],
+    },
+    {
+      code: "XAF",
+      name: "Gabon CFA Franc",
+      country_name: "Gabon",
+      symbol: "FCFA",
+      country_code: "GA",
+      loading: false,
+      use_country_code: true,
+      payin_fees: [
+        {
+          type: "percentage",
+          min: 1,
+          value: 2,
+          method: "momo",
+        },
+      ],
+    },
+    {
+      code: "XOF",
+      name: "Benin Franc",
+      country_name: "Benin",
+      symbol: "FCFA",
+      country_code: "BJ",
+      use_country_code: true,
+      loading: false,
+      payin_fees: [
+        {
+          type: "percentage",
+          min: 1,
+          value: 2,
+          method: "momo",
+        },
+      ],
+    },
+    {
+      code: "XOF",
+      name: "Burkina Faso Franc",
+      country_name: "Burkina Faso",
+      use_country_code: true,
+      symbol: "FCFA",
+      country_code: "BF",
+      loading: false,
+      payin_fees: [
+        {
+          type: "percentage",
+          min: 1,
+          value: 2,
+          method: "momo",
+        },
+      ],
+    },
+    {
+      code: "XOF",
+      name: "Guinea Franc",
+      country_name: "Republic of Guinea",
+      symbol: "FCFA",
+      use_country_code: true,
+      country_code: "GN",
+      loading: false,
+      payin_fees: [
+        {
+          type: "percentage",
+          min: 1,
+          value: 2,
+          method: "momo",
+        },
+      ],
+    },
+    {
+      code: "XOF",
+      name: "Côte d'Ivoire Franc",
+      country_name: "Côte d'Ivoire",
+      use_country_code: true,
+      symbol: "FCFA",
+      country_code: "CI",
+      loading: false,
+      payin_fees: [
+        {
+          type: "percentage",
+          min: 1,
+          value: 2,
+          method: "momo",
+        },
+      ],
+    },
+    {
+      code: "XOF",
+      name: "Mali Franc",
+      country_name: "Mali",
+      use_country_code: true,
+      symbol: "FCFA",
+      country_code: "ML",
+      loading: false,
+      payin_fees: [
+        {
+          type: "percentage",
+          min: 1,
+          value: 2,
+          method: "momo",
+        },
+      ],
+    },
+    {
+      code: "XOF",
+      name: "Mauritania Franc",
+      country_name: "Mauritania",
+      use_country_code: true,
+      symbol: "FCFA",
+      country_code: "MR",
+      loading: false,
+      payin_fees: [
+        {
+          type: "percentage",
+          min: 1,
+          value: 2,
+          method: "momo",
+        },
+      ],
+    },
+    {
+      code: "XOF",
+      name: "Niger Franc",
+      country_name: "Niger",
+      use_country_code: true,
+      symbol: "FCFA",
+      country_code: "NE",
+      loading: false,
+      payin_fees: [
+        {
+          type: "percentage",
+          min: 1,
+          value: 2,
+          method: "momo",
+        },
+      ],
+    },
+    {
+      code: "XOF",
+      name: "Senegal Franc",
+      country_name: "Senegal",
+      use_country_code: true,
+      symbol: "FCFA",
+      country_code: "SN",
+      loading: false,
+      payin_fees: [
+        {
+          type: "percentage",
+          min: 1,
+          value: 2,
+          method: "momo",
+        },
+      ],
+    },
+    {
+      code: "XOF",
+      name: "Togo Franc",
+      country_name: "Togo",
+      use_country_code: true,
+      symbol: "FCFA",
+      country_code: "TG",
+      loading: false,
+      payin_fees: [
+        {
+          type: "percentage",
+          min: 1,
+          value: 2,
+          method: "momo",
+        },
+      ],
+    },
+    {
+      code: "TZS",
+      name: "Tanzanian Shilling",
+      use_country_code: true,
+      symbol: "TSh",
+      country_name: "Tanzania",
+      country_code: "TZ",
+      loading: false,
+      payin_fees: [
+        {
+          type: "percentage",
+          min: 1,
+          value: 1,
+          method: "bank_transfer",
+        },
+      ],
+      payout_fees: [
+        {
+          type: "percentage",
+          min: 1000,
+          value: 0.5,
+          method: "bank_transfer",
+        },
+      ],
+    },
+    {
+      code: "MWK",
+      name: "Malawian Kwacha",
+      country_name: "Malawi",
+      use_country_code: true,
+      symbol: "MK",
+      country_code: "MW",
+      loading: false,
+      payin_fees: [
+        {
+          type: "percentage",
+          min: 750,
+          value: 1,
+          method: "bank_transfer",
+        },
+        {
+          type: "percentage",
+          min: 750,
+          value: 2,
+          method: "momo",
+        },
+      ],
+      payout_fees: [
+        {
+          type: "percentage",
+          min: 750,
+          value: 0.5,
+          method: "bank_transfer",
+        },
+        {
+          type: "percentage",
+          min: 1,
+          value: 1,
+          method: "momo",
+        },
+      ],
+    },
+    {
+      code: "XLM",
+      name: "Stellar Lumens",
+      symbol: "XLM",
+      country_code: "US",
+      loading: false,
+      is_crypto: true,
+    },
+    {
+      code: "TRY",
+      name: "Turkish Lira (₺)",
+      symbol: "₺",
+      loading: false,
+      icon_extension: "svg",
+      country_code: "TR",
+      allow_p2p: true,
+    },
+    {
+      code: "USD",
+      name: "United States Dollar ($)",
+      symbol: "$",
+      loading: false,
+      icon_extension: "svg",
+      country_code: "US",
+      allow_p2p: false,
+      is_foreign_currency: true,
+    },
+    {
+      code: "EUR",
+      name: "Euro (€)",
+      symbol: "€",
+      loading: false,
+      icon_extension: "svg",
+      country_code: "EU",
+      allow_p2p: false,
+      is_foreign_currency: true,
+    },
+    {
+      code: "USDC",
+      name: "USDC ($)",
+      symbol: "$",
+      loading: false,
+      icon_extension: "svg",
+      country_code: "US",
+      allow_p2p: false,
+      is_crypto: true,
+      can_accept_deposit: true,
+    },
+    {
+      code: "EURC",
+      name: "EURC (€)",
+      symbol: "€",
+      loading: false,
+      icon_extension: "png",
+      country_code: "EU",
+      allow_p2p: false,
+      is_crypto: true,
+    },
+    {
+      code: "USDT",
+      name: "USDT ($)",
+      symbol: "$",
+      loading: false,
+      icon_extension: "svg",
+      country_code: "US",
+      allow_p2p: false,
+      is_crypto: true,
+      can_accept_deposit: true,
+    },
+    {
+      code: "BTC",
+      name: "BTC",
+      symbol: "₿",
+      loading: false,
+      icon_extension: "svg",
+      country_code: "US",
+      is_crypto: true,
+    },
+    {
+      code: "ETH",
+      name: "ETH",
+      symbol: "Ξ",
+      loading: false,
+      icon_extension: "png",
+      country_code: "US",
+      is_crypto: true,
+    },
+  ]);
 
   public alertSetup = reactive<AlertSetup>({
     show: false,
     message: "",
     type: "success",
     duration: 5100,
-  })
+  });
 
   constructor() {
     // Init observable wrappers only for selected properties
-    this.defineReactiveProperty("router", undefined)
-    this.defineReactiveProperty("route", undefined)
-    this.defineReactiveProperty("apiUrl", undefined)
-    this.defineReactiveProperty("watchInterval", undefined)
-    this.defineReactiveProperty("loadingState", false)
-    this.defineReactiveProperty("showBottomNav", false)
-    this.defineReactiveProperty("forcePageTransparency", false)
-    this.defineReactiveProperty("loaderSetup", this.loaderSetup)
-    this.defineReactiveProperty("modalSetup", this.modalSetup)
-    this.defineReactiveProperty("alertSetup", this.alertSetup)
-    this.defineReactiveProperty("currentLayout", this.currentLayout)
+    this.defineReactiveProperty("router", undefined);
+    this.defineReactiveProperty("route", undefined);
+    this.defineReactiveProperty("apiUrl", undefined);
+    this.defineReactiveProperty("watchInterval", undefined);
+    this.defineReactiveProperty("loadingState", false);
+    this.defineReactiveProperty("showBottomNav", false);
+    this.defineReactiveProperty("forcePageTransparency", false);
+    this.defineReactiveProperty("loaderSetup", this.loaderSetup);
+    this.defineReactiveProperty("modalSetup", this.modalSetup);
+    this.defineReactiveProperty("alertSetup", this.alertSetup);
+    this.defineReactiveProperty("currentLayout", this.currentLayout);
   }
 
   protected defineReactiveProperty<T = any>(prop: string, initialValue: T) {
-    const obs = new Observable<T>(initialValue)
-    this._observables.set(prop, obs)
+    const obs = new Observable<T>(initialValue);
+    this._observables.set(prop, obs);
 
     Object.defineProperty(this, prop, {
       get() {
-        return obs.value
+        return obs.value;
       },
       set(val: T) {
-        obs.value = val
+        obs.value = val;
       },
       configurable: true,
       enumerable: true,
-    })
+    });
   }
 
   public encryptData = (jsonData: object, secretKey: string): string => {
-    return CryptoJS.AES.encrypt(JSON.stringify(jsonData), secretKey).toString()
-  }
+    return CryptoJS.AES.encrypt(JSON.stringify(jsonData), secretKey).toString();
+  };
 
   public decryptData = (encryptedData: string, secretKey: string): object => {
-    const bytes = CryptoJS.AES.decrypt(encryptedData, secretKey)
-    return JSON.parse(bytes.toString(CryptoJS.enc.Utf8))
-  }
+    const bytes = CryptoJS.AES.decrypt(encryptedData, secretKey);
+    return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+  };
 
   public base64ToBlob = async (url: string) => {
     return fetch(url)
       .then((res) => res.blob())
       .then((data) => {
-        return data
-      })
-  }
+        return data;
+      });
+  };
 
   public showAlert = (alertSetup: AlertSetup) => {
     const showAlertHandler = (wait_until_next_alert = false) => {
-      this.alertSetup = alertSetup
+      this.alertSetup = alertSetup;
 
       if (wait_until_next_alert) {
-        return
+        return;
       }
 
       setTimeout(() => {
@@ -172,9 +787,9 @@ export default class Common {
           show: false,
           message: "",
           type: "success",
-        }
-      }, this.alertSetup?.duration || 5100)
-    }
+        };
+      }, this.alertSetup?.duration || 5100);
+    };
 
     if (this.alertSetup.show) {
       // sleep for 5 seconds
@@ -183,14 +798,14 @@ export default class Common {
           show: false,
           message: "",
           type: "success",
-        }
+        };
 
-        showAlertHandler(alertSetup.wait_until_next_alert)
-      })
+        showAlertHandler(alertSetup.wait_until_next_alert);
+      });
     } else {
-      showAlertHandler(alertSetup.wait_until_next_alert)
+      showAlertHandler(alertSetup.wait_until_next_alert);
     }
-  }
+  };
 
   public showError = (
     error: CombinedError,
@@ -198,7 +813,7 @@ export default class Common {
     icon: "error-alert" | "error-kite" | "success-kite" | "success-thumb",
     fallbackMsg = ""
   ) => {
-    const message = error.graphQLErrors[0].message
+    const message = error.graphQLErrors[0].message;
     // this.showLoader({
     //   show: true,
     //   useModal: true,
@@ -213,41 +828,41 @@ export default class Common {
       show: true,
       message: message,
       type: "error",
-    })
-  }
+    });
+  };
 
   public showModal = (modalSetupData: ModalSetup) => {
-    this.modalSetup = modalSetupData
-  }
+    this.modalSetup = modalSetupData;
+  };
 
   public getLabel = (data: any, key: string) => {
     const thisData = data.filter((Option: any) => {
-      return Option.key == key
-    })
+      return Option.key == key;
+    });
 
-    return thisData.length > 0 ? thisData[0].value : ""
-  }
+    return thisData.length > 0 ? thisData[0].value : "";
+  };
 
   public showLoader = (loaderSetup: LoaderSetup) => {
-    this.loaderSetup = loaderSetup
-  }
+    this.loaderSetup = loaderSetup;
+  };
 
   public copytext = (text: string) => {
-    const el = document.createElement("textarea")
-    el.value = text
-    el.setAttribute("readonly", "")
-    el.style.position = "absolute"
-    el.style.left = "-9999px"
-    document.body.appendChild(el)
-    el.select()
-    document.execCommand("copy")
-    document.body.removeChild(el)
+    const el = document.createElement("textarea");
+    el.value = text;
+    el.setAttribute("readonly", "");
+    el.style.position = "absolute";
+    el.style.left = "-9999px";
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand("copy");
+    document.body.removeChild(el);
     this.showAlert({
       show: true,
       message: "Copied to clipboard",
       type: "success",
-    })
-  }
+    });
+  };
 
   public TruncateText = (
     str: string,
@@ -256,119 +871,127 @@ export default class Common {
     extensionCharacter: string = "...",
     position: TruncatePosition = "end"
   ): TruncateResult => {
-    if (!str) return { truncated: "", readMore: false }
+    if (!str) return { truncated: "", readMore: false };
 
-    const isTruncated = str.length > maxLength
-    if (expanded || !isTruncated) return { truncated: str, readMore: false }
+    const isTruncated = str.length > maxLength;
+    if (expanded || !isTruncated) return { truncated: str, readMore: false };
 
-    let truncated: string
+    let truncated: string;
     if (position === "start") {
-      truncated = `${extensionCharacter}${str.slice(-(maxLength - extensionCharacter.length))}`
+      truncated = `${extensionCharacter}${str.slice(
+        -(maxLength - extensionCharacter.length)
+      )}`;
     } else if (position === "end") {
-      truncated = `${str.slice(0, maxLength - extensionCharacter.length)}${extensionCharacter}`
+      truncated = `${str.slice(
+        0,
+        maxLength - extensionCharacter.length
+      )}${extensionCharacter}`;
     } else {
-      const partLength = Math.floor((maxLength - extensionCharacter.length) / 2)
-      truncated = `${str.slice(0, partLength)}${extensionCharacter}${str.slice(-partLength)}`
+      const partLength = Math.floor(
+        (maxLength - extensionCharacter.length) / 2
+      );
+      truncated = `${str.slice(0, partLength)}${extensionCharacter}${str.slice(
+        -partLength
+      )}`;
     }
 
-    return { truncated, readMore: isTruncated }
-  }
+    return { truncated, readMore: isTruncated };
+  };
 
   public goBack = () => {
-    const ignoreBackRoute =
-      this.route?.query.ignoreBackRoute ?
-        this.route.query.ignoreBackRoute.toString()
-      : null
-    const routeMiddlewares: any = this.route?.meta.middlewares
-    const goBackRoute = routeMiddlewares?.goBackRoute
+    const ignoreBackRoute = this.route?.query.ignoreBackRoute
+      ? this.route.query.ignoreBackRoute.toString()
+      : null;
+    const routeMiddlewares: any = this.route?.meta.middlewares;
+    const goBackRoute = routeMiddlewares?.goBackRoute;
 
-    const backRouteFromQuery = this.route?.query.backRoute?.toString()
+    const backRouteFromQuery = this.route?.query.backRoute?.toString();
 
     if (backRouteFromQuery) {
-      this.GoToRoute(backRouteFromQuery)
+      this.GoToRoute(backRouteFromQuery);
     } else if (typeof goBackRoute == "function" && !ignoreBackRoute) {
-      this.GoToRoute(goBackRoute())
+      this.GoToRoute(goBackRoute());
     } else if (typeof goBackRoute == "string" && !ignoreBackRoute) {
-      this.GoToRoute(goBackRoute)
+      this.GoToRoute(goBackRoute);
     } else {
-      window.history.length > 1 ? this.router?.go(-1) : this.router?.push("/")
+      window.history.length > 1 ? this.router?.go(-1) : this.router?.push("/");
     }
-  }
+  };
 
   public hideLoader = () => {
     const Loader: LoaderSetup = {
       show: false,
       useModal: false,
       loading: false,
-    }
-    this.loaderSetup = Loader
-  }
+    };
+    this.loaderSetup = Loader;
+  };
 
   public globalParameters = reactive<{
-    currency: string
+    currency: string;
   }>({
     currency: "ngn",
-  })
+  });
 
-  public momentInstance = moment
+  public momentInstance = moment;
 
   public makeTouchSensation = async (style: "HEAVY" | "MEDIUM" | "LIGHT") => {
-    let currentStyle = ImpactStyle.Light
+    let currentStyle = ImpactStyle.Light;
 
     if (style == "MEDIUM") {
-      currentStyle = ImpactStyle.Medium
+      currentStyle = ImpactStyle.Medium;
     } else if (style == "HEAVY") {
-      currentStyle = ImpactStyle.Heavy
+      currentStyle = ImpactStyle.Heavy;
     }
-    await Haptics.impact({ style: currentStyle })
-  }
+    await Haptics.impact({ style: currentStyle });
+  };
 
   public makeid = (length: number) => {
-    let result = ""
+    let result = "";
     const characters =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-    const charactersLength = characters.length
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const charactersLength = characters.length;
     for (let i = 0; i < length; i++) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength))
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
-    return result
-  }
+    return result;
+  };
   public convertToMoney = (
     float: any,
     withZeros = true,
     currencyType = "ngn",
     withSymbol = true
   ) => {
-    let currencySymbol = ""
+    let currencySymbol = "";
     if (currencyType == "usd") {
-      currencySymbol = "$ "
+      currencySymbol = "$ ";
     } else if (currencyType == "ngn") {
-      currencySymbol = "₦ "
+      currencySymbol = "₦ ";
     }
     if (!withSymbol) {
-      currencySymbol = ""
+      currencySymbol = "";
     }
     if (withZeros) {
       return currency(float, {
         separator: ",",
         symbol: currencySymbol,
-      }).format()
+      }).format();
     } else {
-      return currencySymbol + new Intl.NumberFormat().format(parseFloat(float))
+      return currencySymbol + new Intl.NumberFormat().format(parseFloat(float));
     }
-  }
+  };
 
   private isString = (x: any) => {
-    return Object.prototype.toString.call(x) === "[object String]"
-  }
+    return Object.prototype.toString.call(x) === "[object String]";
+  };
 
   public searchArray = (arr: any[], searchKey: string) => {
     return arr.filter((obj) => {
       return Object.keys(obj).some((key) => {
-        return this.isString(obj[key]) ? obj[key].includes(searchKey) : false
-      })
-    })
-  }
+        return this.isString(obj[key]) ? obj[key].includes(searchKey) : false;
+      });
+    });
+  };
 
   public debounce = (
     method = () => {
@@ -381,27 +1004,27 @@ export default class Common {
     if (typeof window.LIT !== "undefined") {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-expect-error
-      clearTimeout(window.LIT)
+      clearTimeout(window.LIT);
     }
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
     window.LIT = setTimeout(() => {
-      method()
-    }, delay)
-  }
+      method();
+    }, delay);
+  };
 
   public watchProperty = (objectToWatch: string, objectToUpdate: any) => {
-    let upatedValue = (this as any)[`${objectToWatch}`]
+    let upatedValue = (this as any)[`${objectToWatch}`];
     const watchAction = () => {
-      upatedValue = (this as any)[`${objectToWatch}`]
+      upatedValue = (this as any)[`${objectToWatch}`];
       if (objectToUpdate) {
-        objectToUpdate.value = upatedValue
+        objectToUpdate.value = upatedValue;
       }
-      this.watchInterval = window.requestAnimationFrame(watchAction)
-    }
+      this.watchInterval = window.requestAnimationFrame(watchAction);
+    };
 
-    watchAction()
-  }
+    watchAction();
+  };
 
   public initiateWebSocket = (config: WebSocketConfig) => {
     try {
@@ -421,185 +1044,186 @@ export default class Common {
             },
           },
           authEndpoint: `${config.socketAuthUrl}/broadcasting/auth`,
-        })
+        });
       }
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   public stopWatchAction = () => {
     if (this.watchInterval != undefined) {
-      window.cancelAnimationFrame(this.watchInterval)
+      window.cancelAnimationFrame(this.watchInterval);
     }
-  }
+  };
 
   private fetchFile = (url: string) => {
     return new Promise(function (resolve, reject) {
       // Get file name from url.
-      const xhr = new XMLHttpRequest()
-      xhr.responseType = "blob"
+      const xhr = new XMLHttpRequest();
+      xhr.responseType = "blob";
       xhr.onload = function () {
-        resolve(xhr)
-      }
-      xhr.onerror = reject
-      xhr.open("GET", url)
-      xhr.send()
+        resolve(xhr);
+      };
+      xhr.onerror = reject;
+      xhr.open("GET", url);
+      xhr.send();
     }).then(function (xhr: any) {
-      const filename = url.substring(url.lastIndexOf("/") + 1).split("?")[0]
-      const a = document.createElement("a")
-      a.href = window.URL.createObjectURL(xhr.response) // xhr.response is a blob
-      a.download = filename // Set the file name.
-      a.style.display = "none"
-      document.body.appendChild(a)
-      a.click()
-      return xhr
-    })
-  }
+      const filename = url.substring(url.lastIndexOf("/") + 1).split("?")[0];
+      const a = document.createElement("a");
+      a.href = window.URL.createObjectURL(xhr.response); // xhr.response is a blob
+      a.download = filename; // Set the file name.
+      a.style.display = "none";
+      document.body.appendChild(a);
+      a.click();
+      return xhr;
+    });
+  };
 
   public downloadFiles = (urls = []) => {
-    return Promise.all(urls.map(this.fetchFile))
-  }
+    return Promise.all(urls.map(this.fetchFile));
+  };
 
   public fomartDate = (date: string, format: string) => {
-    return moment(date).format(format)
-  }
+    return moment(date).format(format);
+  };
 
   public countDownTime = (endTime: string) => {
-    return moment(moment(endTime).diff(moment.now())).format("mm:ss")
-  }
+    return moment(moment(endTime).diff(moment.now())).format("mm:ss");
+  };
 
   public timeFromNow = (time: string) => {
-    return moment(time).fromNow()
-  }
+    return moment(time).fromNow();
+  };
 
   public updatedData = (oldData: any, newData: any) => {
     if (oldData != undefined && newData != undefined) {
-      return { ...oldData, ...newData }
+      return { ...oldData, ...newData };
     }
-    return oldData
-  }
+    return oldData;
+  };
 
   public preFetchRouteData = (
     routeTo: RouteLocationNormalized,
     next: NavigationGuardNext,
     routeFrom: RouteLocationNormalized
   ) => {
-    const allActions: Promise<any>[] = []
+    const allActions: Promise<any>[] = [];
     if (this.loaderSetup.loading) {
-      return
+      return;
     }
 
-    const routeMiddlewares: any = routeTo.meta.middlewares
+    const routeMiddlewares: any = routeTo.meta.middlewares;
 
     // handle fetchRules
 
-    const fetchRules: FetchRule[] = routeMiddlewares.fetchRules || []
+    const fetchRules: FetchRule[] = routeMiddlewares.fetchRules || [];
 
-    let BreakException = {}
+    let BreakException = {};
 
     // Check for transparency settings
-    const transparencySettings = routeMiddlewares.enforceTransparency
+    const transparencySettings = routeMiddlewares.enforceTransparency;
 
     if (transparencySettings) {
-      this.forcePageTransparency = true
+      this.forcePageTransparency = true;
     } else {
-      this.forcePageTransparency = false
+      this.forcePageTransparency = false;
     }
 
     // Hide modal
-    this.showModal({ show: false })
+    this.showModal({ show: false });
 
     try {
       for (let index = 0; index < fetchRules.length; index++) {
-        const rule: FetchRule = JSON.parse(JSON.stringify(fetchRules[index]))
+        const rule: FetchRule = JSON.parse(JSON.stringify(fetchRules[index]));
 
         if (rule.requireAuth) {
           if (!Logic.Auth.AuthUser) {
-            window.location.href = "/start"
+            window.location.href = "/start";
 
-            throw BreakException
+            throw BreakException;
           }
         }
 
-        let addRuleToRequest = true
+        let addRuleToRequest = true;
 
         if (rule.condition) {
           switch (rule.condition.routeSearchItem) {
             case "fullPath":
               addRuleToRequest = routeTo["fullPath"].includes(
                 rule.condition.searchQuery
-              )
-              break
+              );
+              break;
             case "params":
-              addRuleToRequest =
-                routeTo["params"][rule.condition.searchQuery] ? true : false
-              break
+              addRuleToRequest = routeTo["params"][rule.condition.searchQuery]
+                ? true
+                : false;
+              break;
             case "query":
-              addRuleToRequest =
-                routeTo["query"][rule.condition.searchQuery] ? true : false
-              break
+              addRuleToRequest = routeTo["query"][rule.condition.searchQuery]
+                ? true
+                : false;
+              break;
             default:
-              break
+              break;
           }
         }
 
         if (addRuleToRequest) {
           // @ts-ignore
-          const domain = Logic[rule.domain]
+          const domain = Logic[rule.domain];
 
-          let fetchData = false
+          let fetchData = false;
 
           if (domain[rule.property] == undefined) {
-            fetchData = true
+            fetchData = true;
           }
 
           if (
             typeof rule.ignoreProperty == "function" &&
             rule.ignoreProperty()
           ) {
-            fetchData = true
+            fetchData = true;
           }
 
           if (rule.ignoreProperty) {
-            fetchData = true
+            fetchData = true;
           }
 
           if (routeFrom && routeFrom.query.force_load) {
-            fetchData = true
+            fetchData = true;
           }
 
           if (rule.subProperty) {
             if (domain[rule.property][rule.subProperty] == undefined) {
-              fetchData = true
+              fetchData = true;
             }
           }
 
           if (fetchData) {
             allActions.push(
               new Promise((resolve) => {
-                const routeId = []
+                const routeId = [];
                 if (rule.useRouteId) {
-                  routeId.push(routeTo.params.id.toString())
+                  routeId.push(routeTo.params.id.toString());
                 }
 
                 if (rule.useRouteQuery) {
-                  const allQueries: any[] = []
-                  const catenation_type =
-                    rule.query_concatenation_type ?
-                      rule.query_concatenation_type
-                    : "prehend"
+                  const allQueries: any[] = [];
+                  const catenation_type = rule.query_concatenation_type
+                    ? rule.query_concatenation_type
+                    : "prehend";
                   rule.queries?.forEach((item) => {
                     if (catenation_type == "prehend") {
-                      allQueries.unshift(routeTo.query[item])
+                      allQueries.unshift(routeTo.query[item]);
                     } else {
-                      allQueries.push(routeTo.query[item])
+                      allQueries.push(routeTo.query[item]);
                     }
-                  })
+                  });
                   if (catenation_type == "append") {
-                    rule.params.push(...allQueries)
+                    rule.params.push(...allQueries);
                   } else {
-                    rule.params.unshift(...allQueries)
+                    rule.params.unshift(...allQueries);
                   }
                 }
 
@@ -609,67 +1233,66 @@ export default class Common {
                     if (param.where) {
                       param.where.forEach((item: any) => {
                         if (item.field == "user.id" || item.field == "userId") {
-                          item.value = Logic.Auth.AuthUser?.uuid
+                          item.value = Logic.Auth.AuthUser?.uuid;
                         }
-                      })
+                      });
                     }
                   }
-                })
+                });
 
-                const allParameter = rule.params
+                const allParameter = rule.params;
 
                 if (routeId.length) {
-                  allParameter.unshift(...routeId)
+                  allParameter.unshift(...routeId);
                 }
 
-                const request = domain[rule.method](...allParameter)
+                const request = domain[rule.method](...allParameter);
 
                 request?.then((value: any) => {
-                  resolve(value)
-                })
+                  resolve(value);
+                });
               })
-            )
+            );
           } else {
             if (rule.silentUpdate) {
               // run in silence
               if (rule.useRouteId) {
-                rule.params.unshift(routeTo.params.id.toString())
+                rule.params.unshift(routeTo.params.id.toString());
               }
               if (rule.useRouteQuery) {
-                const allQueries: any[] = []
-                const catenation_type =
-                  rule.query_concatenation_type ?
-                    rule.query_concatenation_type
-                  : "prehend"
+                const allQueries: any[] = [];
+                const catenation_type = rule.query_concatenation_type
+                  ? rule.query_concatenation_type
+                  : "prehend";
                 rule.queries?.forEach((item) => {
                   if (catenation_type == "prehend") {
-                    allQueries.unshift(routeTo.query[item])
+                    allQueries.unshift(routeTo.query[item]);
                   } else {
-                    allQueries.push(routeTo.query[item])
+                    allQueries.push(routeTo.query[item]);
                   }
-                })
+                });
                 if (catenation_type == "append") {
-                  rule.params.push(...allQueries)
+                  rule.params.push(...allQueries);
                 } else {
-                  rule.params.unshift(...allQueries)
+                  rule.params.unshift(...allQueries);
                 }
               }
-              rule.params = [...new Set(rule.params)]
+              rule.params = [...new Set(rule.params)];
               setTimeout(() => {
-                domain[rule.method](...rule.params)
-              }, 1000)
+                domain[rule.method](...rule.params);
+              }, 1000);
             }
           }
         }
       }
     } catch (error) {
-      if (error !== BreakException) throw error
+      if (error !== BreakException) throw error;
     }
 
     // save user activities
 
     if (routeMiddlewares.tracking_data) {
-      const trackingData: any = routeMiddlewares.tracking_data
+      const trackingData: any = routeMiddlewares.tracking_data;
       // Logic.User.SaveUserActivity(
       //   trackingData.lable,
       //   'page_view',
@@ -680,11 +1303,11 @@ export default class Common {
 
     const showBottomNav = () => {
       // page layout
-      const layout: any = routeTo.meta?.layout
+      const layout: any = routeTo.meta?.layout;
       if (layout == "Dashboard") {
-        this.showBottomNav = true
+        this.showBottomNav = true;
       } else {
-        this.showBottomNav = false
+        this.showBottomNav = false;
       }
 
       this.currentLayout = {
@@ -694,24 +1317,24 @@ export default class Common {
           name: routeFrom.meta.layout as string,
           path: routeFrom.path as string,
         },
-      }
-    }
+      };
+    };
 
     if (allActions.length > 0) {
       this.showLoader({
         loading: true,
         show: true,
-      })
+      });
 
       Promise.all(allActions).then(() => {
-        this.hideLoader()
-        showBottomNav()
-        return next()
-      })
+        this.hideLoader();
+        showBottomNav();
+        return next();
+      });
     } else {
-      this.hideLoader()
-      showBottomNav()
-      return next()
+      this.hideLoader();
+      showBottomNav();
+      return next();
     }
-  }
+  };
 }

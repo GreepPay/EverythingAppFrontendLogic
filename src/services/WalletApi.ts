@@ -994,10 +994,31 @@ export default class WalletsApi extends BaseApiService {
     return response;
   };
 
+  public GetTransferFees = (amount: number, currency: string, type: string) => {
+    const requestData = `
+        query GetTransferFees($amount: Float!, $currency: String!, $type: String!) {
+          GetTransferFees(amount: $amount, currency: $currency, type: $type) 
+        }
+      `;
+
+    const response: Promise<
+      OperationResult<{
+        GetTransferFees: number;
+      }>
+    > = this.query(requestData, {
+      amount,
+      currency,
+      type,
+    });
+
+    return response;
+  };
+
   public ConfirmWithdrawal = (
     uuid: string,
     currency: string,
     amount: number,
+    country_code: string,
     metadata = ""
   ) => {
     const requestData = `
@@ -1005,12 +1026,14 @@ export default class WalletsApi extends BaseApiService {
           $uuid: String!
           $currency: String!
           $amount: Float!
+          $country_code: String!
           $metadata: String
         ) {
           ConfirmWithdrawal(
             uuid: $uuid
             currency: $currency
             amount: $amount
+            country_code: $country_code
             metadata: $metadata
           ) {
              id
@@ -1055,6 +1078,7 @@ export default class WalletsApi extends BaseApiService {
       uuid,
       currency,
       amount,
+      country_code,
       metadata,
     });
 

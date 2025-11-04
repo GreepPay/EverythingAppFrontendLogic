@@ -1,6 +1,6 @@
-import { $api } from "../../services"
-import { CombinedError } from "urql"
-import Common from "./Common"
+import { $api } from "../../services";
+import { CombinedError } from "urql";
+import Common from "./Common";
 import {
   MutationSignUpArgs,
   MutationSignInArgs,
@@ -11,81 +11,90 @@ import {
   MutationSendResetPasswordOtpArgs,
   MutationUpdateProfileArgs,
   User,
-} from "../../gql/graphql"
-import { Logic } from ".."
+} from "../../gql/graphql";
+import { Logic } from "..";
 
 export default class AuthModule extends Common {
   constructor() {
-    super()
-    this.defineReactiveProperty("AccessToken", null)
-    this.defineReactiveProperty("AuthUser", undefined)
+    super();
+    this.defineReactiveProperty("AccessToken", null);
+    this.defineReactiveProperty("AuthUser", undefined);
 
-    this.setDefaultAuth()
+    this.setDefaultAuth();
   }
 
   // Base variables
-  public AccessToken: string | null = null
-  public AuthUser: User | undefined = undefined
-  public hasConnection: boolean = false
+  public AccessToken: string | null = null;
+  public AuthUser: User | undefined = undefined;
+  public hasConnection: boolean = false;
 
   // mutation payloads
-  public SignUpPayload: MutationSignUpArgs | undefined
-  public SignInPayload: MutationSignInArgs | undefined
-  public ResetPasswordForm: MutationResetPasswordArgs | undefined
-  public UpdatePasswordForm: MutationUpdatePasswordArgs | undefined
-  public VerifyUserOTPayload: MutationVerifyUserOtpArgs | undefined
-  public VerifyUserIdentityPayload: MutationVerifyUserIdentityArgs | undefined
-  public UpdatePasswordPayload: MutationUpdatePasswordArgs | undefined
+  public SignUpPayload: MutationSignUpArgs | undefined;
+  public SignInPayload: MutationSignInArgs | undefined;
+  public ResetPasswordForm: MutationResetPasswordArgs | undefined;
+  public UpdatePasswordForm: MutationUpdatePasswordArgs | undefined;
+  public VerifyUserOTPayload: MutationVerifyUserOtpArgs | undefined;
+  public VerifyUserIdentityPayload: MutationVerifyUserIdentityArgs | undefined;
+  public UpdatePasswordPayload: MutationUpdatePasswordArgs | undefined;
 
   // Private methods
   private SetUpAuth = (AuthResponse: any | undefined) => {
     if (AuthResponse) {
-      this.AccessToken = AuthResponse.token
-      this.AuthUser = this.updatedData(this.AuthUser, AuthResponse.user)
+      this.AccessToken = AuthResponse.token;
+      this.AuthUser = this.updatedData(this.AuthUser, AuthResponse.user);
 
       // save to localstorage
       localStorage.setItem(
         "access_token",
         this.AccessToken ? this.AccessToken : ""
-      )
+      );
       if (this.AuthUser) {
-        localStorage.setItem("auth_user", JSON.stringify(this.AuthUser))
+        localStorage.setItem("auth_user", JSON.stringify(this.AuthUser));
       }
     }
-  }
+  };
 
   private setDefaultAuth = () => {
-    this.AccessToken = localStorage.getItem("access_token")
-    const auth_user = localStorage.getItem("auth_user")
-    this.AuthUser = auth_user ? JSON.parse(auth_user || "{}") : undefined
-  }
+    this.AccessToken = localStorage.getItem("access_token");
+    const auth_user = localStorage.getItem("auth_user");
+    this.AuthUser = auth_user ? JSON.parse(auth_user || "{}") : undefined;
+  };
   public GetAuthUser = async (): Promise<User | undefined> => {
     return $api.auth
       .GetAuthUser()
       .then((response) => {
-        this.AuthUser = response.data?.GetAuthUser
+        this.AuthUser = response.data?.GetAuthUser;
 
         if (this.AuthUser) {
-          localStorage.setItem("auth_user", JSON.stringify(this.AuthUser))
+          localStorage.setItem("auth_user", JSON.stringify(this.AuthUser));
         }
 
         if (this.AuthUser?.profile.default_currency) {
           localStorage.setItem(
             "default_currency",
             this.AuthUser.profile.default_currency
-          )
+          );
+
+          const currencyInfo = Logic.Common.availableCurrencies.filter(
+            (item) => item.code == this.AuthUser?.profile.default_currency
+          )[0];
+
+          localStorage.setItem(
+            "default_country_code",
+            currencyInfo ? currencyInfo.country_code || "" : ""
+          );
         }
 
-        this.connectSocketChannels()
+        this.connectSocketChannels();
 
-        return this.AuthUser
+        return this.AuthUser;
       })
       .catch((error: CombinedError) => {
-        Logic.Common.showError(error, "Oops!", "error-alert")
-        Logic.Auth.SignOut()
-        throw error
-      })
-  }
+        Logic.Common.showError(error, "Oops!", "error-alert");
+        Logic.Auth.SignOut();
+        throw error;
+      });
+  };
 
   private connectSocketChannels = () => {
     if (!Logic.Common.laravelEcho) {
@@ -95,7 +104,7 @@ export default class AuthModule extends Common {
         pusherPort: import.meta.env.VITE_PUSHER_PORT,
         pusherCluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
         socketAuthUrl: import.meta.env.VITE_SOCKET_AUTH_URL,
-      })
+      });
     }
 
     if (Logic.Common.laravelEcho && !this.hasConnection) {
@@ -106,13 +115,13 @@ export default class AuthModule extends Common {
           ".transaction.created",
           (data: { status: string } & { [key: string]: any }) => {
             if (data.status === "success") {
-              Logic.Auth.GetAuthUser()
-              Logic.Wallet.GetGlobalExchangeRate()
+              Logic.Auth.GetAuthUser();
+              Logic.Wallet.GetGlobalExchangeRate();
             }
           }
-        )
+        );
     }
-  }
+  };
 
   // Mutations
   public SignUp = (formIsValid: boolean) => {
@@ -120,19 +129,19 @@ export default class AuthModule extends Common {
       return $api.auth
         .SignUp(this.SignUpPayload)
         .then((response) => {
-          this.AuthUser = response.data?.SignUp || undefined
-          localStorage.setItem("auth_email", this.SignUpPayload?.email || "")
-          localStorage.setItem("auth_pass", this.SignUpPayload?.password || "")
+          this.AuthUser = response.data?.SignUp || undefined;
+          localStorage.setItem("auth_email", this.SignUpPayload?.email || "");
+          localStorage.setItem("auth_pass", this.SignUpPayload?.password || "");
 
-          Logic.Common.hideLoader()
-          return response.data?.SignUp
+          Logic.Common.hideLoader();
+          return response.data?.SignUp;
         })
         .catch((error: CombinedError) => {
-          Logic.Common.showError(error, "Oops!", "error-alert")
-          throw new Error(error.message)
-        })
+          Logic.Common.showError(error, "Oops!", "error-alert");
+          throw new Error(error.message);
+        });
     }
-  }
+  };
 
   public SignIn = (formIsValid: boolean) => {
     if (formIsValid && this.SignInPayload) {
@@ -140,33 +149,33 @@ export default class AuthModule extends Common {
         .SignIn(this.SignInPayload)
         .then((response) => {
           if (response.data?.SignIn) {
-            this.SetUpAuth(response.data?.SignIn)
+            this.SetUpAuth(response.data?.SignIn);
           }
           // this.AuthUser = response.data?.SignIn.user
-          Logic.Common.hideLoader()
-          return response.data?.SignIn
+          Logic.Common.hideLoader();
+          return response.data?.SignIn;
         })
         .catch((error: CombinedError) => {
-          Logic.Common.hideLoader()
-          Logic.Common.showError(error, "Oops!", "error-alert")
-          throw new Error(error.message)
-        })
+          Logic.Common.hideLoader();
+          Logic.Common.showError(error, "Oops!", "error-alert");
+          throw new Error(error.message);
+        });
     }
-  }
+  };
 
   public ResendEmailOTP = async (email: string) => {
     return $api.auth
       .ResendEmailOTP({ email })
       .then((response) => {
         if (response.data?.ResendEmailOTP) {
-          return response.data.ResendEmailOTP
+          return response.data.ResendEmailOTP;
         }
       })
       .catch((error: CombinedError) => {
-        Logic.Common.showError(error, "Oops!", "error-alert")
-        throw new Error(error.message)
-      })
-  }
+        Logic.Common.showError(error, "Oops!", "error-alert");
+        throw new Error(error.message);
+      });
+  };
 
   public sendResetPasswordOTP = async (
     data: MutationSendResetPasswordOtpArgs
@@ -178,77 +187,77 @@ export default class AuthModule extends Common {
           let uuid = localStorage.setItem(
             "reset_password_uuid",
             response.data.SendResetPasswordOTP
-          )
-          console.log(uuid)
-          return response.data.SendResetPasswordOTP
+          );
+          console.log(uuid);
+          return response.data.SendResetPasswordOTP;
         }
       })
       .catch((error: CombinedError) => {
-        Logic.Common.showError(error, "Oops!", "error-alert")
-        throw new Error(error.message)
-      })
-  }
+        Logic.Common.showError(error, "Oops!", "error-alert");
+        throw new Error(error.message);
+      });
+  };
 
   public ResetPassword = async (data: MutationResetPasswordArgs) => {
     return $api.auth
       .ResetPassword(data)
       .then((response) => {
         if (response.data?.ResetPassword) {
-          return response.data.ResetPassword
+          return response.data.ResetPassword;
         }
       })
       .catch((error: CombinedError) => {
-        Logic.Common.showError(error, "Oops!", "error-alert")
-        throw new Error(error.message)
-      })
-  }
+        Logic.Common.showError(error, "Oops!", "error-alert");
+        throw new Error(error.message);
+      });
+  };
 
   public VerifyUserIdentity = () => {
     if (this.VerifyUserIdentityPayload) {
       return $api.auth
         .VerifyUserIdentity(this.VerifyUserIdentityPayload)
         .then((response) => {
-          Logic.Common.hideLoader()
-          return response.data?.VerifyUserIdentity
+          Logic.Common.hideLoader();
+          return response.data?.VerifyUserIdentity;
         })
         .catch((error: CombinedError) => {
-          Logic.Common.hideLoader()
-          Logic.Common.showError(error, "Verification Failed", "error-alert")
-          throw new Error(error.message)
-        })
+          Logic.Common.hideLoader();
+          Logic.Common.showError(error, "Verification Failed", "error-alert");
+          throw new Error(error.message);
+        });
     }
-  }
+  };
 
   public UpdatePassword = (formIsValid: boolean) => {
     if (formIsValid && this.UpdatePasswordPayload) {
-      Logic.Common.showLoader({ loading: true })
+      Logic.Common.showLoader({ loading: true });
       return $api.auth
         .UpdatePassword(this.UpdatePasswordPayload)
         .then((response) => {
-          Logic.Common.hideLoader()
-          return response.data?.UpdatePassword
+          Logic.Common.hideLoader();
+          return response.data?.UpdatePassword;
         })
         .catch((error: CombinedError) => {
-          Logic.Common.showError(error, "Oops!", "error-alert")
-          throw new Error(error.message)
-        })
+          Logic.Common.showError(error, "Oops!", "error-alert");
+          throw new Error(error.message);
+        });
     }
-  }
+  };
 
   public DeleteUser = () => {
-    Logic.Common.showLoader({ loading: true })
+    Logic.Common.showLoader({ loading: true });
     return $api.auth
       .DeleteUser()
       .then((response) => {
-        Logic.Common.hideLoader()
-        Logic.Common.GoToRoute("/start", true)
-        return response.data?.DeleteUser
+        Logic.Common.hideLoader();
+        Logic.Common.GoToRoute("/start", true);
+        return response.data?.DeleteUser;
       })
       .catch((error: CombinedError) => {
-        Logic.Common.showError(error, "Oops!", "error-alert")
-        throw new Error(error.message)
-      })
-  }
+        Logic.Common.showError(error, "Oops!", "error-alert");
+        throw new Error(error.message);
+      });
+  };
 
   public VerifyUserOTP = () => {
     if (this.VerifyUserOTPayload) {
@@ -256,30 +265,30 @@ export default class AuthModule extends Common {
         .VerifyUserOTP(this.VerifyUserOTPayload)
         .then((response) => {
           if (response.data?.VerifyUserOTP) {
-            return response.data.VerifyUserOTP
+            return response.data.VerifyUserOTP;
           }
         })
         .catch((error: CombinedError) => {
-          Logic.Common.showError(error, "Oops!", "error-alert")
-          throw new Error(error.message)
-        })
+          Logic.Common.showError(error, "Oops!", "error-alert");
+          throw new Error(error.message);
+        });
     }
-  }
+  };
 
   public SignOut = () => {
-    Logic.Common.showLoader({ loading: true, show: true })
+    Logic.Common.showLoader({ loading: true, show: true });
     $api.auth
       .SignOut()
       .then(() => {
-        localStorage.clear()
-        Logic.Common.hideLoader()
-        Logic.Common.GoToRoute("/auth/login", true)
+        localStorage.clear();
+        Logic.Common.hideLoader();
+        Logic.Common.GoToRoute("/auth/login", true);
       })
       .catch((error) => {
-        localStorage.clear()
-        Logic.Common.hideLoader()
-        Logic.Common.GoToRoute("/auth/login")
-        Logic.Common.showError(error, "Oops!", "error-alert")
-      })
-  }
+        localStorage.clear();
+        Logic.Common.hideLoader();
+        Logic.Common.GoToRoute("/auth/login");
+        Logic.Common.showError(error, "Oops!", "error-alert");
+      });
+  };
 }

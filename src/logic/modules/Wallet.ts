@@ -257,7 +257,7 @@ export default class Wallet extends Common {
     isBackground = false
   ): Promise<GlobalExchangeRate | undefined> => {
     if (!target) {
-      target = Logic.Auth.AuthUser?.profile?.default_currency || "NGN";
+      target = "USD";
     }
     return $api.wallet.GetGlobalExchangeRate(base, target).then((response) => {
       if (!isBackground) {
@@ -529,11 +529,12 @@ export default class Wallet extends Common {
     uuid: string,
     currency: string,
     amount: number,
+    country_code = "",
     metadata = ""
   ) => {
     if (uuid) {
       return $api.wallet
-        .ConfirmWithdrawal(uuid, currency, amount, metadata)
+        .ConfirmWithdrawal(uuid, currency, amount, country_code, metadata)
         .then((response) => {
           if (response.data?.ConfirmWithdrawal) {
             this.CurrentOfframp = response.data.ConfirmWithdrawal;
@@ -546,6 +547,19 @@ export default class Wallet extends Common {
         });
     }
   };
+
+  public GetTransferFees = async (
+    amount: number,
+    currency: string,
+    type: string
+  ): Promise<number | undefined> => {
+    return $api.wallet
+      .GetTransferFees(amount, currency, type)
+      .then((response) => {
+        return response.data?.GetTransferFees;
+      });
+  };
+
   public MonitorTopupStatus = (collectionId: string, cd_action: Function) => {
     this.CheckStatusState.active = true;
     $api.wallet

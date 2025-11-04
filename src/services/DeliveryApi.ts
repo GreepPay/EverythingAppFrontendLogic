@@ -1,5 +1,5 @@
-import { BaseApiService } from "./common/BaseService"
-import { OperationResult } from "urql"
+import { BaseApiService } from "./common/BaseService";
+import { OperationResult } from "urql";
 import {
   Delivery,
   DeliveryAddress,
@@ -11,7 +11,7 @@ import {
   MutationUpdateDeliveryAddressArgs,
   QueryGetDeliveriesOrderByOrderByClause,
   QueryGetDeliveriesWhereWhereConditions,
-} from "../gql/graphql"
+} from "../gql/graphql";
 
 export default class DeliveryApi extends BaseApiService {
   // #region QUERIES
@@ -54,16 +54,16 @@ export default class DeliveryApi extends BaseApiService {
         }
       }
     }
-  `
+  `;
 
     const response: Promise<
       OperationResult<{
-        GetDeliveries: DeliveryPaginator
+        GetDeliveries: DeliveryPaginator;
       }>
-    > = this.query(requestData, { first, page, orderBy, where })
+    > = this.query(requestData, { first, page, orderBy, where });
 
-    return response
-  }
+    return response;
+  };
 
   public GetSingleDelivery = (where: any) => {
     const requestData = `
@@ -91,16 +91,16 @@ export default class DeliveryApi extends BaseApiService {
         recipientSignature
       }
     }
-  `
+  `;
 
     const response: Promise<
       OperationResult<{
-        GetSingleDelivery: Delivery
+        GetSingleDelivery: Delivery;
       }>
-    > = this.query(requestData, { where })
+    > = this.query(requestData, { where });
 
-    return response
-  }
+    return response;
+  };
 
   public GetDeliveryLocations = (
     page: number,
@@ -135,19 +135,19 @@ export default class DeliveryApi extends BaseApiService {
           }
         }
       }
-    `
+    `;
 
     const response: Promise<
       OperationResult<{
-        GetDeliveryLocations: DeliveryLocationPaginator
+        GetDeliveryLocations: DeliveryLocationPaginator;
       }>
     > = this.query(requestData, {
       page,
       count,
-    })
+    });
 
-    return response
-  }
+    return response;
+  };
 
   public GetDeliveryPricing = (
     originLocationId: number,
@@ -177,24 +177,25 @@ export default class DeliveryApi extends BaseApiService {
             updatedAt
           }
           price
+          currency
           status
           createdAt
           updatedAt
         }
       }
-    `
+    `;
 
     const response: Promise<
       OperationResult<{
-        GetDeliveryPricing: DeliveryPricing
+        GetDeliveryPricing: DeliveryPricing;
       }>
     > = this.query(requestData, {
       originLocationId,
       destinationLocationId,
-    })
+    });
 
-    return response
-  }
+    return response;
+  };
 
   public GetDeliveryAddress = (uuid: string) => {
     const requestData = `
@@ -213,16 +214,16 @@ export default class DeliveryApi extends BaseApiService {
         updated_at
       }
     }
-  `
+  `;
 
     const response: Promise<
       OperationResult<{
-        GetDeliveryAddress: DeliveryAddress
+        GetDeliveryAddress: DeliveryAddress;
       }>
-    > = this.query(requestData, { uuid })
+    > = this.query(requestData, { uuid });
 
-    return response
-  }
+    return response;
+  };
 
   public GetDeliveryAddresses = (page: number, first: number) => {
     const requestData = `
@@ -253,19 +254,19 @@ export default class DeliveryApi extends BaseApiService {
         }
       }
     }
-  `
+  `;
 
     const response: Promise<
       OperationResult<{
         GetDeliveryAddresses: {
-          data: any[]
-          paginatorInfo: any
-        }
+          data: any[];
+          paginatorInfo: any;
+        };
       }>
-    > = this.query(requestData, { first, page })
+    > = this.query(requestData, { first, page });
 
-    return response
-  }
+    return response;
+  };
 
   public GetP2PDeliveryAddresses = (
     first: number,
@@ -306,16 +307,16 @@ export default class DeliveryApi extends BaseApiService {
         }
       }
     }
-  `
+  `;
 
     const response: Promise<
       OperationResult<{
-        GetP2PDeliveryAddresses: DeliveryAddressPaginator
+        GetP2PDeliveryAddresses: DeliveryAddressPaginator;
       }>
-    > = this.query(requestData, { first, page })
+    > = this.query(requestData, { first, page });
 
-    return response
-  }
+    return response;
+  };
 
   // #endregion QUERIES
 
@@ -350,16 +351,16 @@ export default class DeliveryApi extends BaseApiService {
         updated_at
       }
     }
-  `
+  `;
 
     const response: Promise<
       OperationResult<{
-        AddDeliveryAddress: DeliveryAddress
+        AddDeliveryAddress: DeliveryAddress;
       }>
-    > = this.mutation(requestData, data)
+    > = this.mutation(requestData, data);
 
-    return response
-  }
+    return response;
+  };
 
   public UpdateDeliveryAddress = (data: MutationUpdateDeliveryAddressArgs) => {
     const requestData = `
@@ -394,16 +395,16 @@ export default class DeliveryApi extends BaseApiService {
         updated_at
       }
     }
-  `
+  `;
 
     const response: Promise<
       OperationResult<{
-        UpdateDeliveryAddress: DeliveryAddress
+        UpdateDeliveryAddress: DeliveryAddress;
       }>
-    > = this.mutation(requestData, data)
+    > = this.mutation(requestData, data);
 
-    return response
-  }
+    return response;
+  };
 
   // #endregion MUTATIONS
 }
