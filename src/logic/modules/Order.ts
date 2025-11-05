@@ -83,11 +83,11 @@ export default class OrderModule extends Common {
       })
   }
 
-  public GetSingleOrder = async (id: string): Promise<Order | undefined> => {
+  public GetOrder = async (id: string): Promise<Order | undefined> => {
     return $api.order
-      .GetSingleOrder(id)
+      .GetOrder(id)
       .then((response) => {
-        this.SingleOrder = response.data?.GetSingleOrder
+        this.SingleOrder = response.data?.GetOrder
         return this.SingleOrder
       })
       .catch((error: CombinedError) => {

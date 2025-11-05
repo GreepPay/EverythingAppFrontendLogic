@@ -1,28 +1,28 @@
-import { BaseApiService } from "./common/BaseService";
-import { OperationResult } from "urql";
+import { BaseApiService } from "./common/BaseService"
+import { OperationResult } from "urql"
 import {
   CreateOrderInput,
   Order,
   OrderPaginator,
   QueryGetOrdersOrderByOrderByClause,
   QueryGetOrdersWhereWhereConditions,
-} from "../gql/graphql";
+} from "../gql/graphql"
 
 // This should match the CreateDeliveryOrderInput from the GraphQL schema
 export interface CreateDeliveryOrderInput {
-  itemDescription: string;
-  weight?: string;
-  scheduledDate?: string;
-  scheduledTime?: string;
-  pickupAddress: string;
-  deliveryAddress: string;
-  note?: string;
-  deliveryPrice: number;
-  urgency?: string;
-  estimatedDeliveryDate?: string;
-  paymentMethod?: string;
-  phone?: string;
-  conversationId?: string; // Add conversation ID field
+  itemDescription: string
+  weight?: string
+  scheduledDate?: string
+  scheduledTime?: string
+  pickupAddress: string
+  deliveryAddress: string
+  note?: string
+  deliveryPrice: number
+  urgency?: string
+  estimatedDeliveryDate?: string
+  paymentMethod?: string
+  phone?: string
+  conversationId?: string // Add conversation ID field
 }
 
 export default class OrderApi extends BaseApiService {
@@ -36,13 +36,13 @@ export default class OrderApi extends BaseApiService {
         paymentStatus 
       }
     }
-  `;
+  `
 
     const response: Promise<OperationResult<{ CreateOrder: Order }>> =
-      this.mutation(requestData, { input });
+      this.mutation(requestData, { input })
 
-    return response;
-  };
+    return response
+  }
 
   public CreateDeliveryOrder = (input: CreateDeliveryOrderInput) => {
     const requestData = `
@@ -69,32 +69,32 @@ export default class OrderApi extends BaseApiService {
         updatedAt
       }
     }
-  `;
+  `
 
     const response: Promise<OperationResult<{ CreateDeliveryOrder: any }>> =
-      this.mutation(requestData, { input });
+      this.mutation(requestData, { input })
 
-    return response;
-  };
+    return response
+  }
 
   public UpdateDeliveryStatus = (deliveryId: string, status: string) => {
     const requestData = `
     mutation UpdateDeliveryStatus($input: UpdateDeliveryStatusInput!) {
       UpdateDeliveryStatus(input: $input)
     }
-  `;
+  `
 
     // Convert deliveryId to integer since GraphQL schema expects Int
-    const deliveryIdInt = parseInt(deliveryId, 10);
+    const deliveryIdInt = parseInt(deliveryId, 10)
 
     const response: Promise<
       OperationResult<{ UpdateDeliveryStatus: boolean }>
     > = this.mutation(requestData, {
       input: { deliveryId: deliveryIdInt, status },
-    });
+    })
 
-    return response;
-  };
+    return response
+  }
   // MUTATIONS
 
   // #region QUERIES
@@ -112,7 +112,9 @@ export default class OrderApi extends BaseApiService {
           hasMorePages
         }
         data {
-          id
+          id 
+          uuid
+          orderNumber
           customerId 
           status
           paymentMethod
@@ -125,105 +127,63 @@ export default class OrderApi extends BaseApiService {
         }
       }
     }
-  `;
+  `
 
     const response: Promise<
       OperationResult<{
-        GetOrders: OrderPaginator;
+        GetOrders: OrderPaginator
       }>
-    > = this.query(requestData, { first, page });
+    > = this.query(requestData, { first, page })
 
-    return response;
-  };
+    return response
+  }
 
-  public GetSingleOrder = (id: string) => {
+  public GetOrder = (uuid: string) => {
     const requestData = `
-    query GetSingleOrder($id: ID!) {
-      GetSingleOrder(id: $id) {
+    query GetOrder($uuid: String!) {
+      GetOrder(uuid: $uuid) {
         id
+        uuid
+        orderNumber
         customerId
-        saleId
-        items {
-          productId
-          sku
-          quantity
-          fulfilledQuantity
-          price
-          taxRate
-          taxAmount
-          discountAmount
-          total
-        }
-        shippingAddress {
-          street
-          city
-          state
-          postalCode
-          country
-          phone
-        }
-        billingAddress {
-          street
-          city
-          state
-          postalCode
-          country
-          phone
-        }
-        status
-        statusHistory {
-          status
-          timestamp
-          changedBy
-          note
-        }
-        paymentMethod
-        paymentStatus
-        paymentDetails {
-          transactionId
-          provider
-          method
-          amount
-          currency
-          status
-          timestamp
-        }
-        refundDetails {
-          transactionId
-          amount
-          reason
-          status
-          timestamp
-        }
-        cancellationReason
-        refundId
+        user {
+          id
+          uuid
+          username
+        } 
+        items
         subtotalAmount
         taxAmount
         discountAmount
         totalAmount
         currency
-        appliedDiscounts {
-          code
-          type
-          value
-          description
+        status
+        shippingAddress
+        billingAddress
+        paymentMethod
+        paymentStatus
+        paymentDetails
+        appliedDiscounts
+        taxDetails
+        refundDetails
+        deliveries {
+          deliveryAttempts
+          deliveryAddress
         }
-        taxDetails {
-          name
-          rate
-          amount
-        }
+        statusHistory
+        createdAt
+        updatedAt
       }
     }
-  `;
+  `
 
     const response: Promise<
       OperationResult<{
-        GetSingleOrder: Order;
+        GetOrder: Order
       }>
-    > = this.query(requestData, { id });
+    > = this.query(requestData, { uuid })
 
-    return response;
-  };
+    return response
+  }
   // #endregion QUERIES
 }
