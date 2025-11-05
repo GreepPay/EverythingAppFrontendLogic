@@ -227,5 +227,21 @@ export default class UserApi extends BaseApiService {
 
     return response;
   };
+
+  public UploadFile = (file: File) => {
+    const requestData = `
+      mutation UploadFile($file: Upload!) {
+        UploadFile(file: $file)
+      }
+    `;
+
+    const response: Promise<
+      OperationResult<{
+        UploadFile: string;
+      }>
+    > = this.mutation(requestData, { file });
+
+    return response;
+  };
   // #endregion MUTATIONS
 }

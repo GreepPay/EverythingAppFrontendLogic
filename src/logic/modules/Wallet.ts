@@ -587,6 +587,7 @@ export default class Wallet extends Common {
         throw new Error(error.message);
       });
   };
+
   public UploadFile = async (file: File) => {
     Logic.Common.showLoader({ loading: true, show: true });
     return $api.wallet

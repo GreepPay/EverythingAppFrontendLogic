@@ -122,4 +122,21 @@ export default class User extends Common {
         throw error;
       });
   };
+
+  public UploadFile = async (file: File) => {
+    Logic.Common.showLoader({ loading: true, show: true });
+    return $api.wallet
+      .UploadFile(file)
+      .then((response) => {
+        if (response.data?.UploadFile) {
+          Logic.Common.hideLoader();
+          return response.data.UploadFile;
+        }
+      })
+      .catch((error: CombinedError) => {
+        Logic.Common.hideLoader();
+        Logic.Common.showError(error, "Oops!", "error-alert");
+        throw error;
+      });
+  };
 }
