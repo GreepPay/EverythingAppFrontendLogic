@@ -12,7 +12,7 @@ import {
   MutationUpdateProfileArgs,
   User,
 } from "../../gql/graphql"
-import { Logic } from ".."
+import { Logic } from ".." 
 
 export default class AuthModule extends Common {
   constructor() {

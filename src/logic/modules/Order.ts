@@ -4,6 +4,7 @@ import {
   CreateOrderInput,
   QueryGetOrdersOrderByOrderByClause,
   QueryGetOrdersWhereWhereConditions,
+  ExchangeOrderPaginator,
 } from "../../gql/graphql"
 import { CreateDeliveryOrderInput } from "../../services/OrderApi"
 import { $api } from "../../services"
@@ -68,14 +69,35 @@ export default class OrderModule extends Common {
   }
 
   public GetOrders = async (
-    first: number,
-    page: number
+    page: number,
+    count: number,
+    orderType: "CREATED_AT",
+    order = "DESC" as "DESC" | "ASC",
+    whereQuery = "",
+    isLoadMore = false
   ): Promise<OrderPaginator | undefined> => {
     return $api.order
-      .GetOrders(first, page)
+      .GetOrders(page, count, orderType, order, whereQuery)
       .then((response) => {
-        this.OrdersPaginator = response.data?.GetOrders
-        return this.OrdersPaginator
+        if (response) {
+          if (!isLoadMore) {
+            this.OrdersPaginator = response.data?.GetOrders
+          } else {
+            const existingData: OrderPaginator = JSON.parse(
+              JSON.stringify(this.OrdersPaginator)
+            )
+            existingData.data = existingData.data.concat(
+              response.data?.GetOrders?.data || []
+            )
+            existingData.paginatorInfo = response.data.GetOrders?.paginatorInfo
+
+            this.OrdersPaginator = existingData
+          }
+
+          return this.OrdersPaginator
+        }
+        // this.OrdersPaginator = response.data?.GetOrders
+        // return this.OrdersPaginator
       })
       .catch((error: CombinedError) => {
         Logic.Common.showError(error, "Failed to fetch orders", "error-alert")

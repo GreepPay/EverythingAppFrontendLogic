@@ -98,10 +98,25 @@ export default class OrderApi extends BaseApiService {
   // MUTATIONS
 
   // #region QUERIES
-  public GetOrders = (first: number, page: number) => {
+  public GetOrders = (
+    page: number,
+    count: number,
+    orderType = "CREATED_AT",
+    order: "ASC" | "DESC",
+    whereQuery = ""
+  ) => {
     const requestData = `
-    query GetOrders($first: Int!, $page: Int) {
-      GetOrders(first: $first, page: $page) {
+    query GetOrders(
+        $page: Int!,
+        $count: Int!
+      ) {
+      GetOrders(first: $count,
+          page: $page,
+       orderBy: {
+            column: ${orderType ? orderType : "CREATED_AT"},
+            order: ${order}
+          }
+          ${whereQuery ? `where: ${whereQuery}` : ""}) {
         paginatorInfo {
           firstItem
           lastItem
@@ -133,7 +148,7 @@ export default class OrderApi extends BaseApiService {
       OperationResult<{
         GetOrders: OrderPaginator
       }>
-    > = this.query(requestData, { first, page })
+    > = this.query(requestData, { page, count })
 
     return response
   }
@@ -173,8 +188,33 @@ export default class OrderApi extends BaseApiService {
         statusHistory
         createdAt
         updatedAt
-      }
-    }
+        sales {
+          id
+          uuid
+          transactionId
+          business {
+            business_name
+            business_type
+            category
+            logo
+            id
+            uuid
+          } 
+          subtotalAmount
+          taxAmount
+          discountAmount
+          totalAmount
+          currency
+          status
+          items  
+          paymentDetails
+          refundDetails
+          metadata
+          createdAt
+          updatedAt
+        }
+  }
+  }
   `
 
     const response: Promise<
