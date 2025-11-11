@@ -104,6 +104,7 @@ export default class TicketApi extends BaseApiService {
           businessId
           business {
             id
+            uuid
             business_name
             logo
           }

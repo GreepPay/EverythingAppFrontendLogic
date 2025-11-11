@@ -179,13 +179,30 @@ export default class Wallet extends Common {
     count: number,
     orderType: "CREATED_AT",
     order = "DESC" as "DESC" | "ASC",
-    whereQuery = ""
+    whereQuery = "",
+    isLoadMore = false
   ): Promise<ExchangeOrderPaginator | undefined> => {
     return $api.wallet
       .GetManyP2POrders(page, count, orderType, order, whereQuery)
       .then((response) => {
-        this.ManyP2pOrders = response.data?.GetMyP2POrders;
-        return this.ManyP2pOrders;
+        if (response) {
+          if (!isLoadMore) {
+            this.ManyP2pOrders = response.data?.GetMyP2POrders;
+          } else {
+            const existingData: ExchangeOrderPaginator = JSON.parse(
+              JSON.stringify(this.ManyP2pOrders)
+            );
+            existingData.data = existingData.data.concat(
+              response.data?.GetMyP2POrders?.data || []
+            );
+            existingData.paginatorInfo =
+              response.data.GetMyP2POrders?.paginatorInfo;
+
+            this.ManyP2pOrders = existingData;
+          }
+
+          return this.ManyP2pOrders;
+        }
       });
   };
 

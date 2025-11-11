@@ -4,134 +4,157 @@ import {
   CreateOrderInput,
   QueryGetOrdersOrderByOrderByClause,
   QueryGetOrdersWhereWhereConditions,
-} from "../../gql/graphql"
-import { CreateDeliveryOrderInput } from "../../services/OrderApi"
-import { $api } from "../../services"
-import { CombinedError } from "@urql/core"
-import { Logic } from ".."
-import Common from "./Common"
+  ExchangeOrderPaginator,
+} from "../../gql/graphql";
+import { CreateDeliveryOrderInput } from "../../services/OrderApi";
+import { $api } from "../../services";
+import { CombinedError } from "@urql/core";
+import { Logic } from "..";
+import Common from "./Common";
 
 export default class OrderModule extends Common {
   constructor() {
-    super()
-    this.defineReactiveProperty("OrdersPaginator", undefined)
-    this.defineReactiveProperty("SingleOrder", undefined)
+    super();
+    this.defineReactiveProperty("OrdersPaginator", undefined);
+    this.defineReactiveProperty("SingleOrder", undefined);
   }
 
-  public OrdersPaginator: OrderPaginator | undefined
-  public SingleOrder: Order | undefined
+  public OrdersPaginator: OrderPaginator | undefined;
+  public SingleOrder: Order | undefined;
 
   // mutation payloads
-  public CreateOrderPayload: CreateOrderInput | undefined
-  public CreateDeliveryOrderPayload: CreateDeliveryOrderInput | undefined
+  public CreateOrderPayload: CreateOrderInput | undefined;
+  public CreateDeliveryOrderPayload: CreateDeliveryOrderInput | undefined;
 
   public CreateOrder = async (): Promise<Order | undefined> => {
-    if (!this.CreateOrderPayload) return
+    if (!this.CreateOrderPayload) return;
 
-    console.log("CreateOrderPayload", this.CreateOrderPayload)
+    console.log("CreateOrderPayload", this.CreateOrderPayload);
 
     return $api.order
       .CreateOrder(this.CreateOrderPayload)
       .then((response) => {
-        return response.data?.CreateOrder
+        return response.data?.CreateOrder;
       })
       .catch((error: CombinedError) => {
-        Logic.Common.showError(error, "Failed to create order", "error-alert")
-        return undefined
-      })
-  }
+        Logic.Common.showError(error, "Failed to create order", "error-alert");
+        return undefined;
+      });
+  };
 
   public CreateDeliveryOrder = async (): Promise<Order | undefined> => {
-    if (!this.CreateDeliveryOrderPayload) return
+    if (!this.CreateDeliveryOrderPayload) return;
 
     Logic.Common.showLoader({
       loading: true,
       show: true,
       message: "Processing your delivery order...",
-    })
+    });
 
     return $api.order
       .CreateDeliveryOrder(this.CreateDeliveryOrderPayload)
       .then((response) => {
-        Logic.Common.hideLoader()
-        return response.data?.CreateDeliveryOrder
+        Logic.Common.hideLoader();
+        return response.data?.CreateDeliveryOrder;
       })
       .catch((error: CombinedError) => {
-        Logic.Common.hideLoader()
+        Logic.Common.hideLoader();
         Logic.Common.showError(
           error,
           "Failed to create delivery order",
           "error-alert"
-        )
-        return undefined
-      })
-  }
+        );
+        return undefined;
+      });
+  };
 
   public GetOrders = async (
-    first: number,
-    page: number
+    page: number,
+    count: number,
+    orderType: "CREATED_AT",
+    order = "DESC" as "DESC" | "ASC",
+    whereQuery = "",
+    isLoadMore = false
   ): Promise<OrderPaginator | undefined> => {
     return $api.order
-      .GetOrders(first, page)
+      .GetOrders(page, count, orderType, order, whereQuery)
       .then((response) => {
-        this.OrdersPaginator = response.data?.GetOrders
-        return this.OrdersPaginator
-      })
-      .catch((error: CombinedError) => {
-        Logic.Common.showError(error, "Failed to fetch orders", "error-alert")
-        return undefined
-      })
-  }
+        if (response) {
+          if (!isLoadMore) {
+            this.OrdersPaginator = response.data?.GetOrders;
+          } else {
+            const existingData: OrderPaginator = JSON.parse(
+              JSON.stringify(this.OrdersPaginator)
+            );
+            existingData.data = existingData.data.concat(
+              response.data?.GetOrders?.data || []
+            );
+            existingData.paginatorInfo =
+              response.data?.GetOrders?.paginatorInfo || undefined;
 
-  public GetSingleOrder = async (id: string): Promise<Order | undefined> => {
-    return $api.order
-      .GetSingleOrder(id)
-      .then((response) => {
-        this.SingleOrder = response.data?.GetSingleOrder
-        return this.SingleOrder
+            this.OrdersPaginator = existingData;
+          }
+
+          return this.OrdersPaginator;
+        }
+        // this.OrdersPaginator = response.data?.GetOrders
+        // return this.OrdersPaginator
       })
       .catch((error: CombinedError) => {
-        Logic.Common.showError(error, "Failed to fetch order", "error-alert")
-        return undefined
+        Logic.Common.showError(error, "Failed to fetch orders", "error-alert");
+        return undefined;
+      });
+  };
+
+  public GetOrder = async (id: string): Promise<Order | undefined> => {
+    return $api.order
+      .GetOrder(id)
+      .then((response) => {
+        this.SingleOrder = response.data?.GetOrder;
+        return this.SingleOrder;
       })
-  }
+      .catch((error: CombinedError) => {
+        Logic.Common.showError(error, "Failed to fetch order", "error-alert");
+        return undefined;
+      });
+  };
 
   public UpdateDeliveryStatus = async (
     deliveryId: string,
     status: string
   ): Promise<boolean | undefined> => {
     if (!deliveryId || !status) {
-      return false
+      return false;
     }
 
     Logic.Common.showLoader({
       loading: true,
       show: true,
       message: "Updating delivery status...",
-    })
+    });
 
     return $api.order
       .UpdateDeliveryStatus(deliveryId, status)
       .then((response) => {
-        Logic.Common.hideLoader()
+        Logic.Common.hideLoader();
         if (response.data?.UpdateDeliveryStatus) {
           Logic.Common.showAlert({
             show: true,
             message: "Delivery status updated successfully",
             type: "success",
-          })
-          return true
+          });
+          return true;
         }
-        return false
+        return false;
       })
       .catch((error: CombinedError) => {
-        Logic.Common.hideLoader()
+        Logic.Common.hideLoader();
         Logic.Common.showError(
           error,
           "Failed to update delivery status",
           "error-alert"
-        )
-        return false
-      })
-  }
+        );
+        return false;
+      });
+  };
 }

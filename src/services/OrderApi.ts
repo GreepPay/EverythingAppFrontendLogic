@@ -98,10 +98,25 @@ export default class OrderApi extends BaseApiService {
   // MUTATIONS
 
   // #region QUERIES
-  public GetOrders = (first: number, page: number) => {
+  public GetOrders = (
+    page: number,
+    count: number,
+    orderType = "CREATED_AT",
+    order: "ASC" | "DESC",
+    whereQuery = ""
+  ) => {
     const requestData = `
-    query GetOrders($first: Int!, $page: Int) {
-      GetOrders(first: $first, page: $page) {
+    query GetOrders(
+        $page: Int!,
+        $count: Int!
+      ) {
+      GetOrders(first: $count,
+          page: $page,
+       orderBy: {
+            column: ${orderType ? orderType : "CREATED_AT"},
+            order: ${order}
+          }
+          ${whereQuery ? `where: ${whereQuery}` : ""}) {
         paginatorInfo {
           firstItem
           lastItem
@@ -112,7 +127,9 @@ export default class OrderApi extends BaseApiService {
           hasMorePages
         }
         data {
-          id
+          id 
+          uuid
+          orderNumber
           customerId 
           status
           paymentMethod
@@ -122,6 +139,35 @@ export default class OrderApi extends BaseApiService {
           discountAmount
           totalAmount
           currency 
+          sales {
+            id
+            uuid
+            transactionId
+            subtotalAmount
+            taxAmount
+            discountAmount
+            totalAmount
+            currency
+            status
+            items  
+            paymentDetails
+            refundDetails
+            productItems {
+               id
+              sku
+              name
+              slug
+              description
+              price
+              currency
+              type
+              status
+              images
+            }
+            metadata
+            createdAt
+            updatedAt
+        }
         }
       }
     }
@@ -131,97 +177,92 @@ export default class OrderApi extends BaseApiService {
       OperationResult<{
         GetOrders: OrderPaginator;
       }>
-    > = this.query(requestData, { first, page });
+    > = this.query(requestData, { page, count });
 
     return response;
   };
 
-  public GetSingleOrder = (id: string) => {
+  public GetOrder = (uuid: string) => {
     const requestData = `
-    query GetSingleOrder($id: ID!) {
-      GetSingleOrder(id: $id) {
+    query GetOrder($uuid: String!) {
+      GetOrder(uuid: $uuid) {
         id
+        uuid
+        orderNumber
         customerId
-        saleId
-        items {
-          productId
-          sku
-          quantity
-          fulfilledQuantity
-          price
-          taxRate
-          taxAmount
-          discountAmount
-          total
-        }
-        shippingAddress {
-          street
-          city
-          state
-          postalCode
-          country
-          phone
-        }
-        billingAddress {
-          street
-          city
-          state
-          postalCode
-          country
-          phone
-        }
-        status
-        statusHistory {
-          status
-          timestamp
-          changedBy
-          note
-        }
-        paymentMethod
-        paymentStatus
-        paymentDetails {
-          transactionId
-          provider
-          method
-          amount
-          currency
-          status
-          timestamp
-        }
-        refundDetails {
-          transactionId
-          amount
-          reason
-          status
-          timestamp
-        }
-        cancellationReason
-        refundId
+        user {
+          id
+          uuid
+          username
+        } 
+        items
         subtotalAmount
         taxAmount
         discountAmount
         totalAmount
         currency
-        appliedDiscounts {
-          code
-          type
-          value
-          description
+        status
+        shippingAddress
+        billingAddress
+        paymentMethod
+        paymentStatus
+        paymentDetails
+        appliedDiscounts
+        taxDetails
+        refundDetails
+        deliveries {
+          deliveryAttempts
+          deliveryAddress
         }
-        taxDetails {
-          name
-          rate
-          amount
+        statusHistory
+        createdAt
+        updatedAt
+        sales {
+          id
+          uuid
+          transactionId
+          business {
+            business_name
+            business_type
+            category
+            logo
+            id
+            uuid
+          } 
+          productItems {
+            id
+            sku
+            name
+            slug
+            description
+            price
+            currency
+            type
+            images
+            status
+          }
+          subtotalAmount
+          taxAmount
+          discountAmount
+          totalAmount
+          currency
+          status
+          items  
+          paymentDetails
+          refundDetails
+          metadata
+          createdAt
+          updatedAt
         }
-      }
-    }
+  }
+  }
   `;
 
     const response: Promise<
       OperationResult<{
-        GetSingleOrder: Order;
+        GetOrder: Order;
       }>
-    > = this.query(requestData, { id });
+    > = this.query(requestData, { uuid });
 
     return response;
   };

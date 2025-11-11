@@ -1,9 +1,9 @@
 import {
   MutationSavePushNotificationTokenArgs,
   NotificationPaginator,
-} from "src/gql/graphql"
-import { OperationResult } from "urql"
-import { BaseApiService } from "./common/BaseService"
+} from "src/gql/graphql";
+import { OperationResult } from "urql";
+import { BaseApiService } from "./common/BaseService";
 
 export default class NotificationApi extends BaseApiService {
   // #region QUERIES
@@ -52,19 +52,19 @@ export default class NotificationApi extends BaseApiService {
         }
       }
     }
-  `
+  `;
 
     const response: Promise<
       OperationResult<{
-        GetNotifications: NotificationPaginator
+        GetNotifications: NotificationPaginator;
       }>
     > = this.query(requestData, {
       page,
       count,
-    })
+    });
 
-    return response
-  }
+    return response;
+  };
   // #endregion QUERIES
 
   // #region MUTATIONS
@@ -73,41 +73,41 @@ export default class NotificationApi extends BaseApiService {
       mutation MarkNotificationsAsRead($notificationIds: [Int!]!) {
         MarkNotificationsAsRead(notification_ids: $notificationIds)
       }
-		`
+		`;
 
     const response: Promise<
       OperationResult<{
-        MarkNotificationsAsRead: Boolean
+        MarkNotificationsAsRead: Boolean;
       }>
     > = this.mutation(requestData, {
       notificationIds,
-    })
+    });
 
-    return response
-  }
+    return response;
+  };
 
   public SavePushNotificationToken = (
     data: MutationSavePushNotificationTokenArgs
   ) => {
     const requestData = `
       mutation SavePushNotificationToken(
-        $deviceToken: String!
-        $deviceType: String!
+        $device_token: String!
+        $device_type: String!
       ) {
         SavePushNotificationToken(
-          device_token: $deviceToken
-          device_type: $deviceType
+          device_token: $device_token
+          device_type: $device_type
         )
       }
-		`
+		`;
 
     const response: Promise<
       OperationResult<{
-        SavePushNotificationToken: Boolean
+        SavePushNotificationToken: Boolean;
       }>
-    > = this.mutation(requestData, data)
+    > = this.mutation(requestData, data);
 
-    return response
-  }
+    return response;
+  };
   // #endregion MUTATIONS
 }

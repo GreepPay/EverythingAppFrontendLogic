@@ -421,6 +421,8 @@ export type DeliveryPricing = {
   __typename?: 'DeliveryPricing';
   /** Created At */
   createdAt: Scalars['String'];
+  /** Currency */
+  currency: Scalars['String'];
   /** Destination Location */
   destinationLocation: DeliveryLocation;
   /** Unique ID */
@@ -1295,8 +1297,8 @@ export type Order = {
   paymentStatus?: Maybe<Scalars['String']>;
   /** Refund Details */
   refundDetails?: Maybe<Scalars['String']>;
-  /** Sale */
-  sale: Sale;
+  /** Sales */
+  sales: Array<Sale>;
   /** Shipping Address */
   shippingAddress?: Maybe<Scalars['String']>;
   /** Status */
@@ -1886,7 +1888,7 @@ export type Query = {
   GetSingleDelivery?: Maybe<Delivery>;
   /** Get a single point transaction by UUID */
   GetSinglePointTransaction?: Maybe<PointTransaction>;
-  /** Get a Ticker by UUID */
+  /** Get a Ticket by UUID */
   GetSingleTicket?: Maybe<Ticket>;
   /** Get a single transaction by UUID */
   GetSingleTransaction?: Maybe<Transaction>;
@@ -2067,7 +2069,9 @@ export type QueryGetMyP2pPaymentMethodsArgs = {
 
 export type QueryGetMyTicketsArgs = {
   first: Scalars['Int'];
+  orderBy?: InputMaybe<Array<QueryGetMyTicketsOrderByOrderByClause>>;
   page?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<QueryGetMyTicketsWhereWhereConditions>;
 };
 
 
@@ -2681,6 +2685,54 @@ export type QueryGetMyP2POrdersWhereWhereConditionsRelation = {
   relation: Scalars['String'];
 };
 
+/** Allowed column names for Query.GetMyTickets.orderBy. */
+export enum QueryGetMyTicketsOrderByColumn {
+  CreatedAt = 'CREATED_AT'
+}
+
+/** Order by clause for Query.GetMyTickets.orderBy. */
+export type QueryGetMyTicketsOrderByOrderByClause = {
+  /** The column that is used for ordering. */
+  column: QueryGetMyTicketsOrderByColumn;
+  /** The direction that is used for ordering. */
+  order: SortOrder;
+};
+
+/** Allowed column names for Query.GetMyTickets.where. */
+export enum QueryGetMyTicketsWhereColumn {
+  ProductId = 'PRODUCT_ID',
+  Status = 'STATUS',
+  TicketType = 'TICKET_TYPE'
+}
+
+/** Dynamic WHERE conditions for the `where` argument of the query `GetMyTickets`. */
+export type QueryGetMyTicketsWhereWhereConditions = {
+  /** A set of conditions that requires all conditions to match. */
+  AND?: InputMaybe<Array<QueryGetMyTicketsWhereWhereConditions>>;
+  /** Check whether a relation exists. Extra conditions or a minimum amount can be applied. */
+  HAS?: InputMaybe<QueryGetMyTicketsWhereWhereConditionsRelation>;
+  /** A set of conditions that requires at least one condition to match. */
+  OR?: InputMaybe<Array<QueryGetMyTicketsWhereWhereConditions>>;
+  /** The column that is used for the condition. */
+  column?: InputMaybe<QueryGetMyTicketsWhereColumn>;
+  /** The operator that is used for the condition. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The value that is used for the condition. */
+  value?: InputMaybe<Scalars['Mixed']>;
+};
+
+/** Dynamic HAS conditions for WHERE conditions for the `where` argument of the query `GetMyTickets`. */
+export type QueryGetMyTicketsWhereWhereConditionsRelation = {
+  /** The amount to test. */
+  amount?: InputMaybe<Scalars['Int']>;
+  /** Additional condition logic. */
+  condition?: InputMaybe<QueryGetMyTicketsWhereWhereConditions>;
+  /** The comparison operator to test against the amount. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The relation that is checked. */
+  relation: Scalars['String'];
+};
+
 /** Allowed column names for Query.GetNotifications.orderBy. */
 export enum QueryGetNotificationsOrderByColumn {
   CreatedAt = 'CREATED_AT',
@@ -3192,6 +3244,8 @@ export type Sale = {
   __typename?: 'Sale';
   /** Applied Discounts */
   appliedDiscounts?: Maybe<Scalars['String']>;
+  /** Business */
+  business: Business;
   /** Sale Created At */
   createdAt: Scalars['String'];
   /** Currency */
@@ -3208,6 +3262,8 @@ export type Sale = {
   metadata?: Maybe<Scalars['String']>;
   /** Payment Details */
   paymentDetails: Scalars['String'];
+  /** Product Items */
+  productItems?: Maybe<Array<Product>>;
   /** Refund Details */
   refundDetails?: Maybe<Scalars['String']>;
   /** Status */

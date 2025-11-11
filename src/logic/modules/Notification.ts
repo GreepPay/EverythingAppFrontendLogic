@@ -3,32 +3,32 @@ import {
   NotificationPaginator,
   PaginatorInfo,
   QueryGetNotificationsArgs,
-} from "../../gql/graphql"
-import { $api } from "../../services"
-import Common from "./Common"
-import { PushNotifications } from "@capacitor/push-notifications"
-import { getPlatforms } from "@ionic/vue"
+} from "../../gql/graphql";
+import { $api } from "../../services";
+import Common from "./Common";
+import { PushNotifications } from "@capacitor/push-notifications";
+import { getPlatforms, isPlatform } from "@ionic/vue";
 
 export default class NotificationModule extends Common {
   constructor() {
-    super()
-    this.defineReactiveProperty("ManyNotifications", undefined)
-    this.defineReactiveProperty("GetBitificationsPayload", undefined)
+    super();
+    this.defineReactiveProperty("ManyNotifications", undefined);
+    this.defineReactiveProperty("GetBitificationsPayload", undefined);
   }
 
   // Base Variables
-  public UnreadNotification = 0
-  public ManyNotifications: NotificationPaginator | undefined
-  public GetBitificationsPayload: QueryGetNotificationsArgs | undefined
+  public UnreadNotification = 0;
+  public ManyNotifications: NotificationPaginator | undefined;
+  public GetBitificationsPayload: QueryGetNotificationsArgs | undefined;
 
   // Mutation Variables
   public PushNotificationDeviceForm:
     | MutationSavePushNotificationTokenArgs
-    | undefined
+    | undefined;
 
   public reset = () => {
-    this.ManyNotifications = undefined
-  }
+    this.ManyNotifications = undefined;
+  };
 
   public GetNotifications = async (
     page: number,
@@ -44,100 +44,113 @@ export default class NotificationModule extends Common {
       .then((response) => {
         if (response) {
           if (!isLoadMore) {
-            this.ManyNotifications = response.data?.GetNotifications
+            this.ManyNotifications = response.data?.GetNotifications;
           } else {
             const existingData: NotificationPaginator = JSON.parse(
               JSON.stringify(this.ManyNotifications)
-            )
+            );
             existingData.data = existingData.data.concat(
               response.data?.GetNotifications?.data || []
-            )
+            );
             existingData.paginatorInfo =
-              response.data.GetNotifications?.paginatorInfo
+              response.data.GetNotifications?.paginatorInfo;
 
-            this.ManyNotifications = existingData
+            this.ManyNotifications = existingData;
           }
 
-          return this.ManyNotifications
+          return this.ManyNotifications;
         }
-      })
-  }
+      });
+  };
 
   public SavePushNotificationDevice = () => {
     if (this.PushNotificationDeviceForm) {
       return $api.notification
         .SavePushNotificationToken(this.PushNotificationDeviceForm)
         .then(() => {
-          return true
+          console.log("Push notification token saved");
+          return true;
         })
+        .catch((error: any) => {
+          console.log("Error saving push notification token", error);
+          throw error;
+        });
     }
-  }
+  };
 
   public MarkNotificationsAsRead = async (notificationIds: number[]) => {
     return $api.notification
       .MarkNotificationsAsRead(notificationIds)
       .then(() => {
-        this.GetNotifications(1, 10)
-      })
-  }
+        this.GetNotifications(1, 10);
+      });
+  };
 
   public addListeners = async () => {
-    await PushNotifications.removeAllListeners()
+    await PushNotifications.removeAllListeners();
 
     await PushNotifications.addListener("registration", (token) => {
+      let deviceType = "android";
+
+      if (isPlatform("ios")) {
+        deviceType = "ios";
+      }
+
       this.PushNotificationDeviceForm = {
         device_token: token.value,
-        device_type: getPlatforms()[0],
-      }
-      this.SavePushNotificationDevice()
-    })
+        device_type: deviceType,
+      };
+
+      this.SavePushNotificationDevice();
+    });
 
     await PushNotifications.addListener("registrationError", (_err) => {
       // handle error here
-    })
+    });
 
     await PushNotifications.addListener("pushNotificationReceived", () => {
       // handle push notification
-      this.UnreadNotification++
+      this.UnreadNotification++;
       // Logic.User.SaveUserActivity("Push Notification Received", "action");
-    })
+    });
 
     await PushNotifications.addListener(
       "pushNotificationActionPerformed",
       (notification) => {
         // handle notification click
 
-        const uuid = notification.notification.data.uuid
+        const uuid = notification.notification.data.uuid;
 
-        this.MarkNotificationsAsRead([uuid])
+        this.MarkNotificationsAsRead([uuid]);
 
         // Logic.User.SaveUserActivity("Push Notification Clicked", "action");
       }
-    )
-  }
+    );
+  };
 
   public registerNotifications = async () => {
     // set unread notification container
 
     if (localStorage.getItem("unread_notification") == null) {
-      localStorage.setItem("unread_notification", "0")
+      localStorage.setItem("unread_notification", "0");
     }
 
-    let permStatus = await PushNotifications.checkPermissions()
+    let permStatus = await PushNotifications.checkPermissions();
 
     if (permStatus.receive === "prompt") {
-      permStatus = await PushNotifications.requestPermissions()
+      permStatus = await PushNotifications.requestPermissions();
     }
 
     if (permStatus.receive !== "granted") {
-      console.error("User denied permissions!")
+      console.error("User denied permissions!");
     }
 
-    await PushNotifications.register()
-  }
+    await PushNotifications.register();
+  };
 
   public getDeliveredNotifications = async () => {
-    const notificationList = await PushNotifications.getDeliveredNotifications()
-    console.log("delivered notifications", notificationList)
-  }
+    const notificationList =
+      await PushNotifications.getDeliveredNotifications();
+    console.log("delivered notifications", notificationList);
+  };
 }
