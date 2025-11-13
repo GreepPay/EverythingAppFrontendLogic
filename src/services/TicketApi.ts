@@ -4,11 +4,25 @@ import { Ticket, TicketPaginator } from "../gql/graphql"
 
 export default class TicketApi extends BaseApiService {
   // #region QUERIES
-  public GetMyTickets = (page: number, first: number) => {
+  public GetMyTickets = (
+    page: number,
+    first: number,
+    orderType = "CREATED_AT",
+    order: "ASC" | "DESC" = "DESC",
+    whereQuery = ""
+  ) => {
     const requestData = `
     query GetMyTickets($first: Int!, $page: Int!) {
-      GetMyTickets(first: $first, page: $page) {
-        paginatorInfo {
+      GetMyTickets(
+        first: $first, 
+        page: $page, 
+        orderBy: {
+          column: ${orderType ? orderType : "CREATED_AT"},
+          order: ${order}
+        }
+        ${whereQuery ? `where: ${whereQuery}` : ""}
+      ) {
+       paginatorInfo {
           firstItem
           lastItem
           currentPage
