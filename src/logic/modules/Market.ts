@@ -1,4 +1,8 @@
-import { BusinessPaginator, Business as GqlBusiness } from "../../gql/graphql"
+import {
+  BusinessPaginator,
+  DeliveryAddressPaginator,
+  Business as GqlBusiness,
+} from "../../gql/graphql"
 import { $api } from "../../services"
 import { CombinedError } from "@urql/core"
 import Common from "./Common"
@@ -37,10 +41,31 @@ export default class MarketModule extends Common {
   }
 
   //
-  public GetMarketShops = async (page: number, count: number) => {
+  public GetMarketShops = async (
+    page: number,
+    count: number,
+    isLoadMore = false
+  ) => {
     return $api.market.GetMarketShops(page, count).then((response) => {
-      this.ManyMarketShops = response.data?.MarketShops
-      return this.ManyMarketShops
+      if (response) {
+        if (!isLoadMore) {
+          this.ManyMarketShops = response.data?.MarketShops
+        } else {
+          const existingData: BusinessPaginator = JSON.parse(
+            JSON.stringify(this.ManyMarketShops)
+          )
+          existingData.data = existingData.data.concat(
+            response.data?.MarketShops?.data || []
+          )
+          existingData.paginatorInfo = response.data.MarketShops?.paginatorInfo
+
+          this.ManyMarketShops = existingData
+        }
+
+        return this.ManyMarketShops
+      }
+      // this.ManyMarketShops = response.data?.MarketShops
+      // return this.ManyMarketShops
     })
   }
 

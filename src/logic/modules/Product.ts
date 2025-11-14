@@ -226,16 +226,7 @@ export default class Product extends Common {
           } else {
             this.ManyMarketProducts = existingData
             return this.ManyMarketProducts
-          }
-          // const MarketProducts: ProductPaginator | undefined =
-          //   forBusiness ? this.BusinessMarketProducts : this.ManyMarketProducts
-
-          // // const existingData: ProductPaginator = JSON.parse(
-          // //   JSON.stringify(MarketProducts)
-          // // )
-          // existingData.data = existingData.data.concat(
-          //   response.data?.GetMarketProducts?.data || []
-          // )
+          } 
         }
       })
   }
