@@ -22,6 +22,7 @@ import { Haptics, ImpactStyle } from "@capacitor/haptics";
 import { Observable } from "./Observable";
 import Echo from "laravel-echo";
 import Pusher from "pusher-js";
+import { FileSharer } from "@byteowls/capacitor-filesharer";
 
 // @ts-ignore
 window.Pusher = Pusher;
@@ -91,6 +92,24 @@ export default class Common {
 
   public SetApiUrl = (apiUrl: string) => {
     this.apiUrl = apiUrl;
+  };
+
+  public shareFile = (
+    fileName: string,
+    base64Data: string,
+    contentType: string
+  ) => {
+    return FileSharer.share({
+      filename: fileName,
+      contentType,
+      base64Data,
+    })
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.error("File sharing failed", error.message);
+      });
   };
 
   public GoToRoute = (path: string, forceReload = false) => {
