@@ -1160,7 +1160,8 @@ export default class WalletsApi extends BaseApiService {
   public GetRecommendedExchangeAds = (
     page: number,
     count: number,
-    ad_type = "buy"
+    ad_type = "buy",
+    currency = ""
   ) => {
     const requestData = `
       query GetRecommendedExchangeAds($page: Int!, $count: Int!) {
@@ -1168,6 +1169,11 @@ export default class WalletsApi extends BaseApiService {
           column: AD_TYPE,
           operator: EQ,
           value: "${ad_type}",
+          AND: {
+             column: FROM_CURRENCY,
+             operator: EQ,
+             value: "${currency}"
+          }
         }) {
           paginatorInfo {
             total
@@ -1213,10 +1219,20 @@ export default class WalletsApi extends BaseApiService {
     return response;
   };
 
-  public GetP2pPaymentMethods = (page: number, count: number) => {
+  public GetP2pPaymentMethods = (
+    page: number,
+    count: number,
+    orderType = "CREATED_AT",
+    order: "ASC" | "DESC" = "DESC",
+    whereQuery = ""
+  ) => {
     const requestData = `
       query GetMyP2pPaymentMethods($page: Int!, $count: Int!) {
-        GetMyP2pPaymentMethods(first: $count, page: $page) {
+        GetMyP2pPaymentMethods(first: $count, page: $page,   orderBy: {
+            column: ${orderType ? orderType : "CREATED_AT"},
+            order: ${order}
+          }
+          ${whereQuery ? `where: ${whereQuery}` : ""}) {
           paginatorInfo {
             total
             perPage
@@ -1247,6 +1263,34 @@ export default class WalletsApi extends BaseApiService {
         GetMyP2pPaymentMethods: P2pPaymentMethodPaginator;
       }>
     > = this.query(requestData, { page, count });
+
+    return response;
+  };
+
+  public GetP2pPaymentMethod = (uuid: string) => {
+    const requestData = `
+      query GetP2pPaymentMethod($uuid: String!) {
+        GetP2pPaymentMethod(uuid: $uuid) {
+          uuid
+          user_id
+          bank_name
+          account_number
+          account_name
+          currency
+          meta_data
+          created_at
+          updated_at
+        }
+      }
+    `;
+
+    const response: Promise<
+      OperationResult<{
+        GetP2pPaymentMethod: P2pPaymentMethod;
+      }>
+    > = this.query(requestData, {
+      uuid,
+    });
 
     return response;
   };
