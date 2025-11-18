@@ -13,6 +13,8 @@ export type Scalars = {
   Float: number;
   /** A datetime string with format `Y-m-d H:i:s`, e.g. `2018-05-23 13:43:32`. */
   DateTime: any;
+  /** Arbitrary data encoded in JavaScript Object Notation. See https://www.json.org. */
+  JSON: any;
   /**
    * Loose type that allows any value. Be careful when passing in large `Int` or `Float` literals,
    * as they may not be parsed correctly on the server side. Use `String` literals if you are
@@ -176,6 +178,51 @@ export type BusinessPaginator = {
   paginatorInfo: PaginatorInfo;
 };
 
+/**
+ * Business schedule for each day of the week.
+ * Day mapping: 0 = Monday, 1 = Tuesday, ..., 6 = Sunday
+ */
+export type BusinessSchedule = {
+  __typename?: 'BusinessSchedule';
+  /** Break end time in HH:mm format */
+  break_end_time?: Maybe<Scalars['String']>;
+  /** Break start time in HH:mm format */
+  break_start_time?: Maybe<Scalars['String']>;
+  /** Associated business */
+  business: Business;
+  /** Business ID this schedule belongs to */
+  business_id: Scalars['Int'];
+  /** Closing time in HH:mm format */
+  close_time?: Maybe<Scalars['String']>;
+  /** When the schedule was created */
+  created_at: Scalars['DateTime'];
+  /** Day of week (0-6: Monday to Sunday) */
+  day_of_week: Scalars['Int'];
+  /** Unique identifier */
+  id: Scalars['ID'];
+  /** Whether the business is open on this day */
+  is_open: Scalars['Boolean'];
+  /** Maximum orders per hour (optional capacity limit) */
+  max_orders_per_hour?: Maybe<Scalars['Int']>;
+  /** Additional metadata */
+  metadata?: Maybe<Scalars['JSON']>;
+  /** Opening time in HH:mm format */
+  open_time?: Maybe<Scalars['String']>;
+  /** When the schedule was last updated */
+  updated_at: Scalars['DateTime'];
+  /** Unique UUID */
+  uuid: Scalars['String'];
+};
+
+/** A paginated list of BusinessSchedule items. */
+export type BusinessSchedulePaginator = {
+  __typename?: 'BusinessSchedulePaginator';
+  /** A list of BusinessSchedule items. */
+  data: Array<BusinessSchedule>;
+  /** Pagination information about the list of items. */
+  paginatorInfo: PaginatorInfo;
+};
+
 /** A category */
 export type Category = {
   __typename?: 'Category';
@@ -202,6 +249,36 @@ export type CategoryPaginator = {
   data: Array<Category>;
   /** Pagination information about the list of items. */
   paginatorInfo: PaginatorInfo;
+};
+
+/** Commerce item type */
+export type CommerceItem = {
+  __typename?: 'CommerceItem';
+  /** Category */
+  category?: Maybe<Scalars['String']>;
+  /** Currency */
+  currency: Scalars['String'];
+  /** Description */
+  description?: Maybe<Scalars['String']>;
+  /** Image URL */
+  image?: Maybe<Scalars['String']>;
+  /** Item type */
+  itemType: Scalars['String'];
+  /** Title or Business name */
+  name: Scalars['String'];
+  /** Price */
+  price: Scalars['Float'];
+};
+
+/** Commerce section for homepage */
+export type CommerceSection = {
+  __typename?: 'CommerceSection';
+  /** Section data */
+  data: Array<CommerceItem>;
+  /** Section label */
+  label: Scalars['String'];
+  /** Section type (product or business) */
+  type: Scalars['String'];
 };
 
 /** A conversation */
@@ -282,6 +359,7 @@ export type CreateDeliveryOrderInput = {
 export type CreateOrderInput = {
   billingAddress?: InputMaybe<AddressInput>;
   customerId?: InputMaybe<Scalars['Int']>;
+  isPreorder?: InputMaybe<Scalars['Boolean']>;
   items?: InputMaybe<Array<InputMaybe<OrderItemInput>>>;
   paymentMethod?: InputMaybe<Scalars['String']>;
   shippingAddress?: InputMaybe<AddressInput>;
@@ -1285,6 +1363,8 @@ export type Order = {
   discountAmount?: Maybe<Scalars['Float']>;
   /** Unique ID */
   id: Scalars['Int'];
+  /** Pre Order */
+  isPreorder?: Maybe<Scalars['Boolean']>;
   /** Items */
   items?: Maybe<Scalars['String']>;
   /** Order Number */
@@ -1711,6 +1791,10 @@ export type Product = {
   metaTitle?: Maybe<Scalars['String']>;
   /** Product Name */
   name: Scalars['String'];
+  /** National Cuisine */
+  national_cuisine?: Maybe<Scalars['Boolean']>;
+  /** National Cuisine Country */
+  national_cuisine_country?: Maybe<Scalars['String']>;
   /** Price */
   price: Scalars['Float'];
   /** Renewal */
@@ -1723,6 +1807,8 @@ export type Product = {
   status: Scalars['String'];
   /** Stock Threshold */
   stockThreshold?: Maybe<Scalars['Int']>;
+  /** Tags */
+  tags?: Maybe<Array<Maybe<Scalars['String']>>>;
   /** Tax Code */
   taxCode?: Maybe<Scalars['String']>;
   /** Trial Period Days */
@@ -1809,6 +1895,8 @@ export type Profile = {
 
 export type Query = {
   __typename?: 'Query';
+  /** Get commerce sections for homepage (limited results, no pagination) */
+  CommerceSections: Array<CommerceSection>;
   /** Get featured events */
   FeaturedEvents: ProductPaginator;
   /** Get featured products */
@@ -1825,6 +1913,10 @@ export type Query = {
   GetBanksByCountry: Array<FlutterwaveBank>;
   /** Get a paginated list of beneficiaries for the authenticated user */
   GetBeneficiaries: BeneficiaryPaginator;
+  /** Get a single business schedule by UUID */
+  GetBusinessSchedule?: Maybe<BusinessSchedule>;
+  /** Get business schedule for a business */
+  GetBusinessSchedules: BusinessSchedulePaginator;
   GetCategories: CategoryPaginator;
   /** Get a conversation */
   GetConversation?: Maybe<Conversation>;
@@ -1917,6 +2009,11 @@ export type Query = {
 };
 
 
+export type QueryCommerceSectionsArgs = {
+  limit?: InputMaybe<Scalars['Int']>;
+};
+
+
 export type QueryFeaturedEventsArgs = {
   first: Scalars['Int'];
   orderBy?: InputMaybe<Array<QueryFeaturedEventsOrderByOrderByClause>>;
@@ -1962,6 +2059,20 @@ export type QueryGetBanksByCountryArgs = {
 export type QueryGetBeneficiariesArgs = {
   first: Scalars['Int'];
   page?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type QueryGetBusinessScheduleArgs = {
+  uuid: Scalars['String'];
+};
+
+
+export type QueryGetBusinessSchedulesArgs = {
+  business_uuid: Scalars['String'];
+  first: Scalars['Int'];
+  orderBy?: InputMaybe<Array<QueryGetBusinessSchedulesOrderByOrderByClause>>;
+  page?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<QueryGetBusinessSchedulesWhereWhereConditions>;
 };
 
 
@@ -2063,7 +2174,9 @@ export type QueryGetMyP2POrdersArgs = {
 
 export type QueryGetMyP2pPaymentMethodsArgs = {
   first: Scalars['Int'];
+  orderBy?: InputMaybe<Array<QueryGetMyP2pPaymentMethodsOrderByOrderByClause>>;
   page?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<QueryGetMyP2pPaymentMethodsWhereWhereConditions>;
 };
 
 
@@ -2422,6 +2535,57 @@ export type QueryFeaturedShopsWhereWhereConditionsRelation = {
   relation: Scalars['String'];
 };
 
+/** Allowed column names for Query.GetBusinessSchedules.orderBy. */
+export enum QueryGetBusinessSchedulesOrderByColumn {
+  CreatedAt = 'CREATED_AT',
+  DayOfWeek = 'DAY_OF_WEEK',
+  UpdatedAt = 'UPDATED_AT'
+}
+
+/** Order by clause for Query.GetBusinessSchedules.orderBy. */
+export type QueryGetBusinessSchedulesOrderByOrderByClause = {
+  /** The column that is used for ordering. */
+  column: QueryGetBusinessSchedulesOrderByColumn;
+  /** The direction that is used for ordering. */
+  order: SortOrder;
+};
+
+/** Allowed column names for Query.GetBusinessSchedules.where. */
+export enum QueryGetBusinessSchedulesWhereColumn {
+  CreatedAt = 'CREATED_AT',
+  DayOfWeek = 'DAY_OF_WEEK',
+  IsOpen = 'IS_OPEN',
+  UpdatedAt = 'UPDATED_AT'
+}
+
+/** Dynamic WHERE conditions for the `where` argument of the query `GetBusinessSchedules`. */
+export type QueryGetBusinessSchedulesWhereWhereConditions = {
+  /** A set of conditions that requires all conditions to match. */
+  AND?: InputMaybe<Array<QueryGetBusinessSchedulesWhereWhereConditions>>;
+  /** Check whether a relation exists. Extra conditions or a minimum amount can be applied. */
+  HAS?: InputMaybe<QueryGetBusinessSchedulesWhereWhereConditionsRelation>;
+  /** A set of conditions that requires at least one condition to match. */
+  OR?: InputMaybe<Array<QueryGetBusinessSchedulesWhereWhereConditions>>;
+  /** The column that is used for the condition. */
+  column?: InputMaybe<QueryGetBusinessSchedulesWhereColumn>;
+  /** The operator that is used for the condition. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The value that is used for the condition. */
+  value?: InputMaybe<Scalars['Mixed']>;
+};
+
+/** Dynamic HAS conditions for WHERE conditions for the `where` argument of the query `GetBusinessSchedules`. */
+export type QueryGetBusinessSchedulesWhereWhereConditionsRelation = {
+  /** The amount to test. */
+  amount?: InputMaybe<Scalars['Int']>;
+  /** Additional condition logic. */
+  condition?: InputMaybe<QueryGetBusinessSchedulesWhereWhereConditions>;
+  /** The comparison operator to test against the amount. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The relation that is checked. */
+  relation: Scalars['String'];
+};
+
 /** Allowed column names for Query.GetCategories.orderBy. */
 export enum QueryGetCategoriesOrderByColumn {
   Name = 'NAME'
@@ -2679,6 +2843,58 @@ export type QueryGetMyP2POrdersWhereWhereConditionsRelation = {
   amount?: InputMaybe<Scalars['Int']>;
   /** Additional condition logic. */
   condition?: InputMaybe<QueryGetMyP2POrdersWhereWhereConditions>;
+  /** The comparison operator to test against the amount. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The relation that is checked. */
+  relation: Scalars['String'];
+};
+
+/** Allowed column names for Query.GetMyP2pPaymentMethods.orderBy. */
+export enum QueryGetMyP2pPaymentMethodsOrderByColumn {
+  CreatedAt = 'CREATED_AT',
+  UpdatedAt = 'UPDATED_AT'
+}
+
+/** Order by clause for Query.GetMyP2pPaymentMethods.orderBy. */
+export type QueryGetMyP2pPaymentMethodsOrderByOrderByClause = {
+  /** The column that is used for ordering. */
+  column: QueryGetMyP2pPaymentMethodsOrderByColumn;
+  /** The direction that is used for ordering. */
+  order: SortOrder;
+};
+
+/** Allowed column names for Query.GetMyP2pPaymentMethods.where. */
+export enum QueryGetMyP2pPaymentMethodsWhereColumn {
+  AccountName = 'ACCOUNT_NAME',
+  AccountNumber = 'ACCOUNT_NUMBER',
+  BankName = 'BANK_NAME',
+  CreatedAt = 'CREATED_AT',
+  Currency = 'CURRENCY',
+  UpdatedAt = 'UPDATED_AT'
+}
+
+/** Dynamic WHERE conditions for the `where` argument of the query `GetMyP2pPaymentMethods`. */
+export type QueryGetMyP2pPaymentMethodsWhereWhereConditions = {
+  /** A set of conditions that requires all conditions to match. */
+  AND?: InputMaybe<Array<QueryGetMyP2pPaymentMethodsWhereWhereConditions>>;
+  /** Check whether a relation exists. Extra conditions or a minimum amount can be applied. */
+  HAS?: InputMaybe<QueryGetMyP2pPaymentMethodsWhereWhereConditionsRelation>;
+  /** A set of conditions that requires at least one condition to match. */
+  OR?: InputMaybe<Array<QueryGetMyP2pPaymentMethodsWhereWhereConditions>>;
+  /** The column that is used for the condition. */
+  column?: InputMaybe<QueryGetMyP2pPaymentMethodsWhereColumn>;
+  /** The operator that is used for the condition. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The value that is used for the condition. */
+  value?: InputMaybe<Scalars['Mixed']>;
+};
+
+/** Dynamic HAS conditions for WHERE conditions for the `where` argument of the query `GetMyP2pPaymentMethods`. */
+export type QueryGetMyP2pPaymentMethodsWhereWhereConditionsRelation = {
+  /** The amount to test. */
+  amount?: InputMaybe<Scalars['Int']>;
+  /** Additional condition logic. */
+  condition?: InputMaybe<QueryGetMyP2pPaymentMethodsWhereWhereConditions>;
   /** The comparison operator to test against the amount. */
   operator?: InputMaybe<SqlOperator>;
   /** The relation that is checked. */

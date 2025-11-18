@@ -1,5 +1,5 @@
-import { BaseApiService } from "./common/BaseService";
-import { OperationResult } from "urql";
+import { BaseApiService } from "./common/BaseService"
+import { OperationResult } from "urql"
 import {
   MutationUpdateProfileArgs,
   User,
@@ -7,7 +7,10 @@ import {
   MutationVerifyUserIdentityArgs,
   QuerySearchBusinessesArgs,
   Business,
-} from "../gql/graphql";
+  QueryGetBusinessSchedulesArgs,
+  BusinessSchedulePaginator,
+  BusinessSchedule,
+} from "../gql/graphql"
 
 export default class UserApi extends BaseApiService {
   // #region QUERIES
@@ -37,16 +40,16 @@ export default class UserApi extends BaseApiService {
           }
         }
       }
-    `;
+    `
 
     const response: Promise<
       OperationResult<{
-        SearchUsers: User[];
+        SearchUsers: User[]
       }>
-    > = this.query(requestData, data);
+    > = this.query(requestData, data)
 
-    return response;
-  };
+    return response
+  }
 
   public SearchBusiness = (data: QuerySearchBusinessesArgs) => {
     const requestData = `
@@ -64,16 +67,16 @@ export default class UserApi extends BaseApiService {
            }
         }
       }
-    `;
+    `
 
     const response: Promise<
       OperationResult<{
-        SearchBusinesses: Business[];
+        SearchBusinesses: Business[]
       }>
-    > = this.query(requestData, data);
+    > = this.query(requestData, data)
 
-    return response;
-  };
+    return response
+  }
 
   public GetSingleUser = (uuid: string) => {
     const requestData = `
@@ -97,16 +100,16 @@ export default class UserApi extends BaseApiService {
           }
         }
       }
-    `;
+    `
 
     const response: Promise<
       OperationResult<{
-        GetSingleUser: User;
+        GetSingleUser: User
       }>
-    > = this.query(requestData, { uuid });
+    > = this.query(requestData, { uuid })
 
-    return response;
-  };
+    return response
+  }
 
   public SearchBusinesses = (data: QuerySearchBusinessesArgs) => {
     const requestData = `
@@ -124,16 +127,88 @@ export default class UserApi extends BaseApiService {
             }
         }
       }
-    `;
+    `
 
     const response: Promise<
       OperationResult<{
-        SearchBusinesses: Business[];
+        SearchBusinesses: Business[]
       }>
-    > = this.query(requestData, data);
+    > = this.query(requestData, data)
 
-    return response;
-  };
+    return response
+  }
+
+  public GetBusinessSchedules = (page: number, first: number) => {
+    const requestData = `
+      query GetBusinessSchedules($first: Int!, $page: Int) {
+        GetBusinessSchedules(first: $first, page: $page) {
+          data {
+            id
+            uuid
+            business_id
+            day_of_week
+            is_open
+            open_time
+            close_time
+            break_start_time
+            break_end_time
+            max_orders_per_hour
+            metadata
+            created_at
+            updated_at
+          }
+          paginatorInfo {
+            count
+            currentPage
+            firstItem
+            hasMorePages
+            lastItem
+            lastPage
+            perPage
+            total
+          }
+        }
+      }
+    `
+
+    const response: Promise<
+      OperationResult<{
+        GetBusinessSchedules: BusinessSchedulePaginator
+      }>
+    > = this.query(requestData, { page, first })
+
+    return response
+  }
+
+  public GetBusinessSchedule = (uuid: string) => {
+    const requestData = `
+      query GetBusinessSchedule($uuid: String!) {
+        GetBusinessSchedule(uuid: $uuid) {
+              id
+            uuid
+            business_id
+            day_of_week
+            is_open
+            open_time
+            close_time
+            break_start_time
+            break_end_time
+            max_orders_per_hour
+            metadata
+            created_at
+            updated_at
+        }
+      }
+    `
+
+    const response: Promise<
+      OperationResult<{
+        GetBusinessSchedule: BusinessSchedule
+      }>
+    > = this.query(requestData, { uuid })
+
+    return response
+  }
 
   // #endregion QUERIES
 
@@ -161,13 +236,13 @@ export default class UserApi extends BaseApiService {
         auth_passcode: $auth_passcode
       )
     }
-  `;
+  `
 
     const response: Promise<OperationResult<{ UpdateProfile: boolean }>> =
-      this.mutation(requestData, data);
+      this.mutation(requestData, data)
 
-    return response;
-  };
+    return response
+  }
 
   public VerifyUserIdentity = (data: MutationVerifyUserIdentityArgs) => {
     const requestData = `
@@ -184,13 +259,13 @@ export default class UserApi extends BaseApiService {
         id_country: $id_country
       )
     }
-  `;
+  `
 
     const response: Promise<OperationResult<{ VerifyUserIdentity: boolean }>> =
-      this.mutation(requestData, data);
+      this.mutation(requestData, data)
 
-    return response;
-  };
+    return response
+  }
 
   public RetriggerVerification = () => {
     const requestData = `
@@ -207,41 +282,41 @@ export default class UserApi extends BaseApiService {
           }
         }
       }
-    `;
+    `
 
     const response: Promise<
       OperationResult<{
         RetriggerVerification: {
-          auth_user_id: number;
-          verification_id: number;
-          previous_status: string;
-          current_status: string;
-          status_changed: boolean;
+          auth_user_id: number
+          verification_id: number
+          previous_status: string
+          current_status: string
+          status_changed: boolean
           smile_id_result: {
-            status: string;
-            description: string;
-          };
-        };
+            status: string
+            description: string
+          }
+        }
       }>
-    > = this.mutation(requestData, {});
+    > = this.mutation(requestData, {})
 
-    return response;
-  };
+    return response
+  }
 
   public UploadFile = (file: File) => {
     const requestData = `
       mutation UploadFile($file: Upload!) {
         UploadFile(file: $file)
       }
-    `;
+    `
 
     const response: Promise<
       OperationResult<{
-        UploadFile: string;
+        UploadFile: string
       }>
-    > = this.mutation(requestData, { file });
+    > = this.mutation(requestData, { file })
 
-    return response;
-  };
+    return response
+  }
   // #endregion MUTATIONS
 }
