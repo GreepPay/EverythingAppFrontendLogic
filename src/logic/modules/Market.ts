@@ -59,9 +59,8 @@ export default class MarketModule extends Common {
       whereCategoryQuery = `{
         column: CATEGORY,
         operator: EQ,
-        value: "electronics"
+        value: "${category}"
         }`
-      // value: "${category}"
     } else {
       whereCategoryQuery = whereQuery
     }
