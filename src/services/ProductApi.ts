@@ -76,6 +76,8 @@ export default class ProductApi extends BaseApiService {
             trialPeriodDays
             gracePeriod
             renewal
+            national_cuisine
+            national_cuisine_country
             features
             eventType
             eventStartDate
@@ -147,6 +149,8 @@ export default class ProductApi extends BaseApiService {
           trialPeriodDays
           gracePeriod
           renewal
+          national_cuisine
+          national_cuisine_country
           features
           eventType
           eventStartDate
@@ -216,6 +220,8 @@ export default class ProductApi extends BaseApiService {
           trialPeriodDays
           gracePeriod
           renewal
+          national_cuisine
+          national_cuisine_country
           features
           eventType
           eventStartDate
@@ -356,6 +362,8 @@ export default class ProductApi extends BaseApiService {
           trialPeriodDays
           gracePeriod
           renewal
+          national_cuisine
+          national_cuisine_country
           features
           eventType
           eventStartDate
@@ -447,6 +455,8 @@ export default class ProductApi extends BaseApiService {
           trialPeriodDays
           gracePeriod
           renewal
+          national_cuisine
+          national_cuisine_country
           features
           eventType
           eventStartDate
@@ -501,18 +511,16 @@ export default class ProductApi extends BaseApiService {
           total
         }
         data {
-          id
           uuid
+          id
           businessId
           business {
             id
             uuid
-            business_name
+            business_name 
             logo
             banner
             description
-            default_currency
-            website
           }
           sku
           name
@@ -537,6 +545,8 @@ export default class ProductApi extends BaseApiService {
           trialPeriodDays
           gracePeriod
           renewal
+          national_cuisine
+          national_cuisine_country
           features
           eventType
           eventStartDate

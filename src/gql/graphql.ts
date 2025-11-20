@@ -3668,6 +3668,10 @@ export type Transaction = {
   extra_data?: Maybe<Scalars['String']>;
   /** Gateway (default: 'greep-wallet') */
   gateway: Scalars['String'];
+  /** Local Amount (in local currency) */
+  local_amount?: Maybe<Scalars['Float']>;
+  /** Local Currency Code */
+  local_currency?: Maybe<Scalars['String']>;
   /** The associated point transaction */
   point_transaction?: Maybe<PointTransaction>;
   /** Transaction Reference */

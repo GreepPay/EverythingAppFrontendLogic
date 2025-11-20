@@ -209,15 +209,24 @@ export default class Product extends Common {
               this.BusinessMarketProducts
             : this.ManyMarketProducts
         } else {
-          const MarketProducts: ProductPaginator | undefined =
-            forBusiness ? this.BusinessMarketProducts : this.ManyMarketProducts
+          const existingData: ProductPaginator =
+            forBusiness ?
+              JSON.parse(JSON.stringify(this.BusinessMarketProducts))
+            : JSON.parse(JSON.stringify(this.ManyMarketProducts))
 
-          const existingData: ProductPaginator = JSON.parse(
-            JSON.stringify(MarketProducts)
+          existingData.data = existingData.data.concat(
+            response.data?.MarketProducts?.data || []
           )
-            existingData.data = existingData.data.concat(
-              response.data?.GetMarketProducts?.data || []
-            )
+          existingData.paginatorInfo =
+            response.data.MarketProducts?.paginatorInfo
+
+          if (forBusiness) {
+            this.BusinessMarketProducts = existingData
+            return this.BusinessMarketProducts
+          } else {
+            this.ManyMarketProducts = existingData
+            return this.ManyMarketProducts
+          } 
         }
       })
   }

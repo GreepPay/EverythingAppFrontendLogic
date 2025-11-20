@@ -27,10 +27,13 @@ export default class TicketModule extends Common {
   public GetMyTickets = async (
     page: number,
     count: number,
+    orderType = "CREATED_AT",
+    order: "DESC" | "ASC" = "DESC",
+    whereQuery = "",
     isLoadMore = false
   ): Promise<TicketPaginator | undefined> => {
     return $api.ticket
-      .GetMyTickets(page, count)
+      .GetMyTickets(page, count, orderType, order, whereQuery)
       .then((response) => {
         if (response) {
           if (!isLoadMore) {
@@ -48,7 +51,7 @@ export default class TicketModule extends Common {
             this.TicketsPaginator = existingData
           }
 
-          return this.TicketsPaginator 
+          return this.TicketsPaginator
         }
       })
       .catch((error: CombinedError) => {

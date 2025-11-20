@@ -1,4 +1,9 @@
-import { BusinessPaginator, Business as GqlBusiness } from "../../gql/graphql"
+import {
+  BusinessPaginator,
+  DeliveryAddressPaginator,
+  Business as GqlBusiness,
+  CommerceSection,
+} from "../../gql/graphql"
 import { $api } from "../../services"
 import { CombinedError } from "@urql/core"
 import Common from "./Common"
@@ -11,6 +16,7 @@ export default class MarketModule extends Common {
     this.defineReactiveProperty("ManyMarketShops", undefined)
     this.defineReactiveProperty("BusinessesPaginator", undefined)
     this.defineReactiveProperty("SingleBusiness", undefined)
+    this.defineReactiveProperty("CommerceSections", undefined)
   }
 
   // Base Variable
@@ -18,6 +24,7 @@ export default class MarketModule extends Common {
   public ManyFeaturedShops: BusinessPaginator | undefined
   public BusinessesPaginator: BusinessPaginator | undefined
   public SingleBusiness: GqlBusiness | undefined
+  public CommerceSections: CommerceSection | undefined
 
   // Get paginated markets
   public GetMarkets = async (
@@ -37,11 +44,49 @@ export default class MarketModule extends Common {
   }
 
   //
-  public GetMarketShops = async (page: number, count: number) => {
-    return $api.market.GetMarketShops(page, count).then((response) => {
-      this.ManyMarketShops = response.data?.MarketShops
-      return this.ManyMarketShops
-    })
+  public GetMarketShops = async (
+    page: number,
+    count: number,
+    orderType = "CREATED_AT",
+    order: "ASC" | "DESC" = "DESC",
+    whereQuery = "",
+    isLoadMore = false,
+    category: string
+  ) => {
+    console.log("category  adwaer", category)
+    let whereCategoryQuery = ""
+    // if (category && category.trim() !== "") {
+    //   whereCategoryQuery = `{
+    //     column: CATEGORY,
+    //     operator: EQ,
+    //     value: "${category}"
+    //     }`
+    // } else {
+    //   whereCategoryQuery = whereQuery
+    // }
+
+    return $api.market
+      .GetMarketShops(page, count, orderType, order, whereCategoryQuery)
+      .then((response) => {
+        if (response) {
+          if (!isLoadMore) {
+            this.ManyMarketShops = response.data?.MarketShops
+          } else {
+            const existingData: BusinessPaginator = JSON.parse(
+              JSON.stringify(this.ManyMarketShops)
+            )
+            existingData.data = existingData.data.concat(
+              response.data?.MarketShops?.data || []
+            )
+            existingData.paginatorInfo =
+              response.data.MarketShops?.paginatorInfo
+
+            this.ManyMarketShops = existingData
+          }
+
+          return this.ManyMarketShops
+        }
+      })
   }
 
   public GetFeaturedShops = async (page: number, count: number) => {
@@ -55,6 +100,13 @@ export default class MarketModule extends Common {
     return $api.market.GetSingleBusiness(uuid).then((response) => {
       this.SingleBusiness = response.data?.GetSingleBusiness
       return response.data?.GetSingleBusiness
+    })
+  }
+
+  public GetCommerceSections = async () => {
+    return $api.market.GetCommerceSections().then((response) => {
+      this.CommerceSections = response.data?.CommerceSections
+      return response.data?.CommerceSections
     })
   }
   //
