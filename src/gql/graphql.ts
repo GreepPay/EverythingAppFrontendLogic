@@ -169,13 +169,6 @@ export type Business = {
   website?: Maybe<Scalars['String']>;
 };
 
-/** Paginated business data */
-export type BusinessPaginated = {
-  __typename?: 'BusinessPaginated';
-  data: Array<Business>;
-  paginatorInfo: PaginatorInfo;
-};
-
 /** A paginated list of Business items. */
 export type BusinessPaginator = {
   __typename?: 'BusinessPaginator';
@@ -183,12 +176,6 @@ export type BusinessPaginator = {
   data: Array<Business>;
   /** Pagination information about the list of items. */
   paginatorInfo: PaginatorInfo;
-};
-
-/** Randomized business data */
-export type BusinessRandomized = {
-  __typename?: 'BusinessRandomized';
-  data: Array<Business>;
 };
 
 /**
@@ -264,19 +251,20 @@ export type CategoryPaginator = {
   paginatorInfo: PaginatorInfo;
 };
 
-/** Union type for commerce data */
-export type CommerceData = BusinessPaginated | BusinessRandomized | ProductPaginated | ProductRandomized;
-
 /** Commerce section for homepage */
 export type CommerceSection = {
   __typename?: 'CommerceSection';
-  /** Section data */
-  data: CommerceData;
+  /** Section Business */
+  businesses?: Maybe<Array<Business>>;
+  /** Categories used for this section */
+  categories: Array<Scalars['String']>;
   /** Section label */
   label: Scalars['String'];
+  /** Section Product */
+  products?: Maybe<Array<Product>>;
   /** Section type (product or business) */
   type: Scalars['String'];
-  /** Section variant (random or paginated) */
+  /** Section variant (only random since we don't need paginated) */
   variant: Scalars['String'];
 };
 
@@ -291,6 +279,8 @@ export type Conversation = {
   exchangeAd?: Maybe<ExchangeAd>;
   /** Unique ID */
   id: Scalars['Int'];
+  /** Market Order */
+  market_order?: Maybe<Order>;
   /** Messages */
   messages: Array<Message>;
   /** The metadata */
@@ -358,6 +348,8 @@ export type CreateDeliveryOrderInput = {
 export type CreateOrderInput = {
   billingAddress?: InputMaybe<AddressInput>;
   customerId?: InputMaybe<Scalars['Int']>;
+  deliveryAddressId?: InputMaybe<Scalars['Int']>;
+  deliveryMethod?: InputMaybe<Scalars['String']>;
   isPreorder?: InputMaybe<Scalars['Boolean']>;
   items?: InputMaybe<Array<InputMaybe<OrderItemInput>>>;
   paymentMethod?: InputMaybe<Scalars['String']>;
@@ -1350,6 +1342,8 @@ export type Order = {
   appliedDiscounts?: Maybe<Scalars['String']>;
   /** Billing Address */
   billingAddress?: Maybe<Scalars['String']>;
+  /** Conversation */
+  conversation?: Maybe<Conversation>;
   /** Order Created At */
   createdAt: Scalars['String'];
   /** Currency */
@@ -1358,6 +1352,10 @@ export type Order = {
   customerId?: Maybe<Scalars['Int']>;
   /** Deliveries */
   deliveries: Array<Delivery>;
+  /** Delivery Address */
+  deliveryAddress?: Maybe<DeliveryAddress>;
+  /** Delivery Method */
+  deliverymethod?: Maybe<Scalars['String']>;
   /** Discount Amount */
   discountAmount?: Maybe<Scalars['Float']>;
   /** Unique ID */
@@ -1833,13 +1831,6 @@ export type ProductImage = {
   url: Scalars['String'];
 };
 
-/** Paginated product data */
-export type ProductPaginated = {
-  __typename?: 'ProductPaginated';
-  data: Array<Product>;
-  paginatorInfo: PaginatorInfo;
-};
-
 /** A paginated list of Product items. */
 export type ProductPaginator = {
   __typename?: 'ProductPaginator';
@@ -1847,12 +1838,6 @@ export type ProductPaginator = {
   data: Array<Product>;
   /** Pagination information about the list of items. */
   paginatorInfo: PaginatorInfo;
-};
-
-/** Randomized product data */
-export type ProductRandomized = {
-  __typename?: 'ProductRandomized';
-  data: Array<Product>;
 };
 
 export enum ProductStatus {
@@ -1925,6 +1910,8 @@ export type Query = {
   GetBanksByCountry: Array<FlutterwaveBank>;
   /** Get a paginated list of beneficiaries for the authenticated user */
   GetBeneficiaries: BeneficiaryPaginator;
+  /** Get Business Delivery Addresses */
+  GetBusinessDeliveryAddresses: Array<DeliveryAddress>;
   /** Get a single business schedule by UUID */
   GetBusinessSchedule?: Maybe<BusinessSchedule>;
   /** Get business schedule for a business */
@@ -2074,13 +2061,19 @@ export type QueryGetBeneficiariesArgs = {
 };
 
 
+export type QueryGetBusinessDeliveryAddressesArgs = {
+  business_id: Scalars['String'];
+};
+
+
 export type QueryGetBusinessScheduleArgs = {
   uuid: Scalars['String'];
 };
 
 
 export type QueryGetBusinessSchedulesArgs = {
-  business_uuid: Scalars['String'];
+  business_id?: InputMaybe<Scalars['ID']>;
+  business_uuid?: InputMaybe<Scalars['String']>;
   first: Scalars['Int'];
   orderBy?: InputMaybe<Array<QueryGetBusinessSchedulesOrderByOrderByClause>>;
   page?: InputMaybe<Scalars['Int']>;
@@ -3675,6 +3668,10 @@ export type Transaction = {
   extra_data?: Maybe<Scalars['String']>;
   /** Gateway (default: 'greep-wallet') */
   gateway: Scalars['String'];
+  /** Local Amount (in local currency) */
+  local_amount?: Maybe<Scalars['Float']>;
+  /** Local Currency Code */
+  local_currency?: Maybe<Scalars['String']>;
   /** The associated point transaction */
   point_transaction?: Maybe<PointTransaction>;
   /** Transaction Reference */

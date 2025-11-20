@@ -32,6 +32,7 @@ export default class OrderApi extends BaseApiService {
     mutation CreateOrder($input: CreateOrderInput!) {
       CreateOrder(input: $input) { 
         id
+        uuid
         status
         paymentStatus 
       }
@@ -139,6 +140,8 @@ export default class OrderApi extends BaseApiService {
           discountAmount
           totalAmount
           currency 
+          createdAt
+          updatedAt
           sales {
             id
             uuid
@@ -195,6 +198,21 @@ export default class OrderApi extends BaseApiService {
           uuid
           username
         } 
+        deliveryAddress {
+          name
+          delivery_location_id
+          google_map_link
+          description
+        }
+        conversation {
+          uuid
+          name
+          entity_type
+          participants {
+            id
+          }
+        }
+        deliverymethod
         items
         subtotalAmount
         taxAmount

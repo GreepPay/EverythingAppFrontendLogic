@@ -7,6 +7,9 @@ import {
   MutationVerifyUserIdentityArgs,
   QuerySearchBusinessesArgs,
   Business,
+  QueryGetBusinessSchedulesArgs,
+  BusinessSchedulePaginator,
+  BusinessSchedule,
 } from "../gql/graphql";
 
 export default class UserApi extends BaseApiService {
@@ -131,6 +134,92 @@ export default class UserApi extends BaseApiService {
         SearchBusinesses: Business[];
       }>
     > = this.query(requestData, data);
+
+    return response;
+  };
+
+  public GetBusinessSchedules = (
+    page: number,
+    first: number,
+    orderType = "CREATED_AT",
+    order: "ASC" | "DESC",
+    whereQuery = "",
+    business_uuid?: string,
+    business_id?: string
+  ) => {
+    const requestData = `
+      query GetBusinessSchedules($first: Int!, $page: Int, $business_uuid: String, $business_id: ID) {
+        GetBusinessSchedules(first: $first, page: $page, business_uuid: $business_uuid, business_id: $business_id,
+        orderBy: {
+            column: ${orderType ? orderType : "CREATED_AT"},
+            order: ${order}
+          }
+          ${whereQuery ? `where: ${whereQuery}` : ""}
+        ) {
+          data {
+            id
+            uuid
+            business_id
+            day_of_week
+            is_open
+            open_time
+            close_time
+            break_start_time
+            break_end_time
+            max_orders_per_hour
+            metadata
+            created_at
+            updated_at
+          }
+          paginatorInfo {
+            count
+            currentPage
+            firstItem
+            hasMorePages
+            lastItem
+            lastPage
+            perPage
+            total
+          }
+        }
+      }
+    `;
+
+    const response: Promise<
+      OperationResult<{
+        GetBusinessSchedules: BusinessSchedulePaginator;
+      }>
+    > = this.query(requestData, { page, first, business_uuid, business_id });
+
+    return response;
+  };
+
+  public GetBusinessSchedule = (uuid: string) => {
+    const requestData = `
+      query GetBusinessSchedule($uuid: String!) {
+        GetBusinessSchedule(uuid: $uuid) {
+              id
+            uuid
+            business_id
+            day_of_week
+            is_open
+            open_time
+            close_time
+            break_start_time
+            break_end_time
+            max_orders_per_hour
+            metadata
+            created_at
+            updated_at
+        }
+      }
+    `;
+
+    const response: Promise<
+      OperationResult<{
+        GetBusinessSchedule: BusinessSchedule;
+      }>
+    > = this.query(requestData, { uuid });
 
     return response;
   };

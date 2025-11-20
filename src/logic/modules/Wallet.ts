@@ -174,6 +174,13 @@ export default class Wallet extends Common {
     });
   };
 
+  public GetP2pPaymentMethod = async (uuid: string) => {
+    return $api.wallet.GetP2pPaymentMethod(uuid).then((response) => {
+      this.SingleP2pPaymentMethod = response.data?.GetP2pPaymentMethod;
+      return this.SingleP2pPaymentMethod;
+    });
+  };
+
   public GetManyP2POrders = async (
     page: number,
     count: number,
@@ -195,8 +202,9 @@ export default class Wallet extends Common {
             existingData.data = existingData.data.concat(
               response.data?.GetMyP2POrders?.data || []
             );
+            // @ts-ignore
             existingData.paginatorInfo =
-              response.data.GetMyP2POrders?.paginatorInfo;
+              response.data?.GetMyP2POrders?.paginatorInfo;
 
             this.ManyP2pOrders = existingData;
           }
@@ -276,12 +284,46 @@ export default class Wallet extends Common {
     if (!target) {
       target = "USD";
     }
-    return $api.wallet.GetGlobalExchangeRate(base, target).then((response) => {
-      if (!isBackground) {
-        this.CurrentGlobalExchangeRate = response.data?.GetGlobalExchangeRate;
+
+    const getFreshRate = () => {
+      return $api.wallet
+        .GetGlobalExchangeRate(base, target)
+        .then((response) => {
+          existingRateMaps[`${base}_${target}`] =
+            response.data?.GetGlobalExchangeRate;
+
+          localStorage.setItem(
+            "global_exchange_rates",
+            JSON.stringify(existingRateMaps)
+          );
+
+          if (!isBackground) {
+            this.CurrentGlobalExchangeRate =
+              response.data?.GetGlobalExchangeRate;
+          }
+          return response.data?.GetGlobalExchangeRate;
+        });
+    };
+
+    // Let do a cache first setup here.
+    const existingExchangeRates = localStorage.getItem("global_exchange_rates");
+
+    let existingRateMaps: Record<string, GlobalExchangeRate | undefined> = {};
+
+    if (existingExchangeRates) {
+      existingRateMaps = JSON.parse(existingExchangeRates);
+
+      if (existingRateMaps[`${base}_${target}`]) {
+        getFreshRate().then();
+        if (!isBackground) {
+          this.CurrentGlobalExchangeRate =
+            existingRateMaps[`${base}_${target}`];
+        }
+        return existingRateMaps[`${base}_${target}`];
       }
-      return response.data?.GetGlobalExchangeRate;
-    });
+    }
+
+    return getFreshRate();
   };
 
   public GetPaymentDetails = async (payment_uuid: string) => {
@@ -626,10 +668,15 @@ export default class Wallet extends Common {
   public GetRecommendedExchangeAds = async (
     page: number,
     count: number,
-    ad_type = "buy"
+    ad_type = "buy",
+    currency = ""
   ): Promise<ExchangeAdPaginator | undefined> => {
+    if (!currency) {
+      currency = localStorage.getItem("default_currency") || "USDC";
+    }
+
     return $api.wallet
-      .GetRecommendedExchangeAds(page, count, ad_type)
+      .GetRecommendedExchangeAds(page, count, ad_type, currency)
       .then((response) => {
         const newData = response.data?.GetRecommendedExchangeAds;
 
@@ -670,6 +717,29 @@ export default class Wallet extends Common {
   ): Promise<P2pPaymentMethodPaginator | undefined> => {
     return $api.wallet
       .GetP2pPaymentMethods(page, count)
+      .then((response) => {
+        this.ManyP2pPaymentMethods = response.data?.GetMyP2pPaymentMethods;
+        return this.ManyP2pPaymentMethods;
+      })
+      .catch((error: CombinedError) => {
+        Logic.Common.showError(
+          error,
+          "Failed to fetch P2P payment methods",
+          "error-alert"
+        );
+        return undefined;
+      });
+  };
+
+  public GetMyP2pPaymentMethods = async (
+    count: number,
+    page: number,
+    orderType: "CREATED_AT" = "CREATED_AT",
+    order: "DESC" | "ASC" = "DESC",
+    whereQuery = ""
+  ): Promise<P2pPaymentMethodPaginator | undefined> => {
+    return $api.wallet
+      .GetP2pPaymentMethods(page, count, orderType, order, whereQuery)
       .then((response) => {
         this.ManyP2pPaymentMethods = response.data?.GetMyP2pPaymentMethods;
         return this.ManyP2pPaymentMethods;

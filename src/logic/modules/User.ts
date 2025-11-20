@@ -2,7 +2,9 @@ import {
   Business as BusinessModel,
   DeliveryAddressPaginator,
   MutationUpdateProfileArgs,
+  BusinessSchedulePaginator,
   User as UserModel,
+  BusinessSchedule,
 } from "../../gql/graphql";
 import { $api } from "../../services";
 import Common from "./Common";
@@ -17,12 +19,16 @@ export default class User extends Common {
     this.defineReactiveProperty("SingleUser", undefined);
     this.defineReactiveProperty("ManyP2PDeliveryAddresses", undefined);
     this.defineReactiveProperty("VerificationRetryInfo", undefined);
+    this.defineReactiveProperty("BusinessSchedules", undefined);
+    this.defineReactiveProperty("BusinessSchedule", undefined);
   }
 
   // Base variables
   public SearchedUsers: UserModel[] | undefined;
   public SingleUser: UserModel | undefined;
   public SearchedBusinesses: BusinessModel[] | undefined;
+  public BusinessSchedules: BusinessSchedulePaginator | undefined;
+  public BusinessSchedule: BusinessSchedule | undefined;
   public ManyP2PDeliveryAddresses: DeliveryAddressPaginator | undefined;
   public VerificationRetryInfo:
     | {
@@ -88,6 +94,81 @@ export default class User extends Common {
       });
   };
 
+  public GetBusinessSchedules = async (
+    page: number = 1,
+    first: number = 10
+  ) => {
+    return $api.user
+      .GetBusinessSchedules(first, page, "CREATED_AT", "DESC", ``)
+      .then((response) => {
+        if (response.data?.GetBusinessSchedules) {
+          this.BusinessSchedules = response.data.GetBusinessSchedules;
+          return response.data.GetBusinessSchedules;
+        }
+      })
+      .catch((error: CombinedError) => {
+        Logic.Common.showError(
+          error,
+          "Failed to load schedules",
+          "error-alert"
+        );
+        throw error;
+      });
+  };
+
+  public GetBusinessSchedulesByBusinessUUID = async (
+    business_uuid: string
+  ): Promise<BusinessSchedulePaginator | undefined> => {
+    return $api.user
+      .GetBusinessSchedules(1, 50, "CREATED_AT", "DESC", ``, business_uuid)
+      .then((response) => {
+        if (response.data?.GetBusinessSchedules) {
+          this.BusinessSchedules = response.data.GetBusinessSchedules;
+          return response.data.GetBusinessSchedules;
+        }
+      })
+      .catch((error: CombinedError) => {
+        Logic.Common.showError(
+          error,
+          "Failed to load schedules",
+          "error-alert"
+        );
+        throw error;
+      });
+  };
+
+  public GetBusinessSchedulesByBusinessID = async (
+    business_id: string
+  ): Promise<BusinessSchedulePaginator | undefined> => {
+    if (!business_id) {
+      return Promise.resolve(undefined);
+    }
+    return $api.user
+      .GetBusinessSchedules(1, 50, "CREATED_AT", "DESC", ``, "", business_id)
+      .then((response) => {
+        if (response.data?.GetBusinessSchedules) {
+          this.BusinessSchedules = response.data.GetBusinessSchedules;
+          return response.data.GetBusinessSchedules;
+        }
+      })
+      .catch((error: CombinedError) => {
+        Logic.Common.showError(
+          error,
+          "Failed to load schedules",
+          "error-alert"
+        );
+        throw error;
+      });
+  };
+
+  public GetBusinessSchedule = async (
+    uuid: string
+  ): Promise<BusinessSchedule | undefined> => {
+    return $api.user.GetBusinessSchedule(uuid).then((response) => {
+      this.BusinessSchedule = response.data?.GetBusinessSchedule;
+      return response.data?.GetBusinessSchedule;
+    });
+  };
   // Mutations
 
   public UpdateProfile = async () => {

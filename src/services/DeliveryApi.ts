@@ -268,6 +268,34 @@ export default class DeliveryApi extends BaseApiService {
     return response;
   };
 
+  public GetBusinessDeliveryAddresses = (business_id: string) => {
+    const requestData = `
+    query GetBusinessDeliveryAddresses($business_id: String!) {
+      GetBusinessDeliveryAddresses(business_id: $business_id) {
+        id
+          uuid
+          auth_user_id
+          name
+          delivery_location_id
+          google_map_link
+          description
+          is_default
+          is_active
+          created_at
+          updated_at
+      }
+    }
+  `;
+
+    const response: Promise<
+      OperationResult<{
+        GetBusinessDeliveryAddresses: DeliveryAddress[];
+      }>
+    > = this.query(requestData, { business_id });
+
+    return response;
+  };
+
   public GetP2PDeliveryAddresses = (
     first: number,
     page: number,
