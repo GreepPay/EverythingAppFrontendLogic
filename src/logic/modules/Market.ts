@@ -55,15 +55,15 @@ export default class MarketModule extends Common {
   ) => {
     console.log("category  adwaer", category)
     let whereCategoryQuery = ""
-    if (category && category.trim() !== "") {
-      whereCategoryQuery = `{
-        column: CATEGORY,
-        operator: EQ,
-        value: "${category}"
-        }`
-    } else {
-      whereCategoryQuery = whereQuery
-    }
+    // if (category && category.trim() !== "") {
+    //   whereCategoryQuery = `{
+    //     column: CATEGORY,
+    //     operator: EQ,
+    //     value: "${category}"
+    //     }`
+    // } else {
+    //   whereCategoryQuery = whereQuery
+    // }
 
     return $api.market
       .GetMarketShops(page, count, orderType, order, whereCategoryQuery)
