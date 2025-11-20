@@ -1,5 +1,5 @@
-import { BaseApiService } from "./common/BaseService"
-import { OperationResult } from "urql"
+import { BaseApiService } from "./common/BaseService";
+import { OperationResult } from "urql";
 import {
   MutationUpdateProfileArgs,
   User,
@@ -10,7 +10,7 @@ import {
   QueryGetBusinessSchedulesArgs,
   BusinessSchedulePaginator,
   BusinessSchedule,
-} from "../gql/graphql"
+} from "../gql/graphql";
 
 export default class UserApi extends BaseApiService {
   // #region QUERIES
@@ -40,16 +40,16 @@ export default class UserApi extends BaseApiService {
           }
         }
       }
-    `
+    `;
 
     const response: Promise<
       OperationResult<{
-        SearchUsers: User[]
+        SearchUsers: User[];
       }>
-    > = this.query(requestData, data)
+    > = this.query(requestData, data);
 
-    return response
-  }
+    return response;
+  };
 
   public SearchBusiness = (data: QuerySearchBusinessesArgs) => {
     const requestData = `
@@ -67,16 +67,16 @@ export default class UserApi extends BaseApiService {
            }
         }
       }
-    `
+    `;
 
     const response: Promise<
       OperationResult<{
-        SearchBusinesses: Business[]
+        SearchBusinesses: Business[];
       }>
-    > = this.query(requestData, data)
+    > = this.query(requestData, data);
 
-    return response
-  }
+    return response;
+  };
 
   public GetSingleUser = (uuid: string) => {
     const requestData = `
@@ -100,16 +100,16 @@ export default class UserApi extends BaseApiService {
           }
         }
       }
-    `
+    `;
 
     const response: Promise<
       OperationResult<{
-        GetSingleUser: User
+        GetSingleUser: User;
       }>
-    > = this.query(requestData, { uuid })
+    > = this.query(requestData, { uuid });
 
-    return response
-  }
+    return response;
+  };
 
   public SearchBusinesses = (data: QuerySearchBusinessesArgs) => {
     const requestData = `
@@ -127,21 +127,35 @@ export default class UserApi extends BaseApiService {
             }
         }
       }
-    `
+    `;
 
     const response: Promise<
       OperationResult<{
-        SearchBusinesses: Business[]
+        SearchBusinesses: Business[];
       }>
-    > = this.query(requestData, data)
+    > = this.query(requestData, data);
 
-    return response
-  }
+    return response;
+  };
 
-  public GetBusinessSchedules = (page: number, first: number) => {
+  public GetBusinessSchedules = (
+    page: number,
+    first: number,
+    orderType = "CREATED_AT",
+    order: "ASC" | "DESC",
+    whereQuery = "",
+    business_uuid?: string,
+    business_id?: string
+  ) => {
     const requestData = `
-      query GetBusinessSchedules($first: Int!, $page: Int) {
-        GetBusinessSchedules(first: $first, page: $page) {
+      query GetBusinessSchedules($first: Int!, $page: Int, $business_uuid: String, $business_id: ID) {
+        GetBusinessSchedules(first: $first, page: $page, business_uuid: $business_uuid, business_id: $business_id,
+        orderBy: {
+            column: ${orderType ? orderType : "CREATED_AT"},
+            order: ${order}
+          }
+          ${whereQuery ? `where: ${whereQuery}` : ""}
+        ) {
           data {
             id
             uuid
@@ -169,16 +183,16 @@ export default class UserApi extends BaseApiService {
           }
         }
       }
-    `
+    `;
 
     const response: Promise<
       OperationResult<{
-        GetBusinessSchedules: BusinessSchedulePaginator
+        GetBusinessSchedules: BusinessSchedulePaginator;
       }>
-    > = this.query(requestData, { page, first })
+    > = this.query(requestData, { page, first, business_uuid, business_id });
 
-    return response
-  }
+    return response;
+  };
 
   public GetBusinessSchedule = (uuid: string) => {
     const requestData = `
@@ -199,16 +213,16 @@ export default class UserApi extends BaseApiService {
             updated_at
         }
       }
-    `
+    `;
 
     const response: Promise<
       OperationResult<{
-        GetBusinessSchedule: BusinessSchedule
+        GetBusinessSchedule: BusinessSchedule;
       }>
-    > = this.query(requestData, { uuid })
+    > = this.query(requestData, { uuid });
 
-    return response
-  }
+    return response;
+  };
 
   // #endregion QUERIES
 
@@ -236,13 +250,13 @@ export default class UserApi extends BaseApiService {
         auth_passcode: $auth_passcode
       )
     }
-  `
+  `;
 
     const response: Promise<OperationResult<{ UpdateProfile: boolean }>> =
-      this.mutation(requestData, data)
+      this.mutation(requestData, data);
 
-    return response
-  }
+    return response;
+  };
 
   public VerifyUserIdentity = (data: MutationVerifyUserIdentityArgs) => {
     const requestData = `
@@ -259,13 +273,13 @@ export default class UserApi extends BaseApiService {
         id_country: $id_country
       )
     }
-  `
+  `;
 
     const response: Promise<OperationResult<{ VerifyUserIdentity: boolean }>> =
-      this.mutation(requestData, data)
+      this.mutation(requestData, data);
 
-    return response
-  }
+    return response;
+  };
 
   public RetriggerVerification = () => {
     const requestData = `
@@ -282,41 +296,41 @@ export default class UserApi extends BaseApiService {
           }
         }
       }
-    `
+    `;
 
     const response: Promise<
       OperationResult<{
         RetriggerVerification: {
-          auth_user_id: number
-          verification_id: number
-          previous_status: string
-          current_status: string
-          status_changed: boolean
+          auth_user_id: number;
+          verification_id: number;
+          previous_status: string;
+          current_status: string;
+          status_changed: boolean;
           smile_id_result: {
-            status: string
-            description: string
-          }
-        }
+            status: string;
+            description: string;
+          };
+        };
       }>
-    > = this.mutation(requestData, {})
+    > = this.mutation(requestData, {});
 
-    return response
-  }
+    return response;
+  };
 
   public UploadFile = (file: File) => {
     const requestData = `
       mutation UploadFile($file: Upload!) {
         UploadFile(file: $file)
       }
-    `
+    `;
 
     const response: Promise<
       OperationResult<{
-        UploadFile: string
+        UploadFile: string;
       }>
-    > = this.mutation(requestData, { file })
+    > = this.mutation(requestData, { file });
 
-    return response
-  }
+    return response;
+  };
   // #endregion MUTATIONS
 }

@@ -284,12 +284,46 @@ export default class Wallet extends Common {
     if (!target) {
       target = "USD";
     }
-    return $api.wallet.GetGlobalExchangeRate(base, target).then((response) => {
-      if (!isBackground) {
-        this.CurrentGlobalExchangeRate = response.data?.GetGlobalExchangeRate;
+
+    const getFreshRate = () => {
+      return $api.wallet
+        .GetGlobalExchangeRate(base, target)
+        .then((response) => {
+          existingRateMaps[`${base}_${target}`] =
+            response.data?.GetGlobalExchangeRate;
+
+          localStorage.setItem(
+            "global_exchange_rates",
+            JSON.stringify(existingRateMaps)
+          );
+
+          if (!isBackground) {
+            this.CurrentGlobalExchangeRate =
+              response.data?.GetGlobalExchangeRate;
+          }
+          return response.data?.GetGlobalExchangeRate;
+        });
+    };
+
+    // Let do a cache first setup here.
+    const existingExchangeRates = localStorage.getItem("global_exchange_rates");
+
+    let existingRateMaps: Record<string, GlobalExchangeRate | undefined> = {};
+
+    if (existingExchangeRates) {
+      existingRateMaps = JSON.parse(existingExchangeRates);
+
+      if (existingRateMaps[`${base}_${target}`]) {
+        getFreshRate().then();
+        if (!isBackground) {
+          this.CurrentGlobalExchangeRate =
+            existingRateMaps[`${base}_${target}`];
+        }
+        return existingRateMaps[`${base}_${target}`];
       }
-      return response.data?.GetGlobalExchangeRate;
-    });
+    }
+
+    return getFreshRate();
   };
 
   public GetPaymentDetails = async (payment_uuid: string) => {

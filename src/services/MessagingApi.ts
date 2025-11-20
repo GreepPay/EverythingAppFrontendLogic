@@ -60,6 +60,12 @@ export default class MessagingApi extends BaseApiService {
             created_at
             updated_at
            }
+          market_order {
+             uuid
+             deliveryAddress {
+              delivery_location_id 
+             }
+          }
           messages {
             id
             content
