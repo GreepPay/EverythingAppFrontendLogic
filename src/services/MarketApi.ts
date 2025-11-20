@@ -1,6 +1,6 @@
 import { BaseApiService } from "./common/BaseService"
 import { OperationResult } from "urql"
-import { BusinessPaginator, Business } from "../gql/graphql"
+import { BusinessPaginator, Business, CommerceSection } from "../gql/graphql"
 
 export default class MarketApi extends BaseApiService {
   // #region QUERIES
@@ -60,7 +60,13 @@ export default class MarketApi extends BaseApiService {
     return response
   }
 
-  public GetMarketShops = (page: number, count: number) => {
+  public GetMarketShops = (
+    page: number,
+    count: number,
+    orderType = "CREATED_AT",
+    order: "ASC" | "DESC" = "DESC",
+    whereQuery = ""
+  ) => {
     const requestData = `
     query MarketShops(
       $page: Int!
@@ -69,6 +75,11 @@ export default class MarketApi extends BaseApiService {
       MarketShops(
         first: $count,
         page: $page
+        orderBy: {
+          column: ${orderType ? orderType : "CREATED_AT"},
+          order: ${order}
+        }
+        ${whereQuery ? `where: ${whereQuery}` : ""}
       ) {
         paginatorInfo {
           count
@@ -89,6 +100,7 @@ export default class MarketApi extends BaseApiService {
           description
           category
           default_currency
+          website 
           user {
             id
             uuid
@@ -97,8 +109,6 @@ export default class MarketApi extends BaseApiService {
             email
             phone
           }
-          website
-          
           featuredProduct {
             id
             uuid
@@ -230,6 +240,108 @@ export default class MarketApi extends BaseApiService {
     > = this.query(requestData, {
       uuid,
     })
+
+    return response
+  }
+
+  public GetCommerceSections = () => {
+    const requestData = `
+      query CommerceSections {
+        CommerceSections {
+          label
+          type
+          variant
+          categories
+          businesses {
+            id
+            uuid
+            business_name
+            logo
+            banner
+            description
+            category
+            default_currency
+            website 
+            user {
+              id
+              uuid
+              first_name
+              last_name
+              email
+              phone
+            }
+            featuredProduct {
+              id
+              uuid
+              name
+              price
+              currency
+              images
+              description
+            }
+          }
+          products {
+            uuid
+            id
+            businessId
+            business {
+              id
+              uuid
+              business_name
+              auth_user_id
+              logo
+              banner
+              description
+            }
+            sku
+            name
+            slug
+            description
+            price
+            currency
+            taxCode
+            type
+            status
+            variants
+            inventoryCount
+            stockThreshold
+            isBackorderAllowed
+            downloadUrl
+            downloadLimit
+            license
+            fileInfo
+            dimensions
+            weight
+            billingInterval
+            trialPeriodDays
+            gracePeriod
+            renewal
+            national_cuisine
+            national_cuisine_country
+            features
+            eventType
+            eventStartDate
+            eventEndDate
+            venueName
+            eventOnlineUrl
+            eventLocation
+            eventCapacity
+            eventRegisteredCount
+            eventWaitlistEnabled
+            metaTitle
+            metaDescription
+            isVisible
+            images
+            createdAt
+            updatedAt
+          }
+        } 
+      }
+    `
+
+    const response: Promise<
+      OperationResult<{ CommerceSections: CommerceSection }>
+    > = this.query(requestData, {})
 
     return response
   }
