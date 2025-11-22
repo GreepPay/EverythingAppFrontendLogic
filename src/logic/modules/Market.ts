@@ -8,6 +8,7 @@ import { $api } from "../../services"
 import { CombinedError } from "@urql/core"
 import Common from "./Common"
 import { Logic } from ".."
+import { CommerceSectionCategories } from "../../common/constants"
 
 export default class MarketModule extends Common {
   constructor() {
@@ -17,6 +18,7 @@ export default class MarketModule extends Common {
     this.defineReactiveProperty("BusinessesPaginator", undefined)
     this.defineReactiveProperty("SingleBusiness", undefined)
     this.defineReactiveProperty("CommerceSections", undefined)
+    this.defineReactiveProperty("BusinessesCategories", undefined)
   }
 
   // Base Variable
@@ -25,6 +27,7 @@ export default class MarketModule extends Common {
   public BusinessesPaginator: BusinessPaginator | undefined
   public SingleBusiness: GqlBusiness | undefined
   public CommerceSections: CommerceSection | undefined
+  public BusinessesCategories: any | undefined
 
   // Get paginated markets
   public GetMarkets = async (
@@ -55,15 +58,31 @@ export default class MarketModule extends Common {
   ) => {
     console.log("category  adwaer", category)
     let whereCategoryQuery = ""
-    // if (category && category.trim() !== "") {
-    //   whereCategoryQuery = `{
-    //     column: CATEGORY,
-    //     operator: EQ,
-    //     value: "${category}"
-    //     }`
-    // } else {
-    //   whereCategoryQuery = whereQuery
-    // }
+    if (category && category.trim() !== "") {
+      this.GetBusinessesCategories()
+      const subCategoryPerCategory =
+        this.BusinessesCategories.find(
+          (section: any) => section.key === category.toLowerCase()
+        )?.items.map((item: any) => item.key) || []
+
+      const orBlocks = subCategoryPerCategory
+        .map((sub: string) => {
+          return `{
+            column: CATEGORY,
+            operator: LIKE,
+            value: "%${sub}%"
+          }`
+        })
+        .join(",")
+
+      whereCategoryQuery = `{
+        OR: [
+          ${orBlocks}
+        ]
+      }`
+    } else {
+      whereCategoryQuery = whereQuery
+    }
 
     return $api.market
       .GetMarketShops(page, count, orderType, order, whereCategoryQuery)
@@ -108,6 +127,11 @@ export default class MarketModule extends Common {
       this.CommerceSections = response.data?.CommerceSections
       return response.data?.CommerceSections
     })
+  }
+
+  public GetBusinessesCategories = async () => {
+    this.BusinessesCategories = CommerceSectionCategories.businesses
+    return this.BusinessesCategories
   }
   //
 }

@@ -9,6 +9,7 @@ import { $api } from "../../services"
 import { CombinedError } from "urql"
 import Common from "./Common"
 import { Logic } from ".."
+import { CommerceSectionCategories } from "../../common/constants"
 
 export default class Product extends Common {
   // Base Variables
@@ -21,6 +22,7 @@ export default class Product extends Common {
   public BusinessMarketProducts: ProductPaginator | undefined
   public ManyFeaturedProducts: ProductPaginator | undefined
   public ManyFeaturedEvents: ProductPaginator | undefined
+  public ProductsCategories: any | undefined
 
   public ProductsInCart: ProductPaginator | undefined
 
@@ -36,6 +38,7 @@ export default class Product extends Common {
     this.defineReactiveProperty("ManyFeaturedProducts", undefined)
     this.defineReactiveProperty("ManyFeaturedEvents", undefined)
     this.defineReactiveProperty("BusinessMarketProducts", undefined)
+    this.defineReactiveProperty("ProductsCategories", undefined)
   }
 
   public GetShopProducts = async (
@@ -195,10 +198,41 @@ export default class Product extends Common {
     order = "DESC" as "DESC" | "ASC",
     whereQuery = "",
     forBusiness = false,
-    isLoadMore = false
+    isLoadMore = false,
+    category: string
   ) => {
+    console.log("category  adwaer", category)
+    let whereCategoryQuery = ""
+    if (category && category.trim() !== "") {
+      this.GetProductsCategories()
+      const subCategoryPerCategory =
+        this.ProductsCategories.find(
+          (section: any) => section.key === category.toLowerCase()
+        )?.items.map((item: any) => item.key) || []
+
+      const orBlocks = subCategoryPerCategory
+        .map((sub: string) => {
+          return `{
+            column: CATEGORY_ID,
+            operator: LIKE,
+            value: "%${sub}%"
+          }`
+        })
+        .join(",")
+
+      whereCategoryQuery = `{
+        OR: [
+          ${orBlocks}
+        ]
+      }`
+    } else {
+      whereCategoryQuery = whereQuery
+    }
+
+    console.log("whereCategoryQuery", whereCategoryQuery)
+
     return $api.product
-      .GetMarketProducts(page, count, orderType, order, whereQuery)
+      .GetMarketProducts(page, count, orderType, order, whereCategoryQuery)
       .then((response) => {
         if (!isLoadMore) {
           forBusiness ?
@@ -226,7 +260,7 @@ export default class Product extends Common {
           } else {
             this.ManyMarketProducts = existingData
             return this.ManyMarketProducts
-          } 
+          }
         }
       })
   }
@@ -243,5 +277,11 @@ export default class Product extends Common {
       this.ManyFeaturedEvents = response.data?.FeaturedEvents
       return this.ManyFeaturedEvents
     })
+  }
+
+  public GetProductsCategories = async () => {
+    this.ProductsCategories = CommerceSectionCategories.products
+    console.log("this.ProductsCategories", this.ProductsCategories)
+    return this.ProductsCategories
   }
 }
