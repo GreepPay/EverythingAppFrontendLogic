@@ -12,92 +12,104 @@ export default class MessagingApi extends BaseApiService {
   public GetSingleConversation = (uuid: string) => {
     const requestData = `
       query GetConversation($uuid: String!) {
-        GetConversation(uuid: $uuid) {
-          id
-          uuid
-          name
-          entity_type
-          metadata
-          stage
-          p2p_order {
-            uuid
-          }
-          participants {
-            id
-            user_id
-            state
-            user {
-              first_name
-              last_name
-              uuid
-            }
-          }
-          exchangeAd {
-            uuid
-            from_currency
-            to_currency
-            ad_type
-            business {
-                uuid
-                id
-                auth_user_id
-                business_name
-                storeLocations {
-                name
-                address
-                city
-                country
-              }
-            }
-            rate
-            min_amount
-            max_amount
-            payout_address
-            address_details
-            payout_banks
-            business_id
-            status
-            created_at
-            updated_at
-           }
-          market_order {
-             uuid
-             deliveryAddress {
-              delivery_location_id 
-             }
-          }
-          messages {
-            id
-            content
-            status
-            metadata
-            createdAt
-            updatedAt
-            sender {
-              first_name
-              last_name
-              uuid
-            }
-            replied_message {
-              id
-              content
-              metadata
-              status
-              participant {
-                id
-                user_id
-                user {
-                  first_name
-                  last_name
-                  uuid
-                }
-              }
-            }
-          }
-          state
-          created_at
-          updated_at
+      GetConversation(uuid: $uuid) {
+        id
+        uuid
+        name
+        entity_type
+        metadata
+        stage
+        p2p_order {
+        uuid
         }
+        participants {
+        id
+        user_id
+        state
+        user {
+          first_name
+          last_name
+          uuid
+        }
+        }
+        delivery_order {
+          id
+          trackingNumber
+          status
+          estimatedDeliveryDate
+          actualDeliveryDate
+          deliveryAttempts
+          deliveryAddress
+          trackingUpdates
+          createdAt
+          updatedAt
+        }
+        exchangeAd {
+        uuid
+        from_currency
+        to_currency
+        ad_type
+        business {
+          uuid
+          id
+          auth_user_id
+          business_name
+          storeLocations {
+          name
+          address
+          city
+          country
+          }
+        }
+        rate
+        min_amount
+        max_amount
+        payout_address
+        address_details
+        payout_banks
+        business_id
+        status
+        created_at
+        updated_at
+         }
+        market_order {
+         uuid
+         deliveryAddress {
+          delivery_location_id 
+         }
+        }
+        messages {
+        id
+        content
+        status
+        metadata
+        createdAt
+        updatedAt
+        sender {
+          first_name
+          last_name
+          uuid
+        }
+        replied_message {
+          id
+          content
+          metadata
+          status
+          participant {
+          id
+          user_id
+          user {
+            first_name
+            last_name
+            uuid
+          }
+          }
+        }
+        }
+        state
+        created_at
+        updated_at
+      }
       }
     `;
     const response: Promise<

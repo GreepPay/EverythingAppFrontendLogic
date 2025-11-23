@@ -33,6 +33,7 @@ export default class DeliveryModule extends Common {
   public DeliveryPricingData: DeliveryPricing | undefined;
   public DeliveryAddress: DeliveryAddress | undefined;
   public ManyDeliveryAddresses: DeliveryAddressPaginator | undefined;
+  public ManyBusinessDeliveryAddresses: DeliveryAddressPaginator | undefined;
 
   // mutation payloads
   public AddDeliveryAddressPayload: MutationAddDeliveryAddressArgs | undefined;
@@ -137,12 +138,15 @@ export default class DeliveryModule extends Common {
     });
   };
 
-  public GetBusinessDeliveryAddresses = async (business_id: string) => {
+  public GetBusinessDeliveryAddresses = async (
+    business_id: string,
+    forBusiness = false
+  ) => {
     return $api.delivery
       .GetBusinessDeliveryAddresses(business_id)
       .then((response) => {
         if (response) {
-          this.ManyDeliveryAddresses = {
+          const data = {
             data: response.data?.GetBusinessDeliveryAddresses || [],
             paginatorInfo: {
               count: response.data?.GetBusinessDeliveryAddresses.length || 0,
@@ -158,7 +162,14 @@ export default class DeliveryModule extends Common {
               total: response.data?.GetBusinessDeliveryAddresses.length || 0,
             },
           };
-          return this.ManyDeliveryAddresses;
+
+          if (!forBusiness) {
+            this.ManyDeliveryAddresses = data;
+          } else {
+            this.ManyBusinessDeliveryAddresses = data;
+          }
+
+          return this.ManyBusinessDeliveryAddresses;
         }
       });
   };
