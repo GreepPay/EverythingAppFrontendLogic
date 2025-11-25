@@ -166,6 +166,7 @@ export default class MarketModule extends Common {
   }
 
   public GetCommerceSections = async (type: string, limit: number) => {
+    
     return $api.market.GetCommerceSections(type, limit).then((response) => {
       this.CommerceSections = response.data?.CommerceSections
       return response.data?.CommerceSections
