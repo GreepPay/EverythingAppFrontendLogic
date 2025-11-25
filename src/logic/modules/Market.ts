@@ -3,6 +3,7 @@ import {
   DeliveryAddressPaginator,
   Business as GqlBusiness,
   CommerceSection,
+  BusinessFollowers,
 } from "../../gql/graphql"
 import { $api } from "../../services"
 import { CombinedError } from "@urql/core"
@@ -29,6 +30,48 @@ export default class MarketModule extends Common {
   public CommerceSections: CommerceSection | undefined
   public BusinessesCategories: any | undefined
 
+  // #region Mutation
+  // Follow a business
+  public FollowBusiness = async (
+    business_uuid: String
+  ): Promise<BusinessFollowers | undefined> => {
+    console.log("Following business:", business_uuid)
+    return $api.market
+      .FollowBusiness(business_uuid)
+      .then((response) => {
+        return response.data?.FollowBusiness
+      })
+      .catch((error: CombinedError) => {
+        Logic.Common.showError(
+          error,
+          "Failed to follow business",
+          "error-alert"
+        )
+        return undefined
+      })
+  }
+
+  // Unfollow a business
+  public UnfollowBusiness = async (
+    business_uuid: String
+  ): Promise<boolean | undefined> => {
+    return $api.market
+      .UnfollowBusiness(business_uuid)
+      .then((response) => {
+        console.log("Unfollow response", response)
+        return response.data?.UnfollowBusiness
+      })
+      .catch((error: CombinedError) => {
+        Logic.Common.showError(
+          error,
+          "Failed to unfollow business",
+          "error-alert"
+        )
+        return undefined
+      })
+  }
+
+  // #region Queries
   // Get paginated markets
   public GetMarkets = async (
     first: number,
@@ -122,8 +165,9 @@ export default class MarketModule extends Common {
     })
   }
 
-  public GetCommerceSections = async () => {
-    return $api.market.GetCommerceSections().then((response) => {
+  public GetCommerceSections = async (type: string, limit: number) => {
+    
+    return $api.market.GetCommerceSections(type, limit).then((response) => {
       this.CommerceSections = response.data?.CommerceSections
       return response.data?.CommerceSections
     })

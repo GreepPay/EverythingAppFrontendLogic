@@ -93,7 +93,7 @@ export default class ProductApi extends BaseApiService {
             isVisible
             images
             createdAt
-            updatedAt
+            updatedAt 
           }
         }
       }
@@ -276,7 +276,11 @@ export default class ProductApi extends BaseApiService {
           slug
           name
           id
-          uuid
+          uuid 
+          parentId
+          parent_category { 
+            name 
+          } 
           updatedAt
         }
       }
@@ -338,6 +342,19 @@ export default class ProductApi extends BaseApiService {
             logo
             banner
             description
+            storeLocations {
+              uuid
+              name
+              address
+              city
+              country
+              latitude
+              longitude
+              meta_data
+              business_id
+              created_at
+              updated_at
+            }
           }
           sku
           name

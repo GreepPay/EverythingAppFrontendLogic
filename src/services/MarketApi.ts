@@ -1,9 +1,43 @@
 import { BaseApiService } from "./common/BaseService"
 import { OperationResult } from "urql"
-import { BusinessPaginator, Business, CommerceSection } from "../gql/graphql"
+import {
+  BusinessPaginator,
+  Business,
+  CommerceSection,
+  CreateOrderInput,
+  Order,
+  BusinessFollowers,
+} from "../gql/graphql"
 
 export default class MarketApi extends BaseApiService {
+  // #region MUTATIONS
+  public FollowBusiness = (business_uuid: string) => {
+    const requestData = `
+    mutation FollowBusiness($business_uuid: String!) {
+      FollowBusiness(business_uuid: $business_uuid) { 
+        id
+        uuid  
+      }
+    }
+  `
+    return this.mutation(requestData, { business_uuid }) as Promise<
+      OperationResult<{ FollowBusiness: BusinessFollowers }>
+    >
+  }
+
+  public UnfollowBusiness = (business_uuid: string) => {
+    const requestData = `
+    mutation UnfollowBusiness($business_uuid: String!) {
+      UnfollowBusiness(business_uuid: $business_uuid)
+    }
+  `
+    return this.mutation(requestData, { business_uuid }) as Promise<
+      OperationResult<{ UnfollowBusiness: any }>
+    >
+  }
+
   // #region QUERIES
+
   public GetMarkets = (first: number, page: number) => {
     const requestData = `
     query GetMarkets($first: Int!, $page: Int!) {
@@ -228,8 +262,9 @@ export default class MarketApi extends BaseApiService {
               updated_at
             } 
             website   
-    customers
-    business_type
+            customers
+            business_type
+            is_customer
           }
         }
       `
@@ -244,10 +279,10 @@ export default class MarketApi extends BaseApiService {
     return response
   }
 
-  public GetCommerceSections = () => {
+  public GetCommerceSections = (type: string, limit: number) => {
     const requestData = `
-      query CommerceSections {
-        CommerceSections {
+      query CommerceSections  ($type: String!, $limit: Int!) {
+        CommerceSections(type: $type, limit: $limit) {
           label
           type
           variant
@@ -341,7 +376,10 @@ export default class MarketApi extends BaseApiService {
 
     const response: Promise<
       OperationResult<{ CommerceSections: CommerceSection }>
-    > = this.query(requestData, {})
+    > = this.query(requestData, {
+      type,
+      limit,
+    })
 
     return response
   }
