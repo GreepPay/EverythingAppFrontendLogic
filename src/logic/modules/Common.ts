@@ -1104,7 +1104,9 @@ export default class Common {
   };
 
   public fomartDate = (date: string, format: string) => {
-    return moment(date).format(format);
+    // Let first make the date local to the current time zone, since dates from the backend are in UTC
+    const localDate = moment.utc(date).local();
+    return localDate.format(format);
   };
 
   public countDownTime = (endTime: string) => {
@@ -1112,7 +1114,9 @@ export default class Common {
   };
 
   public timeFromNow = (time: string) => {
-    return moment(time).fromNow();
+    // Make date local to current time zone
+    const localTime = moment.utc(time).local();
+    return localTime.fromNow();
   };
 
   public updatedData = (oldData: any, newData: any) => {

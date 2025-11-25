@@ -35,6 +35,9 @@ export default class OrderApi extends BaseApiService {
         uuid
         status
         paymentStatus 
+         conversation {
+          uuid
+        }
       }
     }
   `;
