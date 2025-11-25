@@ -153,8 +153,14 @@ export type Business = {
   description?: Maybe<Scalars['String']>;
   eventProducts?: Maybe<Array<Maybe<Product>>>;
   featuredProduct?: Maybe<Product>;
+  /** Number of followers this business has */
+  followerCount: Scalars['Int'];
+  /** Followers of this business */
+  followers: Array<BusinessFollowers>;
   /** Unique identifier for the business. */
   id: Scalars['String'];
+  /** Whether the authenticated user is a customer of this business */
+  isCustomer: Scalars['Boolean'];
   /** Business logo URL. */
   logo?: Maybe<Scalars['String']>;
   products?: Maybe<Array<Maybe<Product>>>;
@@ -167,6 +173,27 @@ export type Business = {
   wallet?: Maybe<Wallet>;
   /** Business website URL. */
   website?: Maybe<Scalars['String']>;
+};
+
+/** Business follower relationship tracking. */
+export type BusinessFollowers = {
+  __typename?: 'BusinessFollowers';
+  /** User ID who is following (auth_user_id) */
+  auth_user_id: Scalars['Int'];
+  /** Associated business */
+  business: Business;
+  /** Business ID being followed */
+  business_id: Scalars['Int'];
+  /** When the follow relationship was created */
+  created_at: Scalars['DateTime'];
+  /** Unique identifier */
+  id: Scalars['ID'];
+  /** When the follow relationship was last updated */
+  updated_at: Scalars['DateTime'];
+  /** User who is following */
+  user: User;
+  /** Unique UUID */
+  uuid: Scalars['String'];
 };
 
 /** A paginated list of Business items. */
@@ -232,6 +259,9 @@ export type Category = {
   id: Scalars['Int'];
   /** Category Name */
   name: Scalars['String'];
+  /** Parent Id */
+  parentId?: Maybe<Scalars['Int']>;
+  parent_category?: Maybe<Category>;
   /** Products */
   products: Array<Product>;
   /** Category Slug */
@@ -273,6 +303,8 @@ export type Conversation = {
   __typename?: 'Conversation';
   /** Conversation Created At */
   created_at: Scalars['String'];
+  /** Delivery Order */
+  delivery_order?: Maybe<Delivery>;
   /** Entity Type */
   entity_type?: Maybe<Scalars['String']>;
   /** The attached exchange ad */
@@ -889,6 +921,8 @@ export type Mutation = {
   CreateSavedAccount: UserBank;
   /** Delete User */
   DeleteUser: Scalars['Boolean'];
+  /** Follow a business by UUID */
+  FollowBusiness: BusinessFollowers;
   /** Initiate Conversasion */
   InitiateConversation: Conversation;
   /** Initiate Flutterwave top-up process */
@@ -933,6 +967,8 @@ export type Mutation = {
   SoftDeleteMessage: Scalars['Boolean'];
   /** Soft delete a P2P payment method by UUID */
   SoftDeleteP2pPaymentMethod: Scalars['Boolean'];
+  /** Unfollow a business by UUID */
+  UnfollowBusiness: Scalars['Boolean'];
   /** Update an existing delivery address */
   UpdateDeliveryAddress: DeliveryAddress;
   UpdateDeliveryStatus?: Maybe<Scalars['Boolean']>;
@@ -1031,6 +1067,11 @@ export type MutationCreateSavedAccountArgs = {
   type: Scalars['String'];
   unique_id: Scalars['String'];
   uploads?: InputMaybe<Array<Scalars['Upload']>>;
+};
+
+
+export type MutationFollowBusinessArgs = {
+  business_uuid: Scalars['String'];
 };
 
 
@@ -1168,6 +1209,11 @@ export type MutationSoftDeleteMessageArgs = {
 
 export type MutationSoftDeleteP2pPaymentMethodArgs = {
   p2p_payment_method_uuid: Scalars['String'];
+};
+
+
+export type MutationUnfollowBusinessArgs = {
+  business_uuid: Scalars['String'];
 };
 
 
@@ -2010,6 +2056,7 @@ export type Query = {
 
 export type QueryCommerceSectionsArgs = {
   limit?: InputMaybe<Scalars['Int']>;
+  type?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -3169,6 +3216,7 @@ export type QueryGetProductsOrderByOrderByClause = {
 /** Allowed column names for Query.GetProducts.where. */
 export enum QueryGetProductsWhereColumn {
   BusinessId = 'BUSINESS_ID',
+  CategoryId = 'CATEGORY_ID',
   Description = 'DESCRIPTION',
   Id = 'ID',
   Name = 'NAME',
@@ -3326,6 +3374,7 @@ export type QueryMarketProductsOrderByOrderByClause = {
 /** Allowed column names for Query.MarketProducts.where. */
 export enum QueryMarketProductsWhereColumn {
   BusinessId = 'BUSINESS_ID',
+  CategoryId = 'CATEGORY_ID',
   CreatedAt = 'CREATED_AT',
   Currency = 'CURRENCY',
   Name = 'NAME',
