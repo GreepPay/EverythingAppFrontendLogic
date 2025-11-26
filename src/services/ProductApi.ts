@@ -280,8 +280,7 @@ export default class ProductApi extends BaseApiService {
           parentId
           parent_category { 
             name 
-          } 
-          updatedAt
+          }  
         }
       }
     }
