@@ -274,7 +274,9 @@ export default class ProductApi extends BaseApiService {
         }
         data {
           slug
-          name 
+          name
+          id
+          uuid 
           parentId
           parent_category { 
             name 
