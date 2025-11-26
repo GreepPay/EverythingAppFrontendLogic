@@ -274,14 +274,11 @@ export default class ProductApi extends BaseApiService {
         }
         data {
           slug
-          name
-          id
-          uuid 
+          name 
           parentId
           parent_category { 
             name 
-          } 
-          updatedAt
+          }  
         }
       }
     }
