@@ -18,7 +18,7 @@ export default class MarketModule extends Common {
     this.defineReactiveProperty("ManyMarketShops", undefined)
     this.defineReactiveProperty("BusinessesPaginator", undefined)
     this.defineReactiveProperty("SingleBusiness", undefined)
-    this.defineReactiveProperty("CommerceSections", undefined)
+    this.defineReactiveProperty("TypeCommerceSections", undefined)
     this.defineReactiveProperty("BusinessesCategories", undefined)
   }
 
@@ -27,7 +27,7 @@ export default class MarketModule extends Common {
   public ManyFeaturedShops: BusinessPaginator | undefined
   public BusinessesPaginator: BusinessPaginator | undefined
   public SingleBusiness: GqlBusiness | undefined
-  public CommerceSections: CommerceSection | undefined
+  public TypeCommerceSections: CommerceSection | undefined
   public BusinessesCategories: any | undefined
 
   // #region Mutation
@@ -165,11 +165,10 @@ export default class MarketModule extends Common {
     })
   }
 
-  public GetCommerceSections = async (type: string, limit: number) => {
-    
-    return $api.market.GetCommerceSections(type, limit).then((response) => {
-      this.CommerceSections = response.data?.CommerceSections
-      return response.data?.CommerceSections
+  public GetTypeCommerceSections = async (type: string, limit: number) => {
+    return $api.market.GetTypeCommerceSections(type, limit).then((response) => {
+      this.TypeCommerceSections = response.data?.GetTypeCommerceSections
+      return response.data?.GetTypeCommerceSections
     })
   }
 

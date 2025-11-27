@@ -154,13 +154,13 @@ export type Business = {
   eventProducts?: Maybe<Array<Maybe<Product>>>;
   featuredProduct?: Maybe<Product>;
   /** Number of followers this business has */
-  followerCount: Scalars['Int'];
+  follower_count: Scalars['Int'];
   /** Followers of this business */
   followers: Array<BusinessFollowers>;
   /** Unique identifier for the business. */
   id: Scalars['String'];
   /** Whether the authenticated user is a customer of this business */
-  isCustomer: Scalars['Boolean'];
+  is_customer: Scalars['Boolean'];
   /** Business logo URL. */
   logo?: Maybe<Scalars['String']>;
   products?: Maybe<Array<Maybe<Product>>>;
@@ -385,6 +385,7 @@ export type CreateOrderInput = {
   isPreorder?: InputMaybe<Scalars['Boolean']>;
   items?: InputMaybe<Array<InputMaybe<OrderItemInput>>>;
   paymentMethod?: InputMaybe<Scalars['String']>;
+  security_pin?: InputMaybe<Scalars['String']>;
   shippingAddress?: InputMaybe<AddressInput>;
 };
 
@@ -1014,6 +1015,7 @@ export type MutationConfirmWithdrawalArgs = {
   country_code: Scalars['String'];
   currency: Scalars['String'];
   metadata?: InputMaybe<Scalars['String']>;
+  security_pin?: InputMaybe<Scalars['String']>;
   uuid: Scalars['String'];
 };
 
@@ -1123,6 +1125,7 @@ export type MutationMakePaymentArgs = {
   business_uuid?: InputMaybe<Scalars['String']>;
   currency: Scalars['String'];
   receiver_uuid: Scalars['String'];
+  security_pin?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -1257,6 +1260,7 @@ export type MutationUpdateProfileArgs = {
   first_name?: InputMaybe<Scalars['String']>;
   last_name?: InputMaybe<Scalars['String']>;
   profile_photo?: InputMaybe<Scalars['Upload']>;
+  security_pin?: InputMaybe<Scalars['String']>;
   state?: InputMaybe<Scalars['String']>;
 };
 
@@ -2037,6 +2041,8 @@ export type Query = {
   GetTransactions: TransactionPaginator;
   /** Get transfer fees */
   GetTransferFees: Scalars['Float'];
+  /** Get commerce sections for homepage (limited results, no pagination) */
+  GetTypeCommerceSections: Array<CommerceSection>;
   /** Get withdrawal info */
   GetWithdrawInfo: WithdrawInfo;
   /** Get yellow card networks */
@@ -2056,7 +2062,6 @@ export type Query = {
 
 export type QueryCommerceSectionsArgs = {
   limit?: InputMaybe<Scalars['Int']>;
-  type?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -2376,6 +2381,12 @@ export type QueryGetTransferFeesArgs = {
   amount: Scalars['Float'];
   currency: Scalars['String'];
   type: Scalars['String'];
+};
+
+
+export type QueryGetTypeCommerceSectionsArgs = {
+  limit?: InputMaybe<Scalars['Int']>;
+  type?: InputMaybe<Scalars['String']>;
 };
 
 
