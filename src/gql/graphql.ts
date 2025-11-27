@@ -42,6 +42,32 @@ export type Account = {
   uuid: Scalars['String'];
 };
 
+/**
+ * Account tier level definitions for users.
+ * Defines spending limits, transaction limits, and requirements for different tier levels.
+ */
+export type AccountTier = {
+  __typename?: 'AccountTier';
+  /** When the tier was created */
+  created_at: Scalars['DateTime'];
+  /** Daily transaction limit */
+  daily_limit?: Maybe<Scalars['Float']>;
+  /** Tier description */
+  description?: Maybe<Scalars['String']>;
+  /** Maximum account balance allowed */
+  max_balance?: Maybe<Scalars['Float']>;
+  /** Requirements for this tier (JSON array) */
+  requirements?: Maybe<Array<Maybe<Scalars['String']>>>;
+  /** Tier level number */
+  tier_level: Scalars['Int'];
+  /** When the tier was last updated */
+  updated_at: Scalars['DateTime'];
+  /** User type: Business, Customer, Rider, or Admin */
+  user_type: Scalars['String'];
+  /** Unique UUID */
+  uuid: Scalars['String'];
+};
+
 export type AddParticipantInput = {
   added_by: Scalars['Int'];
   conversation_id: Scalars['Int'];
@@ -135,6 +161,8 @@ export enum BillingInterval {
 /** Business profile details. */
 export type Business = {
   __typename?: 'Business';
+  /** Attached account tier details */
+  account_tier?: Maybe<AccountTier>;
   /** The auth_user_id */
   auth_user_id: Scalars['Int'];
   /** Business banner URL. */
@@ -1946,6 +1974,8 @@ export type ProductVariant = {
 /** A user profile on Greep */
 export type Profile = {
   __typename?: 'Profile';
+  /** Attached account tier details */
+  account_tier?: Maybe<AccountTier>;
   /** User UUID */
   auth_user_id: Scalars['String'];
   /** The attached business */
@@ -1982,6 +2012,8 @@ export type Query = {
   FeaturedProducts: ProductPaginator;
   /** Get featured shops */
   FeaturedShops: BusinessPaginator;
+  /** Get all Account Tier */
+  GetAccountTiers: Array<AccountTier>;
   /** Get the authenticated user */
   GetAuthUser?: Maybe<User>;
   /** Get bank account details */
