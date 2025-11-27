@@ -419,30 +419,60 @@ export type Delivery = {
   __typename?: 'Delivery';
   /** Actual Delivery Date */
   actualDeliveryDate?: Maybe<Scalars['String']>;
+  /** Business ID */
+  businessId?: Maybe<Scalars['Int']>;
+  /** Conversation */
+  conversation?: Maybe<Conversation>;
   /** Delivery Created At */
   createdAt: Scalars['String'];
+  /** Customer ID */
+  customerId?: Maybe<Scalars['Int']>;
   /** Delivery Address */
   deliveryAddress: Scalars['String'];
   /** Delivery Attempts */
   deliveryAttempts?: Maybe<Scalars['String']>;
   /** Estimated Delivery Date */
-  estimatedDeliveryDate: Scalars['String'];
+  estimatedDeliveryDate?: Maybe<Scalars['String']>;
   /** Unique ID */
   id: Scalars['Int'];
+  /** Item Description */
+  itemDescription: Scalars['String'];
   /** Metadata */
   metadata?: Maybe<Scalars['String']>;
+  /** Note */
+  note?: Maybe<Scalars['String']>;
   /** Order */
   order?: Maybe<Order>;
+  /** Order ID (null for custom deliveries) */
+  orderId?: Maybe<Scalars['Int']>;
+  /** Payment Method */
+  paymentMethod?: Maybe<Scalars['String']>;
+  /** Phone */
+  phone?: Maybe<Scalars['String']>;
+  /** Pickup Address */
+  pickupAddress: Scalars['String'];
+  /** Delivery Price */
+  price: Scalars['Float'];
+  /** Scheduled Date */
+  scheduledDate?: Maybe<Scalars['String']>;
+  /** Scheduled Time */
+  scheduledTime?: Maybe<Scalars['String']>;
   /** Status */
   status: Scalars['String'];
   /** Tracking Number */
   trackingNumber?: Maybe<Scalars['String']>;
   /** Tracking Updates */
   trackingUpdates?: Maybe<Scalars['String']>;
+  /** Delivery Type (order or custom) */
+  type: Scalars['String'];
   /** Delivery Updated At */
   updatedAt: Scalars['String'];
+  /** Urgency */
+  urgency?: Maybe<Scalars['String']>;
   /** UUID */
   uuid: Scalars['String'];
+  /** Weight */
+  weight?: Maybe<Scalars['String']>;
 };
 
 /** A delivery address for a user. */
@@ -1928,6 +1958,8 @@ export type Profile = {
   customer?: Maybe<Customer>;
   /** Default Currency */
   default_currency?: Maybe<Scalars['String']>;
+  /** Whether the user has set a security PIN */
+  is_security_pin_set: Scalars['Boolean'];
   /** Profile Picture URL (optional) */
   profile_picture?: Maybe<Scalars['String']>;
   /** Profile Updated At */
@@ -2664,7 +2696,8 @@ export type QueryGetCategoriesOrderByOrderByClause = {
 
 /** Allowed column names for Query.GetDeliveries.orderBy. */
 export enum QueryGetDeliveriesOrderByColumn {
-  CreatedAt = 'CREATED_AT'
+  CreatedAt = 'CREATED_AT',
+  UpdatedAt = 'UPDATED_AT'
 }
 
 /** Order by clause for Query.GetDeliveries.orderBy. */
