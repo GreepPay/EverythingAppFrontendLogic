@@ -39,13 +39,14 @@ export default class DeliveryModule extends Common {
   public AddDeliveryAddressPayload: MutationAddDeliveryAddressArgs | undefined;
 
   public GetDeliveries = async (
-    first: number,
     page: number,
-    orderBy?: QueryGetDeliveriesOrderByOrderByClause[],
-    where?: QueryGetDeliveriesWhereWhereConditions
+    count: number,
+    orderType = "UPDATED_AT",
+    order: "DESC" | "ASC" = "DESC",
+    whereQuery = ""
   ): Promise<DeliveryPaginator | undefined> => {
     return $api.delivery
-      .GetDeliveries(first, page, orderBy, where)
+      .GetDeliveries(page, count, orderType, order, whereQuery)
       .then((response) => {
         this.ManyDeliveries = response.data?.GetDeliveries;
         return this.ManyDeliveries;
@@ -61,10 +62,10 @@ export default class DeliveryModule extends Common {
   };
 
   public GetSingleDelivery = async (
-    where: any
+    uuid: string
   ): Promise<Delivery | undefined> => {
     return $api.delivery
-      .GetSingleDelivery(where)
+      .GetSingleDelivery(uuid)
       .then((response) => {
         this.SingleDelivery = response.data?.GetSingleDelivery;
         return this.SingleDelivery;

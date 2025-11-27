@@ -16,14 +16,23 @@ import {
 export default class DeliveryApi extends BaseApiService {
   // #region QUERIES
   public GetDeliveries = (
-    first: number,
     page: number,
-    orderBy?: QueryGetDeliveriesOrderByOrderByClause[],
-    where?: QueryGetDeliveriesWhereWhereConditions
+    count: number,
+    orderType = "CREATED_AT",
+    order: "ASC" | "DESC",
+    whereQuery = ""
   ) => {
     const requestData = `
-    query GetDeliveries($first: Int!, $page: Int, $orderBy: [QueryGetDeliveriesOrderByOrderByClause!], $where: QueryGetDeliveriesWhereWhereConditions) {
-      GetDeliveries(first: $first, page: $page, orderBy: $orderBy, where: $where) {
+    query GetDeliveries( $page: Int!, $count: Int!) {
+      GetDeliveries(
+          first: $count,
+          page: $page,
+          orderBy: {
+            column: ${orderType ? orderType : "CREATED_AT"},
+            order: ${order}
+          }
+          ${whereQuery ? `where: ${whereQuery}` : ""}
+          ) {
         paginatorInfo {
           firstItem
           lastItem
@@ -34,23 +43,38 @@ export default class DeliveryApi extends BaseApiService {
           hasMorePages
         }
         data {
-          orderId
-          trackingNumber
+          id
+          uuid
+          type
           status
-          estimatedDelivery
-          actualDelivery
+          deliveryAddress
+          pickupAddress
+          metadata
+          trackingNumber
+          estimatedDeliveryDate
+          actualDeliveryDate
+          price
+          trackingUpdates
           deliveryAttempts
-          recipientSignature
-          carrier {
-            # Add relevant fields here (e.g. name, code, etc.)
-          }
-          trackingUpdates {
-            timestamp
-            location
+          order {
+            id
+            uuid
+            orderNumber
+            customerId
+            user {
+              id
+              uuid
+              first_name
+              last_name
+              email
+              phone
+            }
+            totalAmount
+            currency
             status
-            description
-            carrierCode
-          }
+         }
+        createdAt
+        updatedAt
         }
       }
     }
@@ -60,35 +84,40 @@ export default class DeliveryApi extends BaseApiService {
       OperationResult<{
         GetDeliveries: DeliveryPaginator;
       }>
-    > = this.query(requestData, { first, page, orderBy, where });
+    > = this.query(requestData, { page, count, orderType, order, whereQuery });
 
     return response;
   };
 
-  public GetSingleDelivery = (where: any) => {
+  public GetSingleDelivery = (uuid: string) => {
     const requestData = `
-    query GetSingleDelivery($where: QueryGetSingleDeliveryWhereWhereConditions) {
-      GetSingleDelivery(where: $where) {
-        orderId
-        carrier {
-          id
-          name
-          code
-          trackingUrl
-        }
-        trackingNumber
-        status
-        estimatedDelivery
-        actualDelivery
-        deliveryAttempts
-        trackingUpdates {
-          timestamp
-          location
+    query GetSingleDelivery($uuid: String!) {
+      GetSingleDelivery(uuid: $uuid) {
+        id
+          uuid
+          trackingNumber
           status
-          description
-          carrierCode
-        }
-        recipientSignature
+          type
+          estimatedDeliveryDate
+          actualDeliveryDate
+          deliveryAddress
+          pickupAddress
+          metadata
+          trackingUpdates
+          deliveryAttempts
+          weight
+          scheduledTime
+          scheduledDate
+           conversation {
+              uuid
+              name
+              entity_type
+              participants {
+                id
+              }
+            }
+          createdAt
+          updatedAt
       }
     }
   `;
@@ -97,7 +126,7 @@ export default class DeliveryApi extends BaseApiService {
       OperationResult<{
         GetSingleDelivery: Delivery;
       }>
-    > = this.query(requestData, { where });
+    > = this.query(requestData, { uuid });
 
     return response;
   };
