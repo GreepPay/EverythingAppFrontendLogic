@@ -279,10 +279,10 @@ export default class MarketApi extends BaseApiService {
     return response
   }
 
-  public GetCommerceSections = (type: string, limit: number) => {
+  public GetTypeCommerceSections = (type: string, limit: number) => {
     const requestData = `
-      query CommerceSections  ($type: String!, $limit: Int!) {
-        CommerceSections(type: $type, limit: $limit) {
+      query GetTypeCommerceSections  ($type: String!, $limit: Int!) {
+        GetTypeCommerceSections(type: $type, limit: $limit) {
           label
           type
           variant
@@ -375,7 +375,7 @@ export default class MarketApi extends BaseApiService {
     `
 
     const response: Promise<
-      OperationResult<{ CommerceSections: CommerceSection }>
+      OperationResult<{ GetTypeCommerceSections: CommerceSection }>
     > = this.query(requestData, {
       type,
       limit,
