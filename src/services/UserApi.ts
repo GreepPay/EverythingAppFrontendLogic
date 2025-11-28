@@ -1,5 +1,5 @@
-import { BaseApiService } from "./common/BaseService";
-import { OperationResult } from "urql";
+import { BaseApiService } from './common/BaseService';
+import { OperationResult } from 'urql';
 import {
   MutationUpdateProfileArgs,
   User,
@@ -10,7 +10,7 @@ import {
   QueryGetBusinessSchedulesArgs,
   BusinessSchedulePaginator,
   BusinessSchedule,
-} from "../gql/graphql";
+} from '../gql/graphql';
 
 export default class UserApi extends BaseApiService {
   // #region QUERIES
@@ -141,9 +141,9 @@ export default class UserApi extends BaseApiService {
   public GetBusinessSchedules = (
     page: number,
     first: number,
-    orderType = "CREATED_AT",
-    order: "ASC" | "DESC",
-    whereQuery = "",
+    orderType = 'CREATED_AT',
+    order: 'ASC' | 'DESC',
+    whereQuery = '',
     business_uuid?: string,
     business_id?: string
   ) => {
@@ -151,10 +151,10 @@ export default class UserApi extends BaseApiService {
       query GetBusinessSchedules($first: Int!, $page: Int, $business_uuid: String, $business_id: ID) {
         GetBusinessSchedules(first: $first, page: $page, business_uuid: $business_uuid, business_id: $business_id,
         orderBy: {
-            column: ${orderType ? orderType : "CREATED_AT"},
+            column: ${orderType ? orderType : 'CREATED_AT'},
             order: ${order}
           }
-          ${whereQuery ? `where: ${whereQuery}` : ""}
+          ${whereQuery ? `where: ${whereQuery}` : ''}
         ) {
           data {
             id
@@ -237,6 +237,7 @@ export default class UserApi extends BaseApiService {
       $country: String,
       $auth_passcode: String,
       $country_code: String,
+      $security_pin: String,
       $state: String
     ) {
       UpdateProfile(
@@ -245,6 +246,7 @@ export default class UserApi extends BaseApiService {
         last_name: $last_name,
         default_currency: $default_currency,
         country_code: $country_code,
+        security_pin: $security_pin,
         country: $country,
         state: $state
         auth_passcode: $auth_passcode

@@ -42,6 +42,32 @@ export type Account = {
   uuid: Scalars['String'];
 };
 
+/**
+ * Account tier level definitions for users.
+ * Defines spending limits, transaction limits, and requirements for different tier levels.
+ */
+export type AccountTier = {
+  __typename?: 'AccountTier';
+  /** When the tier was created */
+  created_at: Scalars['DateTime'];
+  /** Daily transaction limit */
+  daily_limit?: Maybe<Scalars['Float']>;
+  /** Tier description */
+  description?: Maybe<Scalars['String']>;
+  /** Maximum account balance allowed */
+  max_balance?: Maybe<Scalars['Float']>;
+  /** Requirements for this tier (JSON array) */
+  requirements?: Maybe<Array<Maybe<Scalars['String']>>>;
+  /** Tier level number */
+  tier_level: Scalars['Int'];
+  /** When the tier was last updated */
+  updated_at: Scalars['DateTime'];
+  /** User type: Business, Customer, Rider, or Admin */
+  user_type: Scalars['String'];
+  /** Unique UUID */
+  uuid: Scalars['String'];
+};
+
 export type AddParticipantInput = {
   added_by: Scalars['Int'];
   conversation_id: Scalars['Int'];
@@ -135,6 +161,8 @@ export enum BillingInterval {
 /** Business profile details. */
 export type Business = {
   __typename?: 'Business';
+  /** Attached account tier details */
+  account_tier?: Maybe<AccountTier>;
   /** The auth_user_id */
   auth_user_id: Scalars['Int'];
   /** Business banner URL. */
@@ -419,30 +447,60 @@ export type Delivery = {
   __typename?: 'Delivery';
   /** Actual Delivery Date */
   actualDeliveryDate?: Maybe<Scalars['String']>;
+  /** Business ID */
+  businessId?: Maybe<Scalars['Int']>;
+  /** Conversation */
+  conversation?: Maybe<Conversation>;
   /** Delivery Created At */
   createdAt: Scalars['String'];
+  /** Customer ID */
+  customerId?: Maybe<Scalars['Int']>;
   /** Delivery Address */
   deliveryAddress: Scalars['String'];
   /** Delivery Attempts */
   deliveryAttempts?: Maybe<Scalars['String']>;
   /** Estimated Delivery Date */
-  estimatedDeliveryDate: Scalars['String'];
+  estimatedDeliveryDate?: Maybe<Scalars['String']>;
   /** Unique ID */
   id: Scalars['Int'];
+  /** Item Description */
+  itemDescription: Scalars['String'];
   /** Metadata */
   metadata?: Maybe<Scalars['String']>;
+  /** Note */
+  note?: Maybe<Scalars['String']>;
   /** Order */
   order?: Maybe<Order>;
+  /** Order ID (null for custom deliveries) */
+  orderId?: Maybe<Scalars['Int']>;
+  /** Payment Method */
+  paymentMethod?: Maybe<Scalars['String']>;
+  /** Phone */
+  phone?: Maybe<Scalars['String']>;
+  /** Pickup Address */
+  pickupAddress: Scalars['String'];
+  /** Delivery Price */
+  price: Scalars['Float'];
+  /** Scheduled Date */
+  scheduledDate?: Maybe<Scalars['String']>;
+  /** Scheduled Time */
+  scheduledTime?: Maybe<Scalars['String']>;
   /** Status */
   status: Scalars['String'];
   /** Tracking Number */
   trackingNumber?: Maybe<Scalars['String']>;
   /** Tracking Updates */
   trackingUpdates?: Maybe<Scalars['String']>;
+  /** Delivery Type (order or custom) */
+  type: Scalars['String'];
   /** Delivery Updated At */
   updatedAt: Scalars['String'];
+  /** Urgency */
+  urgency?: Maybe<Scalars['String']>;
   /** UUID */
   uuid: Scalars['String'];
+  /** Weight */
+  weight?: Maybe<Scalars['String']>;
 };
 
 /** A delivery address for a user. */
@@ -1916,6 +1974,8 @@ export type ProductVariant = {
 /** A user profile on Greep */
 export type Profile = {
   __typename?: 'Profile';
+  /** Attached account tier details */
+  account_tier?: Maybe<AccountTier>;
   /** User UUID */
   auth_user_id: Scalars['String'];
   /** The attached business */
@@ -1928,6 +1988,8 @@ export type Profile = {
   customer?: Maybe<Customer>;
   /** Default Currency */
   default_currency?: Maybe<Scalars['String']>;
+  /** Whether the user has set a security PIN */
+  is_security_pin_set: Scalars['Boolean'];
   /** Profile Picture URL (optional) */
   profile_picture?: Maybe<Scalars['String']>;
   /** Profile Updated At */
@@ -1950,6 +2012,8 @@ export type Query = {
   FeaturedProducts: ProductPaginator;
   /** Get featured shops */
   FeaturedShops: BusinessPaginator;
+  /** Get all Account Tier */
+  GetAccountTiers: Array<AccountTier>;
   /** Get the authenticated user */
   GetAuthUser?: Maybe<User>;
   /** Get bank account details */
@@ -2664,7 +2728,8 @@ export type QueryGetCategoriesOrderByOrderByClause = {
 
 /** Allowed column names for Query.GetDeliveries.orderBy. */
 export enum QueryGetDeliveriesOrderByColumn {
-  CreatedAt = 'CREATED_AT'
+  CreatedAt = 'CREATED_AT',
+  UpdatedAt = 'UPDATED_AT'
 }
 
 /** Order by clause for Query.GetDeliveries.orderBy. */

@@ -1,12 +1,12 @@
-import { BaseApiService } from "./common/BaseService";
-import { OperationResult } from "urql";
+import { BaseApiService } from './common/BaseService';
+import { OperationResult } from 'urql';
 import {
   CreateOrderInput,
   Order,
   OrderPaginator,
   QueryGetOrdersOrderByOrderByClause,
   QueryGetOrdersWhereWhereConditions,
-} from "../gql/graphql";
+} from '../gql/graphql';
 
 // This should match the CreateDeliveryOrderInput from the GraphQL schema
 export interface CreateDeliveryOrderInput {
@@ -27,10 +27,10 @@ export interface CreateDeliveryOrderInput {
 
 export default class OrderApi extends BaseApiService {
   // #region MUTATIONS
-  public CreateOrder = (input: CreateOrderInput) => {
+  public CreateOrder = (input: CreateOrderInput, security_pin: string) => {
     const requestData = `
-    mutation CreateOrder($input: CreateOrderInput!) {
-      CreateOrder(input: $input) { 
+    mutation CreateOrder($input: CreateOrderInput!, $security_pin: String!) {
+      CreateOrder(input: $input, security_pin: $security_pin) { 
         id
         uuid
         status
@@ -43,7 +43,7 @@ export default class OrderApi extends BaseApiService {
   `;
 
     const response: Promise<OperationResult<{ CreateOrder: Order }>> =
-      this.mutation(requestData, { input });
+      this.mutation(requestData, { input, security_pin });
 
     return response;
   };
@@ -105,9 +105,9 @@ export default class OrderApi extends BaseApiService {
   public GetOrders = (
     page: number,
     count: number,
-    orderType = "CREATED_AT",
-    order: "ASC" | "DESC",
-    whereQuery = ""
+    orderType = 'CREATED_AT',
+    order: 'ASC' | 'DESC',
+    whereQuery = ''
   ) => {
     const requestData = `
     query GetOrders(
@@ -117,10 +117,10 @@ export default class OrderApi extends BaseApiService {
       GetOrders(first: $count,
           page: $page,
        orderBy: {
-            column: ${orderType ? orderType : "CREATED_AT"},
+            column: ${orderType ? orderType : 'CREATED_AT'},
             order: ${order}
           }
-          ${whereQuery ? `where: ${whereQuery}` : ""}) {
+          ${whereQuery ? `where: ${whereQuery}` : ''}) {
         paginatorInfo {
           firstItem
           lastItem
