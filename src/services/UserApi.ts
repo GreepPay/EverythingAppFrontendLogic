@@ -10,6 +10,7 @@ import {
   QueryGetBusinessSchedulesArgs,
   BusinessSchedulePaginator,
   BusinessSchedule,
+  AccountTier,
 } from "../gql/graphql";
 
 export default class UserApi extends BaseApiService {
@@ -74,6 +75,30 @@ export default class UserApi extends BaseApiService {
         SearchBusinesses: Business[];
       }>
     > = this.query(requestData, data);
+
+    return response;
+  };
+
+  public GetAllAccountTiers = () => {
+    const requestData = `
+      query GetAccountTiers {
+        GetAccountTiers {
+          uuid
+          tier_level
+          user_type
+          daily_limit
+          max_balance
+          requirements
+          description
+        }
+      }
+    `;
+
+    const response: Promise<
+      OperationResult<{
+        GetAccountTiers: AccountTier[];
+      }>
+    > = this.query(requestData, {});
 
     return response;
   };

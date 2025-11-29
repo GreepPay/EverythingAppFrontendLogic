@@ -5,6 +5,7 @@ import {
   BusinessSchedulePaginator,
   User as UserModel,
   BusinessSchedule,
+  AccountTier,
 } from "../../gql/graphql";
 import { $api } from "../../services";
 import Common from "./Common";
@@ -21,6 +22,7 @@ export default class User extends Common {
     this.defineReactiveProperty("VerificationRetryInfo", undefined);
     this.defineReactiveProperty("BusinessSchedules", undefined);
     this.defineReactiveProperty("BusinessSchedule", undefined);
+    this.defineReactiveProperty("ManyAccountTiers", undefined);
   }
 
   // Base variables
@@ -30,6 +32,7 @@ export default class User extends Common {
   public BusinessSchedules: BusinessSchedulePaginator | undefined;
   public BusinessSchedule: BusinessSchedule | undefined;
   public ManyP2PDeliveryAddresses: DeliveryAddressPaginator | undefined;
+  public ManyAccountTiers: AccountTier[] | undefined;
   public VerificationRetryInfo:
     | {
         auth_user_id: number;
@@ -68,6 +71,13 @@ export default class User extends Common {
         this.SearchedBusinesses = response.data?.SearchBusinesses;
         return response.data?.SearchBusinesses;
       });
+  };
+
+  public GetAllAccountTiers = async (): Promise<AccountTier[] | undefined> => {
+    return $api.user.GetAllAccountTiers().then((response) => {
+      this.ManyAccountTiers = response.data?.GetAccountTiers;
+      return response.data?.GetAccountTiers;
+    });
   };
 
   public GetSingleUser = async (
