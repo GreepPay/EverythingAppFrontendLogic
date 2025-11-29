@@ -5,18 +5,18 @@ import {
   QueryGetOrdersOrderByOrderByClause,
   QueryGetOrdersWhereWhereConditions,
   ExchangeOrderPaginator,
-} from "../../gql/graphql";
-import { CreateDeliveryOrderInput } from "../../services/OrderApi";
-import { $api } from "../../services";
-import { CombinedError } from "@urql/core";
-import { Logic } from "..";
-import Common from "./Common";
+} from '../../gql/graphql';
+import { CreateDeliveryOrderInput } from '../../services/OrderApi';
+import { $api } from '../../services';
+import { CombinedError } from '@urql/core';
+import { Logic } from '..';
+import Common from './Common';
 
 export default class OrderModule extends Common {
   constructor() {
     super();
-    this.defineReactiveProperty("OrdersPaginator", undefined);
-    this.defineReactiveProperty("SingleOrder", undefined);
+    this.defineReactiveProperty('OrdersPaginator', undefined);
+    this.defineReactiveProperty('SingleOrder', undefined);
   }
 
   public OrdersPaginator: OrderPaginator | undefined;
@@ -26,18 +26,18 @@ export default class OrderModule extends Common {
   public CreateOrderPayload: CreateOrderInput | undefined;
   public CreateDeliveryOrderPayload: CreateDeliveryOrderInput | undefined;
 
-  public CreateOrder = async (): Promise<Order | undefined> => {
+  public CreateOrder = async (
+    transactionPin: string
+  ): Promise<Order | undefined> => {
     if (!this.CreateOrderPayload) return;
 
-    console.log("CreateOrderPayload", this.CreateOrderPayload);
-
     return $api.order
-      .CreateOrder(this.CreateOrderPayload)
+      .CreateOrder(this.CreateOrderPayload, transactionPin)
       .then((response) => {
         return response.data?.CreateOrder;
       })
       .catch((error: CombinedError) => {
-        Logic.Common.showError(error, "Failed to create order", "error-alert");
+        Logic.Common.showError(error, 'Failed to create order', 'error-alert');
         return undefined;
       });
   };
@@ -48,7 +48,7 @@ export default class OrderModule extends Common {
     Logic.Common.showLoader({
       loading: true,
       show: true,
-      message: "Processing your delivery order...",
+      message: 'Processing your delivery order...',
     });
 
     return $api.order
@@ -61,8 +61,8 @@ export default class OrderModule extends Common {
         Logic.Common.hideLoader();
         Logic.Common.showError(
           error,
-          "Failed to create delivery order",
-          "error-alert"
+          'Failed to create delivery order',
+          'error-alert'
         );
         return undefined;
       });
@@ -71,9 +71,9 @@ export default class OrderModule extends Common {
   public GetOrders = async (
     page: number,
     count: number,
-    orderType: "CREATED_AT",
-    order = "DESC" as "DESC" | "ASC",
-    whereQuery = "",
+    orderType: 'CREATED_AT',
+    order = 'DESC' as 'DESC' | 'ASC',
+    whereQuery = '',
     isLoadMore = false
   ): Promise<OrderPaginator | undefined> => {
     return $api.order
@@ -101,7 +101,7 @@ export default class OrderModule extends Common {
         // return this.OrdersPaginator
       })
       .catch((error: CombinedError) => {
-        Logic.Common.showError(error, "Failed to fetch orders", "error-alert");
+        Logic.Common.showError(error, 'Failed to fetch orders', 'error-alert');
         return undefined;
       });
   };
@@ -114,7 +114,7 @@ export default class OrderModule extends Common {
         return this.SingleOrder;
       })
       .catch((error: CombinedError) => {
-        Logic.Common.showError(error, "Failed to fetch order", "error-alert");
+        Logic.Common.showError(error, 'Failed to fetch order', 'error-alert');
         return undefined;
       });
   };
@@ -130,7 +130,7 @@ export default class OrderModule extends Common {
     Logic.Common.showLoader({
       loading: true,
       show: true,
-      message: "Updating delivery status...",
+      message: 'Updating delivery status...',
     });
 
     return $api.order
@@ -140,8 +140,8 @@ export default class OrderModule extends Common {
         if (response.data?.UpdateDeliveryStatus) {
           Logic.Common.showAlert({
             show: true,
-            message: "Delivery status updated successfully",
-            type: "success",
+            message: 'Delivery status updated successfully',
+            type: 'success',
           });
           return true;
         }
@@ -151,8 +151,8 @@ export default class OrderModule extends Common {
         Logic.Common.hideLoader();
         Logic.Common.showError(
           error,
-          "Failed to update delivery status",
-          "error-alert"
+          'Failed to update delivery status',
+          'error-alert'
         );
         return false;
       });

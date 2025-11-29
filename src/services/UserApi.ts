@@ -262,6 +262,7 @@ export default class UserApi extends BaseApiService {
       $country: String,
       $auth_passcode: String,
       $country_code: String,
+      $security_pin: String,
       $state: String
     ) {
       UpdateProfile(
@@ -270,6 +271,7 @@ export default class UserApi extends BaseApiService {
         last_name: $last_name,
         default_currency: $default_currency,
         country_code: $country_code,
+        security_pin: $security_pin,
         country: $country,
         state: $state
         auth_passcode: $auth_passcode

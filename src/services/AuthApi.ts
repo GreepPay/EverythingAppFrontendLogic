@@ -31,6 +31,7 @@ export default class AuthApi extends BaseApiService {
             transaction_pin
             profile {
               profile_picture
+              is_security_pin_set
               verification_status
               default_currency
                account_tier {
@@ -203,7 +204,6 @@ export default class AuthApi extends BaseApiService {
         SendResetPasswordOTP(email: $email)
       }
     `;
-    console.log("helloe");
 
     const response: Promise<OperationResult<{ SendResetPasswordOTP: string }>> =
       this.mutation(requestData, data);

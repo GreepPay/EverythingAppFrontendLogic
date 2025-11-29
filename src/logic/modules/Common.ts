@@ -1103,9 +1103,15 @@ export default class Common {
     return Promise.all(urls.map(this.fetchFile));
   };
 
-  public fomartDate = (date: string, format: string) => {
+  public fomartDate = (
+    date: string,
+    format: string,
+    useLocalTimeZone = true
+  ) => {
     // Let first make the date local to the current time zone, since dates from the backend are in UTC
-    const localDate = moment.utc(date).local();
+    const localDate = useLocalTimeZone
+      ? moment.utc(date).local()
+      : moment(date);
     return localDate.format(format);
   };
 
