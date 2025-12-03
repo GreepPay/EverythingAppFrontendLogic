@@ -91,7 +91,6 @@ export default class AuthModule extends Common {
       })
       .catch((error: CombinedError) => {
         Logic.Common.showError(error, "Oops!", "error-alert");
-        Logic.Auth.SignOut();
         throw error;
       });
   };
