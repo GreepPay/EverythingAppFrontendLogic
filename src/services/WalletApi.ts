@@ -1,5 +1,5 @@
-import { BaseApiService } from './common/BaseService';
-import { OperationResult } from 'urql';
+import { BaseApiService } from "./common/BaseService";
+import { OperationResult } from "urql";
 import {
   MutationInitiateTopupArgs,
   MutationMakePaymentArgs,
@@ -42,7 +42,7 @@ import {
   ExchangeOrder,
   PaymentDetailsResponse,
   ExchangeOrderPaginator,
-} from '../gql/graphql';
+} from "../gql/graphql";
 
 export default class WalletsApi extends BaseApiService {
   // Query
@@ -74,9 +74,9 @@ export default class WalletsApi extends BaseApiService {
   public GetPointTransactions = (
     page: number,
     count: number,
-    orderType = 'CREATED_AT',
-    order: 'ASC' | 'DESC',
-    whereQuery = ''
+    orderType = "CREATED_AT",
+    order: "ASC" | "DESC",
+    whereQuery = ""
   ) => {
     const requestData = `
       query GetPointTransactions(
@@ -87,10 +87,10 @@ export default class WalletsApi extends BaseApiService {
           first: $count,
           page: $page,
           orderBy: {
-            column: ${orderType ? orderType : 'CREATED_AT'},
+            column: ${orderType ? orderType : "CREATED_AT"},
             order: ${order}
           }
-          ${whereQuery ? `where: ${whereQuery}` : ''}
+          ${whereQuery ? `where: ${whereQuery}` : ""}
         ) {
           paginatorInfo {
             total
@@ -182,9 +182,9 @@ export default class WalletsApi extends BaseApiService {
   public GetTransactions = (
     page: number,
     count: number,
-    orderType = 'CREATED_AT',
-    order: 'ASC' | 'DESC',
-    whereQuery = ''
+    orderType = "CREATED_AT",
+    order: "ASC" | "DESC",
+    whereQuery = ""
   ) => {
     const requestData = `
       query GetTransactions(
@@ -195,10 +195,10 @@ export default class WalletsApi extends BaseApiService {
           first: $count,
           page: $page,
           orderBy: {
-            column: ${orderType ? orderType : 'CREATED_AT'},
+            column: ${orderType ? orderType : "CREATED_AT"},
             order: ${order}
           }
-          ${whereQuery ? `where: ${whereQuery}` : ''}
+          ${whereQuery ? `where: ${whereQuery}` : ""}
         ) {
           paginatorInfo {
             total
@@ -244,9 +244,9 @@ export default class WalletsApi extends BaseApiService {
   public GetManyP2POrders = (
     page: number,
     count: number,
-    orderType = 'CREATED_AT',
-    order: 'ASC' | 'DESC',
-    whereQuery = ''
+    orderType = "CREATED_AT",
+    order: "ASC" | "DESC",
+    whereQuery = ""
   ) => {
     const requestData = `
       query GetMyP2POrders(
@@ -257,10 +257,10 @@ export default class WalletsApi extends BaseApiService {
           first: $count,
           page: $page,
           orderBy: {
-            column: ${orderType ? orderType : 'CREATED_AT'},
+            column: ${orderType ? orderType : "CREATED_AT"},
             order: ${order}
           }
-          ${whereQuery ? `where: ${whereQuery}` : ''}
+          ${whereQuery ? `where: ${whereQuery}` : ""}
         ) {
           paginatorInfo {
             total
@@ -775,7 +775,7 @@ export default class WalletsApi extends BaseApiService {
   public CreateCrpytoTransfer = (
     crypto: string,
     network: string,
-    wallet_uuid = ''
+    wallet_uuid = ""
   ) => {
     const requestData = `
         mutation CreateCrpytoTransfer($crypto: String!, $network: String!, $wallet_uuid: String) {
@@ -906,10 +906,13 @@ export default class WalletsApi extends BaseApiService {
     return response;
   };
 
-  public GetSmileIdToken = (verification_type: string) => {
+  public GetSmileIdToken = (
+    verification_type: string,
+    user_uuid: string = ""
+  ) => {
     const requestData = `
-      query GetSmileIdToken($verification_type: String!) {
-      GetSmileIdToken(verification_type: $verification_type)
+      query GetSmileIdToken($verification_type: String!, $user_uuid: String) {
+      GetSmileIdToken(verification_type: $verification_type, user_uuid: $user_uuid)
       }
     `;
 
@@ -919,6 +922,7 @@ export default class WalletsApi extends BaseApiService {
       }>
     > = this.query(requestData, {
       verification_type,
+      user_uuid,
     });
 
     return response;
@@ -1019,8 +1023,8 @@ export default class WalletsApi extends BaseApiService {
     currency: string,
     amount: number,
     country_code: string,
-    metadata = '',
-    security_pin = ''
+    metadata = "",
+    security_pin = ""
   ) => {
     const requestData = `
         mutation ConfirmWithdrawal(
@@ -1164,8 +1168,8 @@ export default class WalletsApi extends BaseApiService {
   public GetRecommendedExchangeAds = (
     page: number,
     count: number,
-    ad_type = 'buy',
-    currency = ''
+    ad_type = "buy",
+    currency = ""
   ) => {
     const requestData = `
       query GetRecommendedExchangeAds($page: Int!, $count: Int!) {
@@ -1226,17 +1230,17 @@ export default class WalletsApi extends BaseApiService {
   public GetP2pPaymentMethods = (
     page: number,
     count: number,
-    orderType = 'CREATED_AT',
-    order: 'ASC' | 'DESC' = 'DESC',
-    whereQuery = ''
+    orderType = "CREATED_AT",
+    order: "ASC" | "DESC" = "DESC",
+    whereQuery = ""
   ) => {
     const requestData = `
       query GetMyP2pPaymentMethods($page: Int!, $count: Int!) {
         GetMyP2pPaymentMethods(first: $count, page: $page,   orderBy: {
-            column: ${orderType ? orderType : 'CREATED_AT'},
+            column: ${orderType ? orderType : "CREATED_AT"},
             order: ${order}
           }
-          ${whereQuery ? `where: ${whereQuery}` : ''}) {
+          ${whereQuery ? `where: ${whereQuery}` : ""}) {
           paginatorInfo {
             total
             perPage

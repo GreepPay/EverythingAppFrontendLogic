@@ -33,12 +33,12 @@ import {
   MutationSoftDeleteP2pPaymentMethodArgs,
   PaymentDetailsResponse,
   ExchangeOrderPaginator,
-} from '../../gql/graphql';
-import { $api } from '../../services';
-import { CombinedError } from 'urql';
-import Common from './Common';
-import { Logic } from '..';
-import { reactive } from 'vue';
+} from "../../gql/graphql";
+import { $api } from "../../services";
+import { CombinedError } from "urql";
+import Common from "./Common";
+import { Logic } from "..";
+import { reactive } from "vue";
 
 export default class Wallet extends Common {
   // Base Variables
@@ -97,34 +97,34 @@ export default class Wallet extends Common {
   constructor() {
     super();
 
-    this.defineReactiveProperty('CurrentExchangeRate', undefined);
-    this.defineReactiveProperty('ManyOffRampCurrencies', undefined);
-    this.defineReactiveProperty('ManyPointTransactions', undefined);
-    this.defineReactiveProperty('ManyTransactions', undefined);
-    this.defineReactiveProperty('ManySavedAccounts', undefined);
-    this.defineReactiveProperty('SinglePointTransaction', undefined);
-    this.defineReactiveProperty('SingleTransaction', undefined);
-    this.defineReactiveProperty('CurrentGlobalExchangeRate', undefined);
-    this.defineReactiveProperty('NormalFinancialSummary', undefined);
-    this.defineReactiveProperty('PointFinancialSummary', undefined);
-    this.defineReactiveProperty('CurrentWithdrawalInfo', undefined);
-    this.defineReactiveProperty('CurrentYellowCardNetworks', undefined);
-    this.defineReactiveProperty('CurrentOfframp', undefined);
-    this.defineReactiveProperty('ManyExchangeAds', undefined);
-    this.defineReactiveProperty('SingleExchangeAd', undefined);
-    this.defineReactiveProperty('ManyRecommendedExchangeAds', undefined);
-    this.defineReactiveProperty('ManyP2pOrders', undefined);
-    this.defineReactiveProperty('SingleP2pOrder', undefined);
-    this.defineReactiveProperty('ManyP2pPaymentMethods', undefined);
-    this.defineReactiveProperty('SingleP2pPaymentMethod', undefined);
-    this.defineReactiveProperty('OnRampChannels', undefined);
-    this.defineReactiveProperty('OffRampChannels', undefined);
-    this.defineReactiveProperty('OnRampNetwork', undefined);
-    this.defineReactiveProperty('CurrentCryptoTransfer', undefined);
-    this.defineReactiveProperty('CheckStatusState', { active: false });
-    this.defineReactiveProperty('CurrentPaymentDetail', undefined);
-    this.defineReactiveProperty('ManyBanksByCountry', undefined);
-    this.defineReactiveProperty('ManyBankBranches', undefined);
+    this.defineReactiveProperty("CurrentExchangeRate", undefined);
+    this.defineReactiveProperty("ManyOffRampCurrencies", undefined);
+    this.defineReactiveProperty("ManyPointTransactions", undefined);
+    this.defineReactiveProperty("ManyTransactions", undefined);
+    this.defineReactiveProperty("ManySavedAccounts", undefined);
+    this.defineReactiveProperty("SinglePointTransaction", undefined);
+    this.defineReactiveProperty("SingleTransaction", undefined);
+    this.defineReactiveProperty("CurrentGlobalExchangeRate", undefined);
+    this.defineReactiveProperty("NormalFinancialSummary", undefined);
+    this.defineReactiveProperty("PointFinancialSummary", undefined);
+    this.defineReactiveProperty("CurrentWithdrawalInfo", undefined);
+    this.defineReactiveProperty("CurrentYellowCardNetworks", undefined);
+    this.defineReactiveProperty("CurrentOfframp", undefined);
+    this.defineReactiveProperty("ManyExchangeAds", undefined);
+    this.defineReactiveProperty("SingleExchangeAd", undefined);
+    this.defineReactiveProperty("ManyRecommendedExchangeAds", undefined);
+    this.defineReactiveProperty("ManyP2pOrders", undefined);
+    this.defineReactiveProperty("SingleP2pOrder", undefined);
+    this.defineReactiveProperty("ManyP2pPaymentMethods", undefined);
+    this.defineReactiveProperty("SingleP2pPaymentMethod", undefined);
+    this.defineReactiveProperty("OnRampChannels", undefined);
+    this.defineReactiveProperty("OffRampChannels", undefined);
+    this.defineReactiveProperty("OnRampNetwork", undefined);
+    this.defineReactiveProperty("CurrentCryptoTransfer", undefined);
+    this.defineReactiveProperty("CheckStatusState", { active: false });
+    this.defineReactiveProperty("CurrentPaymentDetail", undefined);
+    this.defineReactiveProperty("ManyBanksByCountry", undefined);
+    this.defineReactiveProperty("ManyBankBranches", undefined);
   }
 
   // Queries
@@ -141,7 +141,7 @@ export default class Wallet extends Common {
     countryCode: string
   ): Promise<PaymentChannel[] | undefined> => {
     if (!countryCode) {
-      countryCode = localStorage.getItem('default_country_code') ?? '';
+      countryCode = localStorage.getItem("default_country_code") ?? "";
     }
     return $api.wallet
       .GetOnRampChannelsByCountryCode(countryCode)
@@ -155,7 +155,7 @@ export default class Wallet extends Common {
     countryCode: string
   ): Promise<PaymentChannel[] | undefined> => {
     if (!countryCode) {
-      countryCode = localStorage.getItem('default_country_code') ?? '';
+      countryCode = localStorage.getItem("default_country_code") ?? "";
     }
     return $api.wallet
       .GetOffRampChannelsByCountryCode(countryCode)
@@ -184,9 +184,9 @@ export default class Wallet extends Common {
   public GetManyP2POrders = async (
     page: number,
     count: number,
-    orderType: 'CREATED_AT',
-    order = 'DESC' as 'DESC' | 'ASC',
-    whereQuery = '',
+    orderType: "CREATED_AT",
+    order = "DESC" as "DESC" | "ASC",
+    whereQuery = "",
     isLoadMore = false
   ): Promise<ExchangeOrderPaginator | undefined> => {
     return $api.wallet
@@ -218,7 +218,7 @@ export default class Wallet extends Common {
     countryCode: string
   ): Promise<PaymentNetwork[] | undefined> => {
     if (!countryCode) {
-      countryCode = localStorage.getItem('default_country_code') ?? '';
+      countryCode = localStorage.getItem("default_country_code") ?? "";
     }
     return $api.wallet
       .GetOnRampNetworkByCountryCode(countryCode)
@@ -230,7 +230,7 @@ export default class Wallet extends Common {
   public GetWithdrawInfo = async (
     amount: number,
     currency: string,
-    countryCode = ''
+    countryCode = ""
   ): Promise<WithdrawInfo | undefined> => {
     return $api.wallet
       .GetWithdrawInfo(amount, currency, countryCode)
@@ -256,8 +256,8 @@ export default class Wallet extends Common {
     });
   };
 
-  public GetPointFinancialSummary = async (from = '', to = '') => {
-    const input: FinancialSummaryInput = { type: 'point', from, to };
+  public GetPointFinancialSummary = async (from = "", to = "") => {
+    const input: FinancialSummaryInput = { type: "point", from, to };
     return $api.wallet.GetFinancialSummary(input).then((response) => {
       this.PointFinancialSummary = response.data?.GetFinancialSummary;
       return this.PointFinancialSummary;
@@ -277,12 +277,12 @@ export default class Wallet extends Common {
   };
 
   public GetGlobalExchangeRate = async (
-    base = 'USD',
-    target = '',
+    base = "USD",
+    target = "",
     isBackground = false
   ): Promise<GlobalExchangeRate | undefined> => {
     if (!target) {
-      target = 'USD';
+      target = "USD";
     }
 
     const getFreshRate = () => {
@@ -293,7 +293,7 @@ export default class Wallet extends Common {
             response.data?.GetGlobalExchangeRate;
 
           localStorage.setItem(
-            'global_exchange_rates',
+            "global_exchange_rates",
             JSON.stringify(existingRateMaps)
           );
 
@@ -306,7 +306,7 @@ export default class Wallet extends Common {
     };
 
     // Let do a cache first setup here.
-    const existingExchangeRates = localStorage.getItem('global_exchange_rates');
+    const existingExchangeRates = localStorage.getItem("global_exchange_rates");
 
     let existingRateMaps: Record<string, GlobalExchangeRate | undefined> = {};
 
@@ -345,8 +345,8 @@ export default class Wallet extends Common {
       .catch((error: CombinedError) => {
         Logic.Common.showError(
           error,
-          'Failed to fetch on-ramp currencies',
-          'error-alert'
+          "Failed to fetch on-ramp currencies",
+          "error-alert"
         );
         return undefined;
       });
@@ -355,9 +355,9 @@ export default class Wallet extends Common {
   public GetPointTransactions = async (
     page: number,
     count: number,
-    orderType: 'CREATED_AT',
-    order = 'DESC' as 'DESC' | 'ASC',
-    whereQuery = ''
+    orderType: "CREATED_AT",
+    order = "DESC" as "DESC" | "ASC",
+    whereQuery = ""
   ) => {
     return $api.wallet
       .GetPointTransactions(page, count, orderType, order, whereQuery)
@@ -370,9 +370,9 @@ export default class Wallet extends Common {
   public GetTransactions = async (
     page: number,
     count: number,
-    orderType: 'CREATED_AT',
-    order = 'DESC' as 'DESC' | 'ASC',
-    whereQuery = ''
+    orderType: "CREATED_AT",
+    order = "DESC" as "DESC" | "ASC",
+    whereQuery = ""
   ) => {
     return $api.wallet
       .GetTransactions(page, count, orderType, order, whereQuery)
@@ -389,9 +389,9 @@ export default class Wallet extends Common {
     });
   };
 
-  public GetNormalFinancialSummary = async (from = '', to = '') => {
+  public GetNormalFinancialSummary = async (from = "", to = "") => {
     const input: FinancialSummaryInput = {
-      type: 'normal',
+      type: "normal",
       from,
       to,
     };
@@ -441,10 +441,15 @@ export default class Wallet extends Common {
       });
   };
 
-  public GetSmileIdToken = async (verification_type: string) => {
-    return $api.wallet.GetSmileIdToken(verification_type).then((response) => {
-      return response.data?.GetSmileIdToken;
-    });
+  public GetSmileIdToken = async (
+    verification_type: string,
+    user_uuid: string = ""
+  ) => {
+    return $api.wallet
+      .GetSmileIdToken(verification_type, user_uuid)
+      .then((response) => {
+        return response.data?.GetSmileIdToken;
+      });
   };
 
   // Mutations
@@ -458,7 +463,7 @@ export default class Wallet extends Common {
           }
         })
         .catch((error: CombinedError) => {
-          Logic.Common.showError(error, 'Oops!', 'error-alert');
+          Logic.Common.showError(error, "Oops!", "error-alert");
           throw error;
         });
     }
@@ -467,7 +472,7 @@ export default class Wallet extends Common {
   public CreateCrpytoTransfer = async (
     crypto: string,
     network: string,
-    wallet_uuid = ''
+    wallet_uuid = ""
   ) => {
     if (crypto && network) {
       return $api.wallet
@@ -479,7 +484,7 @@ export default class Wallet extends Common {
           }
         })
         .catch((error: CombinedError) => {
-          Logic.Common.showError(error, 'Oops!', 'error-alert');
+          Logic.Common.showError(error, "Oops!", "error-alert");
           throw error;
         });
     }
@@ -495,7 +500,7 @@ export default class Wallet extends Common {
           }
         })
         .catch((error: CombinedError) => {
-          Logic.Common.showError(error, 'Oops!', 'error-alert');
+          Logic.Common.showError(error, "Oops!", "error-alert");
           throw new Error(error.message);
         });
     }
@@ -511,7 +516,7 @@ export default class Wallet extends Common {
           }
         })
         .catch((error: CombinedError) => {
-          Logic.Common.showError(error, 'Oops!', 'error-alert');
+          Logic.Common.showError(error, "Oops!", "error-alert");
           throw new Error(error.message);
         });
     }
@@ -527,7 +532,7 @@ export default class Wallet extends Common {
           }
         })
         .catch((error: CombinedError) => {
-          Logic.Common.showError(error, 'Oops!', 'error-alert');
+          Logic.Common.showError(error, "Oops!", "error-alert");
           throw new Error(error.message);
         });
     }
@@ -545,7 +550,7 @@ export default class Wallet extends Common {
         })
         .catch((error: CombinedError) => {
           Logic.Common.hideLoader();
-          Logic.Common.showError(error, 'Oops!', 'error-alert');
+          Logic.Common.showError(error, "Oops!", "error-alert");
           throw error;
         });
     }
@@ -561,7 +566,7 @@ export default class Wallet extends Common {
           }
         })
         .catch((error: CombinedError) => {
-          Logic.Common.showError(error, 'Oops!', 'error-alert');
+          Logic.Common.showError(error, "Oops!", "error-alert");
           throw new Error(error.message);
         });
     }
@@ -578,7 +583,7 @@ export default class Wallet extends Common {
           }
         })
         .catch((error: CombinedError) => {
-          Logic.Common.showError(error, 'Oops!', 'error-alert');
+          Logic.Common.showError(error, "Oops!", "error-alert");
           throw error;
         });
     }
@@ -588,9 +593,9 @@ export default class Wallet extends Common {
     uuid: string,
     currency: string,
     amount: number,
-    country_code = '',
-    metadata = '',
-    security_pin = ''
+    country_code = "",
+    metadata = "",
+    security_pin = ""
   ) => {
     if (uuid) {
       return $api.wallet
@@ -609,7 +614,7 @@ export default class Wallet extends Common {
           }
         })
         .catch((error: CombinedError) => {
-          Logic.Common.showError(error, 'Oops!', 'error-alert');
+          Logic.Common.showError(error, "Oops!", "error-alert");
           throw error;
         });
     }
@@ -638,8 +643,8 @@ export default class Wallet extends Common {
 
           Logic.Common.showAlert({
             show: true,
-            message: 'Your wallet has been topup successfully!',
-            type: 'success',
+            message: "Your wallet has been topup successfully!",
+            type: "success",
           });
 
           cd_action();
@@ -650,7 +655,7 @@ export default class Wallet extends Common {
         }
       })
       .catch((error: CombinedError) => {
-        Logic.Common.showError(error, 'Oops!', 'error-alert');
+        Logic.Common.showError(error, "Oops!", "error-alert");
         throw new Error(error.message);
       });
   };
@@ -667,7 +672,7 @@ export default class Wallet extends Common {
       })
       .catch((error: CombinedError) => {
         Logic.Common.hideLoader();
-        Logic.Common.showError(error, 'Oops!', 'error-alert');
+        Logic.Common.showError(error, "Oops!", "error-alert");
         throw error;
       });
   };
@@ -676,11 +681,11 @@ export default class Wallet extends Common {
   public GetRecommendedExchangeAds = async (
     page: number,
     count: number,
-    ad_type = 'buy',
-    currency = ''
+    ad_type = "buy",
+    currency = ""
   ): Promise<ExchangeAdPaginator | undefined> => {
     if (!currency) {
-      currency = localStorage.getItem('default_currency') || 'USDC';
+      currency = localStorage.getItem("default_currency") || "USDC";
     }
 
     return $api.wallet
@@ -712,8 +717,8 @@ export default class Wallet extends Common {
       .catch((error: CombinedError) => {
         Logic.Common.showError(
           error,
-          'Failed to fetch recommended exchange ads',
-          'error-alert'
+          "Failed to fetch recommended exchange ads",
+          "error-alert"
         );
         return undefined;
       });
@@ -732,8 +737,8 @@ export default class Wallet extends Common {
       .catch((error: CombinedError) => {
         Logic.Common.showError(
           error,
-          'Failed to fetch P2P payment methods',
-          'error-alert'
+          "Failed to fetch P2P payment methods",
+          "error-alert"
         );
         return undefined;
       });
@@ -742,9 +747,9 @@ export default class Wallet extends Common {
   public GetMyP2pPaymentMethods = async (
     count: number,
     page: number,
-    orderType: 'CREATED_AT' = 'CREATED_AT',
-    order: 'DESC' | 'ASC' = 'DESC',
-    whereQuery = ''
+    orderType: "CREATED_AT" = "CREATED_AT",
+    order: "DESC" | "ASC" = "DESC",
+    whereQuery = ""
   ): Promise<P2pPaymentMethodPaginator | undefined> => {
     return $api.wallet
       .GetP2pPaymentMethods(page, count, orderType, order, whereQuery)
@@ -755,8 +760,8 @@ export default class Wallet extends Common {
       .catch((error: CombinedError) => {
         Logic.Common.showError(
           error,
-          'Failed to fetch P2P payment methods',
-          'error-alert'
+          "Failed to fetch P2P payment methods",
+          "error-alert"
         );
         return undefined;
       });
@@ -774,8 +779,8 @@ export default class Wallet extends Common {
         .catch((error: CombinedError) => {
           Logic.Common.showError(
             error,
-            'Failed to create P2P payment method',
-            'error-alert'
+            "Failed to create P2P payment method",
+            "error-alert"
           );
           throw error;
         });
@@ -794,8 +799,8 @@ export default class Wallet extends Common {
         .catch((error: CombinedError) => {
           Logic.Common.showError(
             error,
-            'Failed to update P2P payment method',
-            'error-alert'
+            "Failed to update P2P payment method",
+            "error-alert"
           );
           throw error;
         });
@@ -814,8 +819,8 @@ export default class Wallet extends Common {
         .catch((error: CombinedError) => {
           Logic.Common.showError(
             error,
-            'Failed to delete P2P payment method',
-            'error-alert'
+            "Failed to delete P2P payment method",
+            "error-alert"
           );
           throw error;
         });
@@ -843,7 +848,7 @@ export default class Wallet extends Common {
       })
       .catch((error: CombinedError) => {
         Logic.Common.hideLoader();
-        Logic.Common.showError(error, 'Oops!', 'error-alert');
+        Logic.Common.showError(error, "Oops!", "error-alert");
         throw error;
       });
   };
@@ -859,8 +864,8 @@ export default class Wallet extends Common {
         if (response.data?.ReleaseP2pFunds) {
           Logic.Common.showAlert({
             show: true,
-            message: 'P2P funds released successfully!',
-            type: 'success',
+            message: "P2P funds released successfully!",
+            type: "success",
           });
           return response.data.ReleaseP2pFunds;
         }
@@ -868,8 +873,8 @@ export default class Wallet extends Common {
       .catch((error: CombinedError) => {
         Logic.Common.showError(
           error,
-          'Failed to release P2P funds',
-          'error-alert'
+          "Failed to release P2P funds",
+          "error-alert"
         );
         throw error;
       });
