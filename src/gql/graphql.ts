@@ -413,7 +413,6 @@ export type CreateOrderInput = {
   isPreorder?: InputMaybe<Scalars['Boolean']>;
   items?: InputMaybe<Array<InputMaybe<OrderItemInput>>>;
   paymentMethod?: InputMaybe<Scalars['String']>;
-  security_pin?: InputMaybe<Scalars['String']>;
   shippingAddress?: InputMaybe<AddressInput>;
 };
 
@@ -1097,6 +1096,7 @@ export type MutationCreateMessageArgs = {
 
 export type MutationCreateOrderArgs = {
   input: CreateOrderInput;
+  security_pin?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -2006,6 +2006,8 @@ export type Query = {
   __typename?: 'Query';
   /** Get commerce sections for homepage (limited results, no pagination) */
   CommerceSections: Array<CommerceSection>;
+  /** Get current app version */
+  CurrentAppVersion: Scalars['String'];
   /** Get featured events */
   FeaturedEvents: ProductPaginator;
   /** Get featured products */

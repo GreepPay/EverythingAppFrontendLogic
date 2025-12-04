@@ -103,6 +103,22 @@ export default class UserApi extends BaseApiService {
     return response;
   };
 
+  public CurrentAppVersion = () => {
+    const requestData = `
+      query CurrentAppVersion {
+        CurrentAppVersion 
+      }
+    `;
+
+    const response: Promise<
+      OperationResult<{
+        CurrentAppVersion: string;
+      }>
+    > = this.query(requestData, {});
+
+    return response;
+  };
+
   public GetSingleUser = (uuid: string) => {
     const requestData = `
       query GetSingleUser($uuid: String!) {

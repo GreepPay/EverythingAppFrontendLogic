@@ -23,6 +23,7 @@ import { Observable } from "./Observable";
 import Echo from "laravel-echo";
 import Pusher from "pusher-js";
 import { FileSharer } from "@byteowls/capacitor-filesharer";
+import { getPlatforms, isPlatform } from "@ionic/vue";
 
 // @ts-ignore
 window.Pusher = Pusher;
@@ -89,6 +90,21 @@ export default class Common {
     actionLabel: "",
     action: () => {},
   });
+
+  public getDeviceType = () => {
+    if (isPlatform("mobileweb")) {
+      return "web";
+    }
+
+    switch (true) {
+      case isPlatform("android"):
+        return "android";
+      case isPlatform("ios"):
+        return "ios";
+      default:
+        return "web";
+    }
+  };
 
   public SetApiUrl = (apiUrl: string) => {
     this.apiUrl = apiUrl;

@@ -21,6 +21,8 @@ export class BaseApiService {
     options: RequestInit,
     onProgress: (progress: number) => void
   ) => {
+    localStorage.setItem("last_activity_period", Date.now().toString());
+
     return new Promise<Response>((resolve, reject) => {
       const xhr = new XMLHttpRequest();
 
@@ -73,6 +75,8 @@ export class BaseApiService {
       this.baseUrl = Logic.Common.apiUrl || "";
     }
 
+    localStorage.setItem("last_activity_period", Date.now().toString());
+
     this.graphqlInstance = createClient({
       url: this.baseUrl,
       fetchOptions: () => {
@@ -82,6 +86,7 @@ export class BaseApiService {
               ? `Bearer ${Logic.Auth.AccessToken}`
               : "",
             app_version: localStorage.getItem("app_version") || "",
+            app_device_type: Logic.Common.getDeviceType(),
             //   requestUuid: Logic.Auth.RequestUuid || '',
           },
         };
@@ -114,6 +119,8 @@ export class BaseApiService {
       this.baseUrl = Logic.Common.apiUrl || "";
     }
 
+    localStorage.setItem("last_activity_period", Date.now().toString());
+
     this.graphqlInstance = createClient({
       url: this.baseUrl,
       fetchOptions: () => {
@@ -123,6 +130,7 @@ export class BaseApiService {
               ? `Bearer ${Logic.Auth.AccessToken}`
               : "",
             app_version: localStorage.getItem("app_version") || "",
+            app_device_type: Logic.Common.getDeviceType(),
             //   requestUuid: Logic.Auth.RequestUuid || '',
           },
         };
@@ -148,6 +156,9 @@ export class BaseApiService {
     if (Logic.Common.apiUrl) {
       this.baseUrl = Logic.Common.apiUrl || "";
     }
+
+    localStorage.setItem("last_activity_period", Date.now().toString());
+
     this.graphqlInstance = createClient({
       url: this.baseUrl,
       fetchOptions: () => {
@@ -157,6 +168,7 @@ export class BaseApiService {
               ? `Bearer ${Logic.Auth.AccessToken}`
               : "",
             app_version: localStorage.getItem("app_version") || "",
+            app_device_type: Logic.Common.getDeviceType(),
             //   requestUuid: Logic.Auth.RequestUuid || '',
           },
         };
@@ -185,6 +197,9 @@ export class BaseApiService {
     if (Logic.Common.apiUrl) {
       this.baseUrl = Logic.Common.apiUrl || "";
     }
+
+    localStorage.setItem("last_activity_period", Date.now().toString());
+
     this.graphqlInstance = createClient({
       url: this.baseUrl,
       fetchOptions: () => {
@@ -194,6 +209,7 @@ export class BaseApiService {
               ? `Bearer ${Logic.Auth.AccessToken}`
               : "",
             app_version: localStorage.getItem("app_version") || "",
+            app_device_type: Logic.Common.getDeviceType(),
             //   requestUuid: Logic.Auth.RequestUuid || '',
           },
         };
