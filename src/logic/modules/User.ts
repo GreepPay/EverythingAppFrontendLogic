@@ -51,6 +51,12 @@ export default class User extends Common {
   public UpdateProfileForm: MutationUpdateProfileArgs | undefined;
 
   // Query
+  public CurrentAppVersion = async (): Promise<string | undefined> => {
+    return $api.user.CurrentAppVersion().then((response) => {
+      return response.data?.CurrentAppVersion;
+    });
+  };
+
   public SearchForUsers = async (query: string) => {
     return $api.user
       .SearchUsers({
