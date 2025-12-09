@@ -223,6 +223,8 @@ export default class WalletsApi extends BaseApiService {
             status
             wallet_balance
             uuid
+            local_amount
+            local_currency
             created_at
             updated_at
           }
@@ -368,6 +370,8 @@ export default class WalletsApi extends BaseApiService {
           updated_at
           uuid
           wallet_balance
+          local_amount
+          local_currency
         }
       }
     `;

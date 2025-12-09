@@ -2431,6 +2431,7 @@ export type QueryGetSingleUserArgs = {
 
 
 export type QueryGetSmileIdTokenArgs = {
+  user_uuid?: InputMaybe<Scalars['String']>;
   verification_type: Scalars['String'];
 };
 

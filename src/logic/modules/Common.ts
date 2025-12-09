@@ -24,6 +24,7 @@ import Echo from "laravel-echo";
 import Pusher from "pusher-js";
 import { FileSharer } from "@byteowls/capacitor-filesharer";
 import { getPlatforms, isPlatform } from "@ionic/vue";
+import { PusherPresenceChannel } from "laravel-echo/dist/channel";
 
 // @ts-ignore
 window.Pusher = Pusher;
@@ -70,6 +71,8 @@ export default class Common {
   public SetRoute = (route: RouteLocationNormalizedLoaded) => {
     this.route = route;
   };
+
+  public activeChannels: Record<string, PusherPresenceChannel> = {};
 
   public loaderSetup: LoaderSetup = reactive({
     show: false,
@@ -774,6 +777,7 @@ export default class Common {
     this.defineReactiveProperty("modalSetup", this.modalSetup);
     this.defineReactiveProperty("alertSetup", this.alertSetup);
     this.defineReactiveProperty("currentLayout", this.currentLayout);
+    this.defineReactiveProperty("activeChannels", this.activeChannels);
   }
 
   protected defineReactiveProperty<T = any>(prop: string, initialValue: T) {
@@ -840,6 +844,29 @@ export default class Common {
     } else {
       showAlertHandler(alertSetup.wait_until_next_alert);
     }
+  };
+
+  public blobToBase64 = (blob: Blob): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64 = (reader.result as string).split(",")[1]; // strip data:application/pdf;base64,
+        resolve(base64);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  };
+
+  public addToActiveChannels = (
+    key: string,
+    channel: PusherPresenceChannel
+  ) => {
+    this.activeChannels[key] = channel;
+  };
+
+  public removeFromActiveChannels = (channelName: string) => {
+    delete this.activeChannels[channelName];
   };
 
   public showError = (
