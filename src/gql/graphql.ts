@@ -413,6 +413,7 @@ export type CreateOrderInput = {
   isPreorder?: InputMaybe<Scalars['Boolean']>;
   items?: InputMaybe<Array<InputMaybe<OrderItemInput>>>;
   paymentMethod?: InputMaybe<Scalars['String']>;
+  referralCode?: InputMaybe<Scalars['String']>;
   shippingAddress?: InputMaybe<AddressInput>;
 };
 
@@ -1992,6 +1993,8 @@ export type Profile = {
   is_security_pin_set: Scalars['Boolean'];
   /** Profile Picture URL (optional) */
   profile_picture?: Maybe<Scalars['String']>;
+  /** Referral Code */
+  referral_code?: Maybe<Scalars['String']>;
   /** Profile Updated At */
   updated_at: Scalars['DateTime'];
   /** User Type: Business, Rider, or Customer */
