@@ -33,6 +33,7 @@ export default class AuthApi extends BaseApiService {
               profile_picture
               is_security_pin_set
               verification_status
+              referral_code
               default_currency
                account_tier {
                 uuid
