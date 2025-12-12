@@ -181,6 +181,13 @@ export default class Wallet extends Common {
     });
   };
 
+  public GetExchangeAd = async (uuid: string) => {
+    return $api.wallet.GetExchangeAd(uuid).then((response) => {
+      this.SingleExchangeAd = response.data?.GetExchangeAd;
+      return this.SingleExchangeAd;
+    });
+  };
+
   public GetManyP2POrders = async (
     page: number,
     count: number,

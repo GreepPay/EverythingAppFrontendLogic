@@ -370,6 +370,7 @@ export type ConversationInput = {
   entity_uuid: Scalars['String'];
   extras?: InputMaybe<Scalars['String']>;
   name: Scalars['String'];
+  stage?: InputMaybe<Scalars['String']>;
 };
 
 export type Coordinates = {
@@ -1087,6 +1088,7 @@ export type MutationCreateCrpytoTransferArgs = {
 
 export type MutationCreateDeliveryOrderArgs = {
   input: CreateDeliveryOrderInput;
+  security_pin?: InputMaybe<Scalars['String']>;
 };
 
 

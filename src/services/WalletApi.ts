@@ -1231,6 +1231,42 @@ export default class WalletsApi extends BaseApiService {
     return response;
   };
 
+  public GetExchangeAd = (uuid: string) => {
+    const requestData = `
+      query GetExchangeAd($uuid: String!) {
+        GetExchangeAd(uuid: $uuid) {
+          uuid
+          business_id
+          address_details
+          from_currency
+          to_currency
+          rate
+          min_amount
+          max_amount
+          payout_address
+          payout_banks
+          status
+          ad_type
+          created_at
+          updated_at
+          business {
+            uuid
+            business_name
+            logo
+          }
+        }
+      }
+    `;
+
+    const response: Promise<
+      OperationResult<{
+        GetExchangeAd: ExchangeAd;
+      }>
+    > = this.query(requestData, { uuid });
+
+    return response;
+  };
+
   public GetP2pPaymentMethods = (
     page: number,
     count: number,
