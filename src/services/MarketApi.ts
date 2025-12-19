@@ -1,5 +1,5 @@
-import { BaseApiService } from "./common/BaseService"
-import { OperationResult } from "urql"
+import { BaseApiService } from "./common/BaseService";
+import { OperationResult } from "urql";
 import {
   BusinessPaginator,
   Business,
@@ -7,7 +7,7 @@ import {
   CreateOrderInput,
   Order,
   BusinessFollowers,
-} from "../gql/graphql"
+} from "../gql/graphql";
 
 export default class MarketApi extends BaseApiService {
   // #region MUTATIONS
@@ -19,22 +19,22 @@ export default class MarketApi extends BaseApiService {
         uuid  
       }
     }
-  `
+  `;
     return this.mutation(requestData, { business_uuid }) as Promise<
       OperationResult<{ FollowBusiness: BusinessFollowers }>
-    >
-  }
+    >;
+  };
 
   public UnfollowBusiness = (business_uuid: string) => {
     const requestData = `
     mutation UnfollowBusiness($business_uuid: String!) {
       UnfollowBusiness(business_uuid: $business_uuid)
     }
-  `
+  `;
     return this.mutation(requestData, { business_uuid }) as Promise<
       OperationResult<{ UnfollowBusiness: any }>
-    >
-  }
+    >;
+  };
 
   // #region QUERIES
 
@@ -83,16 +83,16 @@ export default class MarketApi extends BaseApiService {
         }
       }
     }
-  `
+  `;
 
     const response: Promise<
       OperationResult<{
-        GetMarkets: BusinessPaginator
+        GetMarkets: BusinessPaginator;
       }>
-    > = this.query(requestData, { first, page })
+    > = this.query(requestData, { first, page });
 
-    return response
-  }
+    return response;
+  };
 
   public GetMarketShops = (
     page: number,
@@ -155,19 +155,19 @@ export default class MarketApi extends BaseApiService {
         }
       }
     }
-  `
+  `;
 
     const response: Promise<
       OperationResult<{
-        MarketShops: BusinessPaginator
+        MarketShops: BusinessPaginator;
       }>
     > = this.query(requestData, {
       page,
       count,
-    })
+    });
 
-    return response
-  }
+    return response;
+  };
 
   public GetFeaturedShops = (page: number, count: number) => {
     const requestData = `
@@ -220,19 +220,19 @@ export default class MarketApi extends BaseApiService {
         }
       }
     }
-  `
+  `;
 
     const response: Promise<
       OperationResult<{
-        FeaturedShops: BusinessPaginator
+        FeaturedShops: BusinessPaginator;
       }>
     > = this.query(requestData, {
       page,
       count,
-    })
+    });
 
-    return response
-  }
+    return response;
+  };
 
   public GetSingleBusiness = (uuid: string) => {
     const requestData = `
@@ -267,17 +267,17 @@ export default class MarketApi extends BaseApiService {
             is_customer
           }
         }
-      `
+      `;
     const response: Promise<
       OperationResult<{
-        GetSingleBusiness: Business
+        GetSingleBusiness: Business;
       }>
     > = this.query(requestData, {
       uuid,
-    })
+    });
 
-    return response
-  }
+    return response;
+  };
 
   public GetTypeCommerceSections = (type: string, limit: number) => {
     const requestData = `
@@ -327,6 +327,13 @@ export default class MarketApi extends BaseApiService {
               logo
               banner
               description
+              deliveryAddresses {
+              delivery_location {
+               area
+               country
+               id
+              }
+            }
             }
             sku
             name
@@ -372,17 +379,17 @@ export default class MarketApi extends BaseApiService {
           }
         } 
       }
-    `
+    `;
 
     const response: Promise<
       OperationResult<{ GetTypeCommerceSections: CommerceSection }>
     > = this.query(requestData, {
       type,
       limit,
-    })
+    });
 
-    return response
-  }
+    return response;
+  };
 
   // #endregion QUERIES
 }

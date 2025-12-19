@@ -80,6 +80,17 @@ export type AdditionalIdInput = {
   type: Scalars['String'];
 };
 
+export type Address = {
+  __typename?: 'Address';
+  city: Scalars['String'];
+  country?: Maybe<Scalars['String']>;
+  countryCode: Scalars['String'];
+  line1: Scalars['String'];
+  line2?: Maybe<Scalars['String']>;
+  postalCode: Scalars['String'];
+  region: Scalars['String'];
+};
+
 /** Address input for customer creation */
 export type AddressInput = {
   city?: InputMaybe<Scalars['String']>;
@@ -147,9 +158,13 @@ export type BeneficiaryPaginator = {
 
 export type Billing = {
   __typename?: 'Billing';
-  gracePeriod: Scalars['Int'];
-  interval: BillingInterval;
-  trialDays: Scalars['Int'];
+  city?: Maybe<Scalars['String']>;
+  country?: Maybe<Scalars['String']>;
+  countryCode?: Maybe<Scalars['String']>;
+  line1?: Maybe<Scalars['String']>;
+  line2?: Maybe<Scalars['String']>;
+  postalCode?: Maybe<Scalars['String']>;
+  region?: Maybe<Scalars['String']>;
 };
 
 export enum BillingInterval {
@@ -177,6 +192,7 @@ export type Business = {
   customers?: Maybe<Scalars['Int']>;
   /** Default Currency */
   default_currency?: Maybe<Scalars['String']>;
+  deliveryAddresses?: Maybe<Array<Maybe<DeliveryAddress>>>;
   /** Business description. */
   description?: Maybe<Scalars['String']>;
   eventProducts?: Maybe<Array<Maybe<Product>>>;
@@ -278,6 +294,49 @@ export type BusinessSchedulePaginator = {
   paginatorInfo: PaginatorInfo;
 };
 
+export type Card = {
+  __typename?: 'Card';
+  billing?: Maybe<Billing>;
+  bulkShippingGroupId?: Maybe<Scalars['String']>;
+  configuration?: Maybe<Configuration>;
+  limit: Limit;
+  shipping?: Maybe<Shipping>;
+  status?: Maybe<Scalars['String']>;
+  type: Scalars['String'];
+};
+
+export type CardDetails = {
+  __typename?: 'CardDetails';
+  companyId: Scalars['String'];
+  expirationMonth: Scalars['Int'];
+  expirationYear: Scalars['Int'];
+  id: Scalars['String'];
+  last4: Scalars['String'];
+  limit: Scalars['Float'];
+  status: Scalars['String'];
+  tokenWallets?: Maybe<Array<Scalars['String']>>;
+  type: Scalars['String'];
+  userId: Scalars['String'];
+};
+
+export type CardResponse = {
+  __typename?: 'CardResponse';
+  data: CardResponseData;
+  message: Scalars['String'];
+  success: Scalars['Boolean'];
+};
+
+export type CardResponseData = {
+  __typename?: 'CardResponseData';
+  card: CardDetails;
+  tracking: Tracking;
+};
+
+export enum CardType {
+  Physical = 'PHYSICAL',
+  Virtual = 'VIRTUAL'
+}
+
 /** A category */
 export type Category = {
   __typename?: 'Category';
@@ -324,6 +383,14 @@ export type CommerceSection = {
   type: Scalars['String'];
   /** Section variant (only random since we don't need paginated) */
   variant: Scalars['String'];
+};
+
+export type Configuration = {
+  __typename?: 'Configuration';
+  displayName?: Maybe<Scalars['String']>;
+  productId?: Maybe<Scalars['String']>;
+  productRef?: Maybe<Scalars['String']>;
+  virtualCardArt?: Maybe<Scalars['String']>;
 };
 
 /** A conversation */
@@ -863,6 +930,14 @@ export type GlobalExchangeRate = {
   unit: Scalars['Int'];
 };
 
+export type GreepTransactions = {
+  __typename?: 'GreepTransactions';
+  active_wallets_count: Scalars['Int'];
+  funded_native_tokens: Array<StellarTransaction>;
+  total_unsynced_amount: Scalars['Float'];
+  unsynced_transactions_count: Scalars['Int'];
+};
+
 export type IdTypes = {
   __typename?: 'IdTypes';
   IMAGE?: Maybe<Scalars['Mixed']>;
@@ -900,6 +975,12 @@ export enum LicenseType {
   Perpetual = 'PERPETUAL',
   Single = 'SINGLE'
 }
+
+export type Limit = {
+  __typename?: 'Limit';
+  amount: Scalars['Float'];
+  frequency: Scalars['String'];
+};
 
 export type Location = {
   __typename?: 'Location';
@@ -967,6 +1048,8 @@ export type Mutation = {
   AddParticipant: Conversation;
   /** Confirm withdrawal */
   ConfirmWithdrawal?: Maybe<OffRamp>;
+  /** Create Card */
+  CreateCard?: Maybe<CardResponse>;
   /** Create Crypto Transfer */
   CreateCrpytoTransfer: OffRamp;
   CreateDeliveryOrder?: Maybe<Delivery>;
@@ -979,6 +1062,8 @@ export type Mutation = {
   CreateP2pPaymentMethod: P2pPaymentMethod;
   /** Create a saved account */
   CreateSavedAccount: UserBank;
+  /** Create Card */
+  CreateUserApplication?: Maybe<UserApplicationResponse>;
   /** Delete User */
   DeleteUser: Scalars['Boolean'];
   /** Follow a business by UUID */
@@ -1079,6 +1164,37 @@ export type MutationConfirmWithdrawalArgs = {
 };
 
 
+export type MutationCreateCardArgs = {
+  billingCity?: InputMaybe<Scalars['String']>;
+  billingCountry?: InputMaybe<Scalars['String']>;
+  billingCountryCode?: InputMaybe<Scalars['String']>;
+  billingLine1?: InputMaybe<Scalars['String']>;
+  billingLine2?: InputMaybe<Scalars['String']>;
+  billingPostalCode?: InputMaybe<Scalars['String']>;
+  billingRegion?: InputMaybe<Scalars['String']>;
+  bulkShippingGroupId?: InputMaybe<Scalars['String']>;
+  displayName?: InputMaybe<Scalars['String']>;
+  idempotencyKey: Scalars['String'];
+  limitAmount: Scalars['Float'];
+  limitFrequency?: InputMaybe<Scalars['String']>;
+  productId?: InputMaybe<Scalars['String']>;
+  productRef?: InputMaybe<Scalars['String']>;
+  shippingCity?: InputMaybe<Scalars['String']>;
+  shippingCountryCode?: InputMaybe<Scalars['String']>;
+  shippingFirstName?: InputMaybe<Scalars['String']>;
+  shippingLastName?: InputMaybe<Scalars['String']>;
+  shippingLine1?: InputMaybe<Scalars['String']>;
+  shippingLine2?: InputMaybe<Scalars['String']>;
+  shippingMethod?: InputMaybe<Scalars['String']>;
+  shippingPhoneNumber?: InputMaybe<Scalars['String']>;
+  shippingPostalCode?: InputMaybe<Scalars['String']>;
+  shippingRegion?: InputMaybe<Scalars['String']>;
+  status?: InputMaybe<Scalars['String']>;
+  type?: InputMaybe<Scalars['String']>;
+  virtualCardArt?: InputMaybe<Scalars['String']>;
+};
+
+
 export type MutationCreateCrpytoTransferArgs = {
   crypto: Scalars['String'];
   network: Scalars['String'];
@@ -1130,6 +1246,40 @@ export type MutationCreateSavedAccountArgs = {
   type: Scalars['String'];
   unique_id: Scalars['String'];
   uploads?: InputMaybe<Array<Scalars['Upload']>>;
+};
+
+
+export type MutationCreateUserApplicationArgs = {
+  accountPurpose: Scalars['String'];
+  addressCity: Scalars['String'];
+  addressCountry?: InputMaybe<Scalars['String']>;
+  addressCountryCode: Scalars['String'];
+  addressLine1: Scalars['String'];
+  addressLine2?: InputMaybe<Scalars['String']>;
+  addressPostalCode: Scalars['String'];
+  addressRegion: Scalars['String'];
+  annualSalary: Scalars['String'];
+  birthDate: Scalars['String'];
+  chainId?: InputMaybe<Scalars['String']>;
+  contractAddress?: InputMaybe<Scalars['String']>;
+  countryOfIssue: Scalars['String'];
+  email: Scalars['String'];
+  expectedMonthlyVolume: Scalars['String'];
+  firstName: Scalars['String'];
+  hasExistingDocuments?: InputMaybe<Scalars['Boolean']>;
+  idempotencyKey: Scalars['String'];
+  ipAddress: Scalars['String'];
+  isTermsOfServiceAccepted: Scalars['Boolean'];
+  lastName: Scalars['String'];
+  nationalId: Scalars['String'];
+  occupation: Scalars['String'];
+  phoneCountryCode?: InputMaybe<Scalars['String']>;
+  phoneNumber?: InputMaybe<Scalars['String']>;
+  solanaAddress?: InputMaybe<Scalars['String']>;
+  sourceKey?: InputMaybe<Scalars['String']>;
+  stellarAddress?: InputMaybe<Scalars['String']>;
+  tronAddress?: InputMaybe<Scalars['String']>;
+  walletAddress?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -2061,6 +2211,8 @@ export type Query = {
   GetFinancialSummary: FinancialSummaryResponse;
   /** Get the global exchange rate between two currencies */
   GetGlobalExchangeRate: GlobalExchangeRate;
+  /** Get Greep transaction statistics */
+  GetGreepTransactions: GreepTransactions;
   GetMarkets: BusinessPaginator;
   /** Get a paginated list of P2P orders for the authenticated user */
   GetMyP2POrders: ExchangeOrderPaginator;
@@ -3661,6 +3813,20 @@ export type Sender = {
   phone: Scalars['String'];
 };
 
+export type Shipping = {
+  __typename?: 'Shipping';
+  city?: Maybe<Scalars['String']>;
+  countryCode?: Maybe<Scalars['String']>;
+  firstName?: Maybe<Scalars['String']>;
+  lastName?: Maybe<Scalars['String']>;
+  line1?: Maybe<Scalars['String']>;
+  line2?: Maybe<Scalars['String']>;
+  method?: Maybe<Scalars['String']>;
+  phoneNumber?: Maybe<Scalars['String']>;
+  postalCode?: Maybe<Scalars['String']>;
+  region?: Maybe<Scalars['String']>;
+};
+
 export enum ShippingClass {
   Express = 'EXPRESS',
   Oversized = 'OVERSIZED',
@@ -3686,6 +3852,18 @@ export type Source = {
   accountNumber: Scalars['String'];
   accountType: Scalars['String'];
   networkId: Scalars['String'];
+};
+
+/** Stellar blockchain transaction */
+export type StellarTransaction = {
+  __typename?: 'StellarTransaction';
+  amount: Scalars['Float'];
+  asset_code?: Maybe<Scalars['String']>;
+  created_at: Scalars['DateTime'];
+  destination_account_id: Scalars['String'];
+  id: Scalars['String'];
+  source_account_id: Scalars['String'];
+  transaction_hash: Scalars['String'];
 };
 
 /** A physical store location tied to a business profile. */
@@ -3774,6 +3952,13 @@ export type TicketPaginator = {
   data: Array<Ticket>;
   /** Pagination information about the list of items. */
   paginatorInfo: PaginatorInfo;
+};
+
+export type Tracking = {
+  __typename?: 'Tracking';
+  createdAt: Scalars['DateTime'];
+  idempotencyKey: Scalars['String'];
+  localUserId: Scalars['Int'];
 };
 
 /** A single transaction */
@@ -3905,6 +4090,101 @@ export type User = {
   wallet: Wallet;
 };
 
+export type UserApplication = {
+  __typename?: 'UserApplication';
+  accountPurpose: Scalars['String'];
+  address: Address;
+  annualSalary: Scalars['String'];
+  birthDate: Scalars['String'];
+  chainId?: Maybe<Scalars['String']>;
+  contractAddress?: Maybe<Scalars['String']>;
+  countryOfIssue: Scalars['String'];
+  email: Scalars['String'];
+  expectedMonthlyVolume: Scalars['String'];
+  firstName: Scalars['String'];
+  hasExistingDocuments?: Maybe<Scalars['Boolean']>;
+  id?: Maybe<Scalars['String']>;
+  idempotencyKey: Scalars['String'];
+  ipAddress: Scalars['String'];
+  isTermsOfServiceAccepted: Scalars['Boolean'];
+  lastName: Scalars['String'];
+  nationalId: Scalars['String'];
+  occupation: Scalars['String'];
+  phoneCountryCode?: Maybe<Scalars['String']>;
+  phoneNumber?: Maybe<Scalars['String']>;
+  solanaAddress?: Maybe<Scalars['String']>;
+  sourceKey?: Maybe<Scalars['String']>;
+  stellarAddress?: Maybe<Scalars['String']>;
+  tronAddress?: Maybe<Scalars['String']>;
+  walletAddress?: Maybe<Scalars['String']>;
+};
+
+/** Response for a user application submission */
+export type UserApplicationResponse = {
+  __typename?: 'UserApplicationResponse';
+  data: UserApplicationResponseData;
+  message: Scalars['String'];
+  success: Scalars['Boolean'];
+  timestamp: Scalars['DateTime'];
+};
+
+/** Details of the submitted user application */
+export type UserApplicationResponseApplication = {
+  __typename?: 'UserApplicationResponseApplication';
+  address: Address;
+  applicationCompletionLink?: Maybe<Scalars['String']>;
+  applicationExternalVerificationLink?: Maybe<Scalars['String']>;
+  applicationReason?: Maybe<Scalars['String']>;
+  applicationStatus: Scalars['String'];
+  companyId: Scalars['String'];
+  email: Scalars['String'];
+  firstName: Scalars['String'];
+  id: Scalars['String'];
+  isActive: Scalars['Boolean'];
+  isTermsOfServiceAccepted: Scalars['Boolean'];
+  lastName: Scalars['String'];
+  phoneCountryCode?: Maybe<Scalars['String']>;
+  phoneNumber?: Maybe<Scalars['String']>;
+  solanaAddress?: Maybe<Scalars['String']>;
+  walletAddress?: Maybe<Scalars['String']>;
+};
+
+/** Details of the card created for the user application, if any */
+export type UserApplicationResponseCard = {
+  __typename?: 'UserApplicationResponseCard';
+  created: Scalars['Boolean'];
+  details?: Maybe<CardDetails>;
+};
+
+/** Data associated with a user application response */
+export type UserApplicationResponseData = {
+  __typename?: 'UserApplicationResponseData';
+  application?: Maybe<UserApplicationResponseApplication>;
+  card?: Maybe<UserApplicationResponseCard>;
+  tracking: UserApplicationResponseTracking;
+  transaction: UserApplicationTransactionData;
+};
+
+/** Local tracking information for the user application */
+export type UserApplicationResponseTracking = {
+  __typename?: 'UserApplicationResponseTracking';
+  idempotencyKey: Scalars['String'];
+  submittedAt: Scalars['DateTime'];
+  transactionReference: Scalars['String'];
+  userId: Scalars['Int'];
+};
+
+/** Details of the transaction associated with the user application */
+export type UserApplicationTransactionData = {
+  __typename?: 'UserApplicationTransactionData';
+  amount: Scalars['Float'];
+  currency: Scalars['String'];
+  description: Scalars['String'];
+  reference: Scalars['String'];
+  status: Scalars['String'];
+  type: Scalars['String'];
+};
+
 /** A single beneficiary */
 export type UserBank = {
   __typename?: 'UserBank';
@@ -3977,6 +4257,8 @@ export type VerifyChecksInput = {
 /** A single wallet */
 export type Wallet = {
   __typename?: 'Wallet';
+  /** Blockchain account */
+  blockchain_account_id?: Maybe<Scalars['String']>;
   /** Cash Per Point */
   cash_per_point: Scalars['Float'];
   /** Cash Point Balance */

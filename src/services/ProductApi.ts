@@ -1,11 +1,11 @@
-import { BaseApiService } from "./common/BaseService"
-import { OperationResult } from "urql"
+import { BaseApiService } from "./common/BaseService";
+import { OperationResult } from "urql";
 import {
   Category,
   PaginatorInfo,
   Product,
   ProductPaginator,
-} from "../gql/graphql"
+} from "../gql/graphql";
 
 export default class ProductApi extends BaseApiService {
   // #region QUERIES
@@ -52,6 +52,13 @@ export default class ProductApi extends BaseApiService {
               logo
               banner
               description
+              deliveryAddresses {
+              delivery_location {
+               area
+               country
+               id
+              }
+            }
             }
             sku
             name
@@ -97,18 +104,18 @@ export default class ProductApi extends BaseApiService {
           }
         }
       }
-    `
+    `;
     const response: Promise<
       OperationResult<{
-        GetProducts: ProductPaginator
+        GetProducts: ProductPaginator;
       }>
     > = this.query(requestData, {
       page,
       count,
-    })
+    });
 
-    return response
-  }
+    return response;
+  };
 
   public GetProduct = (uuid: string) => {
     const requestData = `
@@ -125,6 +132,13 @@ export default class ProductApi extends BaseApiService {
             logo
             banner
             description
+            deliveryAddresses {
+              delivery_location {
+               area
+               country
+               id
+              }
+            }
           }
           sku
           name
@@ -169,17 +183,17 @@ export default class ProductApi extends BaseApiService {
           updatedAt
         }
       }
-    `
+    `;
     const response: Promise<
       OperationResult<{
-        GetProduct: Product
+        GetProduct: Product;
       }>
     > = this.query(requestData, {
       uuid,
-    })
+    });
 
-    return response
-  }
+    return response;
+  };
 
   public GetSingleProduct = (where: Record<string, any>) => {
     const requestData = `
@@ -196,6 +210,13 @@ export default class ProductApi extends BaseApiService {
             logo
             banner
             description
+            deliveryAddresses {
+              delivery_location {
+               area
+               country
+               id
+              }
+            }
           }
           sku
           name
@@ -240,16 +261,16 @@ export default class ProductApi extends BaseApiService {
           updatedAt
       }
     }
-  `
+  `;
 
     const response: Promise<
       OperationResult<{
-        GetSingleProduct: Product
+        GetSingleProduct: Product;
       }>
-    > = this.query(requestData, { where })
+    > = this.query(requestData, { where });
 
-    return response
-  }
+    return response;
+  };
 
   public GetCategories = (
     first: number,
@@ -284,19 +305,19 @@ export default class ProductApi extends BaseApiService {
         }
       }
     }
-  `
+  `;
 
     const response: Promise<
       OperationResult<{
         GetCategories: {
-          paginatorInfo: PaginatorInfo
-          data: Category[]
-        }
+          paginatorInfo: PaginatorInfo;
+          data: Category[];
+        };
       }>
-    > = this.query(requestData, { orderBy, first, page })
+    > = this.query(requestData, { orderBy, first, page });
 
-    return response
-  }
+    return response;
+  };
 
   public GetMarketProducts = (
     page: number,
@@ -341,6 +362,13 @@ export default class ProductApi extends BaseApiService {
             logo
             banner
             description
+            deliveryAddresses {
+              delivery_location {
+               area
+               country
+               id
+              }
+            }
             storeLocations {
               uuid
               name
@@ -399,21 +427,21 @@ export default class ProductApi extends BaseApiService {
         }
       }
     }
-  `
+  `;
 
     const response: Promise<
       OperationResult<{
-        MarketProducts: ProductPaginator
+        MarketProducts: ProductPaginator;
       }>
     > = this.query(requestData, {
       page,
       count,
-    })
+    });
 
-    console.log("response", response)
+    console.log("response", response);
 
-    return response
-  }
+    return response;
+  };
 
   public GetFeaturedProducts = (page: number, count: number) => {
     const requestData = `
@@ -447,6 +475,13 @@ export default class ProductApi extends BaseApiService {
             logo
             banner
             description
+            deliveryAddresses {
+              delivery_location {
+               area
+               country
+               id
+              }
+            }
           }
           sku
           name
@@ -492,19 +527,19 @@ export default class ProductApi extends BaseApiService {
         }
       }
     }
-  `
+  `;
 
     const response: Promise<
       OperationResult<{
-        FeaturedProducts: ProductPaginator
+        FeaturedProducts: ProductPaginator;
       }>
     > = this.query(requestData, {
       page,
       count,
-    })
+    });
 
-    return response
-  }
+    return response;
+  };
 
   public GetFeaturedEvents = (page: number, count: number) => {
     const requestData = `
@@ -582,19 +617,19 @@ export default class ProductApi extends BaseApiService {
         }
       }
     }
-  `
+  `;
 
     const response: Promise<
       OperationResult<{
-        FeaturedEvents: ProductPaginator
+        FeaturedEvents: ProductPaginator;
       }>
     > = this.query(requestData, {
       page,
       count,
-    })
+    });
 
-    return response
-  }
+    return response;
+  };
 
   // #endregion QUERIES
 }
