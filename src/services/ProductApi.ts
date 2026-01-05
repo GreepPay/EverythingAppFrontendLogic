@@ -541,6 +541,104 @@ export default class ProductApi extends BaseApiService {
     return response;
   };
 
+  public GetLagosRestaurantProducts = (page: number, count: number) => {
+    const requestData = `
+    query LagosRestaurantProducts(
+      $page: Int!
+      $count: Int!
+    ) {
+      LagosRestaurantProducts(
+        first: $count,
+        page: $page
+      ) {
+        paginatorInfo {
+          count
+          currentPage
+          firstItem
+          hasMorePages
+          lastItem
+          lastPage
+          perPage
+          total
+        }
+        data {
+          uuid
+          id
+          businessId
+          business {
+            id
+            uuid
+            business_name
+            auth_user_id
+            logo
+            banner
+            description
+            deliveryAddresses {
+              delivery_location {
+               area
+               country
+               id
+              }
+            }
+          }
+          sku
+          name
+          slug
+          description
+          price
+          currency
+          taxCode
+          type
+          status
+          variants
+          inventoryCount
+          stockThreshold
+          isBackorderAllowed
+          downloadUrl
+          downloadLimit
+          license
+          fileInfo
+          dimensions
+          weight
+          billingInterval
+          trialPeriodDays
+          gracePeriod
+          renewal
+          national_cuisine
+          national_cuisine_country
+          features
+          eventType
+          eventStartDate
+          eventEndDate
+          venueName
+          eventOnlineUrl
+          eventLocation
+          eventCapacity
+          eventRegisteredCount
+          eventWaitlistEnabled
+          metaTitle
+          metaDescription
+          isVisible
+          images
+          createdAt
+          updatedAt
+        }
+      }
+    }
+  `;
+
+    const response: Promise<
+      OperationResult<{
+        LagosRestaurantProducts: ProductPaginator;
+      }>
+    > = this.query(requestData, {
+      page,
+      count,
+    });
+
+    return response;
+  };
+
   public GetFeaturedEvents = (page: number, count: number) => {
     const requestData = `
     query FeaturedEvents(
