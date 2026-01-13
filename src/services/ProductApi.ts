@@ -99,6 +99,7 @@ export default class ProductApi extends BaseApiService {
             metaDescription
             isVisible
             images
+            tags
             createdAt
             updatedAt 
           }
@@ -421,6 +422,7 @@ export default class ProductApi extends BaseApiService {
           metaTitle
           metaDescription
           isVisible
+          tags
           images
           createdAt
           updatedAt
@@ -522,6 +524,7 @@ export default class ProductApi extends BaseApiService {
           metaDescription
           isVisible
           images
+          tags
           createdAt
           updatedAt
         }

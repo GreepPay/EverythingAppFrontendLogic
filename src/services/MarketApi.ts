@@ -247,24 +247,94 @@ export default class MarketApi extends BaseApiService {
             description
             category
             default_currency
-            user {
-              id
-              uuid
-              first_name
-              last_name
-              username
-              email
-              phone
-              email_verified_at
-              phone_verified_at
-              status 
-              created_at
-              updated_at
-            } 
             website   
             customers
             business_type
             is_customer
+            extra_settings
+            coupons {
+              id
+              uuid
+              type
+              validityInDays
+              currentUserCoupon {
+                uuid
+                currentvalue
+                status
+                expiresAt
+              }
+              status
+              title
+              tagline
+              activationRules
+              rewardRules
+              createdAt
+              updatedAt
+            }
+            recentUserOrders {
+               uuid
+               productItems {
+                 uuid
+                  id
+                  sku
+                  name
+                  slug
+                  description
+                  price
+                  currency
+                  taxCode
+                  type
+                  status
+                  variants
+                  inventoryCount
+                  stockThreshold
+                  isBackorderAllowed
+                  downloadUrl
+                  downloadLimit
+                  license
+                  fileInfo
+                  dimensions
+                  weight
+                  billingInterval
+                  trialPeriodDays
+                  gracePeriod
+                  renewal
+                  national_cuisine
+                  national_cuisine_country
+                  features
+                  eventType
+                  eventStartDate
+                  eventEndDate
+                  venueName
+                  eventOnlineUrl
+                  eventLocation
+                  eventCapacity
+                  eventRegisteredCount
+                  eventWaitlistEnabled
+                  metaTitle
+                  metaDescription
+                  isVisible
+                  images
+                  business {
+                    id
+                    uuid
+                    business_name
+                    auth_user_id
+                    logo
+                    banner
+                    description
+                    deliveryAddresses {
+                      delivery_location {
+                      area
+                      country
+                      id
+                      }
+                    }
+                  }
+                  createdAt
+                  updatedAt
+               }
+            }
           }
         }
       `;

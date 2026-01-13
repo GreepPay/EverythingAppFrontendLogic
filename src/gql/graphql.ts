@@ -188,6 +188,8 @@ export type Business = {
   business_type?: Maybe<Scalars['String']>;
   /** Business category. */
   category?: Maybe<Scalars['String']>;
+  /** Coupons offered by the business */
+  coupons: Array<Coupon>;
   /** Customers */
   customers?: Maybe<Scalars['Int']>;
   /** Default Currency */
@@ -196,6 +198,8 @@ export type Business = {
   /** Business description. */
   description?: Maybe<Scalars['String']>;
   eventProducts?: Maybe<Array<Maybe<Product>>>;
+  /** Extra Settings */
+  extra_settings?: Maybe<Scalars['String']>;
   featuredProduct?: Maybe<Product>;
   /** Number of followers this business has */
   follower_count: Scalars['Int'];
@@ -208,6 +212,8 @@ export type Business = {
   /** Business logo URL. */
   logo?: Maybe<Scalars['String']>;
   products?: Maybe<Array<Maybe<Product>>>;
+  /** Recent user orders for this business */
+  recentUserOrders: Array<Sale>;
   storeLocations?: Maybe<Array<Maybe<StoreLocation>>>;
   /** Attached user */
   user?: Maybe<User>;
@@ -457,6 +463,39 @@ export type CountryInformation = {
   supportedMethods?: Maybe<SupportedMethods>;
 };
 
+/** A coupon */
+export type Coupon = {
+  __typename?: 'Coupon';
+  /** Activation Rules */
+  activationRules?: Maybe<Scalars['String']>;
+  /** Business */
+  business: Business;
+  /** Business ID */
+  businessId: Scalars['Int'];
+  /** Coupon Created At */
+  createdAt: Scalars['String'];
+  /** curreny user coupon */
+  currentUserCoupon?: Maybe<UserCoupon>;
+  /** Unique ID */
+  id: Scalars['Int'];
+  /** Reward Rules */
+  rewardRules?: Maybe<Scalars['String']>;
+  /** Status */
+  status: Scalars['String'];
+  /** Tagline */
+  tagline?: Maybe<Scalars['String']>;
+  /** Title */
+  title?: Maybe<Scalars['String']>;
+  /** Coupon Type */
+  type: Scalars['String'];
+  /** Coupon Updated At */
+  updatedAt: Scalars['String'];
+  /** UUID */
+  uuid: Scalars['String'];
+  /** Validity In Days */
+  validityInDays: Scalars['Int'];
+};
+
 export type CreateDeliveryOrderInput = {
   conversationId?: InputMaybe<Scalars['String']>;
   deliveryAddress: Scalars['String'];
@@ -508,6 +547,44 @@ export type Customer = {
   student_id?: Maybe<Scalars['String']>;
   /** Profile Updated At */
   updated_at: Scalars['DateTime'];
+};
+
+/** A daily liquidity record */
+export type DailyLiquidity = {
+  __typename?: 'DailyLiquidity';
+  /** Liquidity Amount */
+  amount: Scalars['String'];
+  /** Daily Liquidity Created At */
+  created_at: Scalars['DateTime'];
+  /** Currency (default: USDC) */
+  currency: Scalars['String'];
+  /** Extra Data (JSON string) */
+  extra_data?: Maybe<Scalars['String']>;
+  /** Unique ID */
+  id: Scalars['Int'];
+  /** Notes (optional) */
+  notes?: Maybe<Scalars['String']>;
+  /** Daily Liquidity Updated At */
+  updated_at: Scalars['DateTime'];
+  /** The associated user */
+  user?: Maybe<User>;
+  /** User ID */
+  user_id: Scalars['Int'];
+  /** Unique UUID */
+  uuid: Scalars['String'];
+  /** The associated wallet */
+  wallet?: Maybe<Wallet>;
+  /** Wallet ID */
+  wallet_id: Scalars['Int'];
+};
+
+/** A paginated list of DailyLiquidity items. */
+export type DailyLiquidityPaginator = {
+  __typename?: 'DailyLiquidityPaginator';
+  /** A list of DailyLiquidity items. */
+  data: Array<DailyLiquidity>;
+  /** Pagination information about the list of items. */
+  paginatorInfo: PaginatorInfo;
 };
 
 /** A delivery */
@@ -690,6 +767,52 @@ export type Dimensions = {
   height: Scalars['Float'];
   length: Scalars['Float'];
   width: Scalars['Float'];
+};
+
+/** A dispute transaction */
+export type Dispute = {
+  __typename?: 'Dispute';
+  /** Dispute Amount */
+  amount: Scalars['String'];
+  /** Dispute Created At */
+  created_at: Scalars['DateTime'];
+  /** Description (optional) */
+  description?: Maybe<Scalars['String']>;
+  /** Extra Data (JSON string) */
+  extra_data?: Maybe<Scalars['String']>;
+  /** Unique ID */
+  id: Scalars['Int'];
+  /** Notes (optional) */
+  notes?: Maybe<Scalars['String']>;
+  /** Priority (normal, high, urgent) */
+  priority: Scalars['String'];
+  /** Reason for dispute */
+  reason: Scalars['String'];
+  /** Reference (optional) */
+  reference?: Maybe<Scalars['String']>;
+  /** State (active, archived) */
+  state: Scalars['String'];
+  /** Status (open, resolved, rejected) */
+  status: Scalars['String'];
+  /** Transaction ID (optional) */
+  transaction_id?: Maybe<Scalars['Int']>;
+  /** Dispute Updated At */
+  updated_at: Scalars['DateTime'];
+  /** The associated user */
+  user?: Maybe<User>;
+  /** User ID */
+  user_id: Scalars['Int'];
+  /** Unique UUID */
+  uuid: Scalars['String'];
+};
+
+/** A paginated list of Dispute items. */
+export type DisputePaginator = {
+  __typename?: 'DisputePaginator';
+  /** A list of Dispute items. */
+  data: Array<Dispute>;
+  /** Pagination information about the list of items. */
+  paginatorInfo: PaginatorInfo;
 };
 
 export type Download = {
@@ -992,6 +1115,48 @@ export type Location = {
   state?: Maybe<Scalars['String']>;
 };
 
+/** A single lock transaction */
+export type LockTransaction = {
+  __typename?: 'LockTransaction';
+  /** Lock Transaction Amount */
+  amount: Scalars['Float'];
+  /** Lock Transaction Created At */
+  created_at: Scalars['DateTime'];
+  /** Currency (default: 'USDC') */
+  currency: Scalars['String'];
+  /** Credit or Debit: 'credit' or 'debit' */
+  dr_or_cr: Scalars['String'];
+  /** Expiry Date for the lock */
+  expiry_date?: Maybe<Scalars['DateTime']>;
+  /** Extra Data (JSON string) */
+  extra_data?: Maybe<Scalars['String']>;
+  /** Locked Balance */
+  locked_balance: Scalars['Float'];
+  /** Lock Transaction Reference */
+  reference: Scalars['String'];
+  /** State of the lock transaction ('active' or 'archived') */
+  state: Scalars['String'];
+  /** Lock Transaction Status ('default', 'pending', 'successful') */
+  status: Scalars['String'];
+  /** Lock Transaction Updated At */
+  updated_at: Scalars['DateTime'];
+  /** User ID */
+  user_id: Scalars['Int'];
+  /** Unique UUID */
+  uuid: Scalars['String'];
+  /** Wallet ID */
+  wallet_id: Scalars['Int'];
+};
+
+/** A paginated list of LockTransaction items. */
+export type LockTransactionPaginator = {
+  __typename?: 'LockTransactionPaginator';
+  /** A list of LockTransaction items. */
+  data: Array<LockTransaction>;
+  /** Pagination information about the list of items. */
+  paginatorInfo: PaginatorInfo;
+};
+
 /** A message */
 export type Message = {
   __typename?: 'Message';
@@ -1052,7 +1217,11 @@ export type Mutation = {
   CreateCard?: Maybe<CardResponse>;
   /** Create Crypto Transfer */
   CreateCrpytoTransfer: OffRamp;
+  /** Create a daily liquidity record */
+  CreateDailyLiquidity: DailyLiquidity;
   CreateDeliveryOrder?: Maybe<Delivery>;
+  /** Create a new dispute */
+  CreateDispute: Dispute;
   /** Create a message */
   CreateMessage: Message;
   CreateOrder?: Maybe<Order>;
@@ -1064,6 +1233,10 @@ export type Mutation = {
   CreateSavedAccount: UserBank;
   /** Create Card */
   CreateUserApplication?: Maybe<UserApplicationResponse>;
+  /** Delete a daily liquidity record */
+  DeleteDailyLiquidity: Scalars['Boolean'];
+  /** Delete a dispute */
+  DeleteDispute: Scalars['Boolean'];
   /** Delete User */
   DeleteUser: Scalars['Boolean'];
   /** Follow a business by UUID */
@@ -1114,9 +1287,13 @@ export type Mutation = {
   SoftDeleteP2pPaymentMethod: Scalars['Boolean'];
   /** Unfollow a business by UUID */
   UnfollowBusiness: Scalars['Boolean'];
+  /** Update a daily liquidity record */
+  UpdateDailyLiquidity: DailyLiquidity;
   /** Update an existing delivery address */
   UpdateDeliveryAddress: DeliveryAddress;
   UpdateDeliveryStatus?: Maybe<Scalars['Boolean']>;
+  /** Update a dispute */
+  UpdateDispute: Dispute;
   /** Update an existing P2P payment method by UUID */
   UpdateP2pPaymentMethod: P2pPaymentMethod;
   /** Update user password */
@@ -1202,9 +1379,31 @@ export type MutationCreateCrpytoTransferArgs = {
 };
 
 
+export type MutationCreateDailyLiquidityArgs = {
+  amount: Scalars['String'];
+  currency?: InputMaybe<Scalars['String']>;
+  extra_data?: InputMaybe<Scalars['String']>;
+  notes?: InputMaybe<Scalars['String']>;
+  wallet_id: Scalars['Int'];
+};
+
+
 export type MutationCreateDeliveryOrderArgs = {
   input: CreateDeliveryOrderInput;
   security_pin?: InputMaybe<Scalars['String']>;
+};
+
+
+export type MutationCreateDisputeArgs = {
+  amount: Scalars['String'];
+  description?: InputMaybe<Scalars['String']>;
+  extra_data?: InputMaybe<Scalars['String']>;
+  notes?: InputMaybe<Scalars['String']>;
+  priority?: InputMaybe<Scalars['String']>;
+  reason: Scalars['String'];
+  reference?: InputMaybe<Scalars['String']>;
+  status?: InputMaybe<Scalars['String']>;
+  transaction_id?: InputMaybe<Scalars['Int']>;
 };
 
 
@@ -1280,6 +1479,16 @@ export type MutationCreateUserApplicationArgs = {
   stellarAddress?: InputMaybe<Scalars['String']>;
   tronAddress?: InputMaybe<Scalars['String']>;
   walletAddress?: InputMaybe<Scalars['String']>;
+};
+
+
+export type MutationDeleteDailyLiquidityArgs = {
+  id: Scalars['Int'];
+};
+
+
+export type MutationDeleteDisputeArgs = {
+  id: Scalars['Int'];
 };
 
 
@@ -1431,6 +1640,15 @@ export type MutationUnfollowBusinessArgs = {
 };
 
 
+export type MutationUpdateDailyLiquidityArgs = {
+  amount?: InputMaybe<Scalars['String']>;
+  currency?: InputMaybe<Scalars['String']>;
+  extra_data?: InputMaybe<Scalars['String']>;
+  id: Scalars['Int'];
+  notes?: InputMaybe<Scalars['String']>;
+};
+
+
 export type MutationUpdateDeliveryAddressArgs = {
   delivery_location_id?: InputMaybe<Scalars['String']>;
   description?: InputMaybe<Scalars['String']>;
@@ -1444,6 +1662,17 @@ export type MutationUpdateDeliveryAddressArgs = {
 
 export type MutationUpdateDeliveryStatusArgs = {
   input: UpdateDeliveryStatusInput;
+};
+
+
+export type MutationUpdateDisputeArgs = {
+  description?: InputMaybe<Scalars['String']>;
+  extra_data?: InputMaybe<Scalars['String']>;
+  id: Scalars['Int'];
+  notes?: InputMaybe<Scalars['String']>;
+  priority?: InputMaybe<Scalars['String']>;
+  reason?: InputMaybe<Scalars['String']>;
+  status?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -2066,7 +2295,7 @@ export type Product = {
   /** Stock Threshold */
   stockThreshold?: Maybe<Scalars['Int']>;
   /** Tags */
-  tags?: Maybe<Array<Maybe<Scalars['String']>>>;
+  tags?: Maybe<Scalars['String']>;
   /** Tax Code */
   taxCode?: Maybe<Scalars['String']>;
   /** Trial Period Days */
@@ -2192,6 +2421,8 @@ export type Query = {
   GetConversation?: Maybe<Conversation>;
   /** Get country information for verification */
   GetCountryInformation: CountryInformation;
+  /** Get a single daily liquidity record by ID */
+  GetDailyLiquidity?: Maybe<DailyLiquidity>;
   GetDeliveries: DeliveryPaginator;
   /** Get a delivery address by UUID */
   GetDeliveryAddress?: Maybe<DeliveryAddress>;
@@ -2201,6 +2432,8 @@ export type Query = {
   GetDeliveryLocations: DeliveryLocationPaginator;
   /** Get delivery pricing between two locations */
   GetDeliveryPricing?: Maybe<DeliveryPricing>;
+  /** Get a single dispute by ID */
+  GetDispute?: Maybe<Dispute>;
   /** Get an exchange ads */
   GetExchangeAd?: Maybe<ExchangeAd>;
   /** Get Exchange Ads */
@@ -2213,7 +2446,13 @@ export type Query = {
   GetGlobalExchangeRate: GlobalExchangeRate;
   /** Get Greep transaction statistics */
   GetGreepTransactions: GreepTransactions;
+  /** Get many lock transactions - paginated list of lock transactions for the authenticated user */
+  GetLockTransactions: LockTransactionPaginator;
   GetMarkets: BusinessPaginator;
+  /** Get a paginated list of daily liquidity records for the authenticated user */
+  GetMyDailyLiquidity: DailyLiquidityPaginator;
+  /** Get a paginated list of disputes for the authenticated user */
+  GetMyDisputes: DisputePaginator;
   /** Get a paginated list of P2P orders for the authenticated user */
   GetMyP2POrders: ExchangeOrderPaginator;
   /** Get a paginated list of P2P payment methods for the authenticated user */
@@ -2250,6 +2489,8 @@ export type Query = {
   /** Get Single business */
   GetSingleBusiness?: Maybe<Business>;
   GetSingleDelivery?: Maybe<Delivery>;
+  /** Get a single lock transaction by UUID */
+  GetSingleLockTransaction?: Maybe<LockTransaction>;
   /** Get a single point transaction by UUID */
   GetSinglePointTransaction?: Maybe<PointTransaction>;
   /** Get a Ticket by UUID */
@@ -2270,6 +2511,8 @@ export type Query = {
   GetWithdrawInfo: WithdrawInfo;
   /** Get yellow card networks */
   GetYellowCardNetwork: Array<YellowcardNetwork>;
+  /** Get lagos restuarant products */
+  LagosRestaurantProducts: ProductPaginator;
   /** Get market events */
   MarketProducts: ProductPaginator;
   /** Get market shops */
@@ -2373,6 +2616,11 @@ export type QueryGetCountryInformationArgs = {
 };
 
 
+export type QueryGetDailyLiquidityArgs = {
+  id: Scalars['Int'];
+};
+
+
 export type QueryGetDeliveriesArgs = {
   first: Scalars['Int'];
   orderBy?: InputMaybe<Array<QueryGetDeliveriesOrderByOrderByClause>>;
@@ -2406,6 +2654,11 @@ export type QueryGetDeliveryPricingArgs = {
 };
 
 
+export type QueryGetDisputeArgs = {
+  id: Scalars['Int'];
+};
+
+
 export type QueryGetExchangeAdArgs = {
   uuid: Scalars['String'];
 };
@@ -2436,11 +2689,35 @@ export type QueryGetGlobalExchangeRateArgs = {
 };
 
 
+export type QueryGetLockTransactionsArgs = {
+  first: Scalars['Int'];
+  orderBy?: InputMaybe<Array<QueryGetLockTransactionsOrderByOrderByClause>>;
+  page?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<QueryGetLockTransactionsWhereWhereConditions>;
+};
+
+
 export type QueryGetMarketsArgs = {
   first: Scalars['Int'];
   orderBy?: InputMaybe<Array<QueryGetMarketsOrderByOrderByClause>>;
   page?: InputMaybe<Scalars['Int']>;
   where?: InputMaybe<QueryGetMarketsWhereWhereConditions>;
+};
+
+
+export type QueryGetMyDailyLiquidityArgs = {
+  first: Scalars['Int'];
+  orderBy?: InputMaybe<Array<QueryGetMyDailyLiquidityOrderByOrderByClause>>;
+  page?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<QueryGetMyDailyLiquidityWhereWhereConditions>;
+};
+
+
+export type QueryGetMyDisputesArgs = {
+  first: Scalars['Int'];
+  orderBy?: InputMaybe<Array<QueryGetMyDisputesOrderByOrderByClause>>;
+  page?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<QueryGetMyDisputesWhereWhereConditions>;
 };
 
 
@@ -2567,6 +2844,11 @@ export type QueryGetSingleDeliveryArgs = {
 };
 
 
+export type QueryGetSingleLockTransactionArgs = {
+  uuid: Scalars['String'];
+};
+
+
 export type QueryGetSinglePointTransactionArgs = {
   uuid: Scalars['String'];
 };
@@ -2623,6 +2905,15 @@ export type QueryGetWithdrawInfoArgs = {
 
 export type QueryGetYellowCardNetworkArgs = {
   country_code: Scalars['String'];
+};
+
+
+export type QueryLagosRestaurantProductsArgs = {
+  first: Scalars['Int'];
+  orderBy?: InputMaybe<Array<QueryLagosRestaurantProductsOrderByOrderByClause>>;
+  page?: InputMaybe<Scalars['Int']>;
+  status?: InputMaybe<Scalars['String']>;
+  where?: InputMaybe<QueryLagosRestaurantProductsWhereWhereConditions>;
 };
 
 
@@ -3038,6 +3329,58 @@ export type QueryGetExchangeAdsWhereWhereConditionsRelation = {
   relation: Scalars['String'];
 };
 
+/** Allowed column names for Query.GetLockTransactions.orderBy. */
+export enum QueryGetLockTransactionsOrderByColumn {
+  CreatedAt = 'CREATED_AT'
+}
+
+/** Order by clause for Query.GetLockTransactions.orderBy. */
+export type QueryGetLockTransactionsOrderByOrderByClause = {
+  /** The column that is used for ordering. */
+  column: QueryGetLockTransactionsOrderByColumn;
+  /** The direction that is used for ordering. */
+  order: SortOrder;
+};
+
+/** Allowed column names for Query.GetLockTransactions.where. */
+export enum QueryGetLockTransactionsWhereColumn {
+  Amount = 'AMOUNT',
+  CreatedAt = 'CREATED_AT',
+  Currency = 'CURRENCY',
+  DrOrCr = 'DR_OR_CR',
+  ExpiryDate = 'EXPIRY_DATE',
+  Reference = 'REFERENCE',
+  Status = 'STATUS'
+}
+
+/** Dynamic WHERE conditions for the `where` argument of the query `GetLockTransactions`. */
+export type QueryGetLockTransactionsWhereWhereConditions = {
+  /** A set of conditions that requires all conditions to match. */
+  AND?: InputMaybe<Array<QueryGetLockTransactionsWhereWhereConditions>>;
+  /** Check whether a relation exists. Extra conditions or a minimum amount can be applied. */
+  HAS?: InputMaybe<QueryGetLockTransactionsWhereWhereConditionsRelation>;
+  /** A set of conditions that requires at least one condition to match. */
+  OR?: InputMaybe<Array<QueryGetLockTransactionsWhereWhereConditions>>;
+  /** The column that is used for the condition. */
+  column?: InputMaybe<QueryGetLockTransactionsWhereColumn>;
+  /** The operator that is used for the condition. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The value that is used for the condition. */
+  value?: InputMaybe<Scalars['Mixed']>;
+};
+
+/** Dynamic HAS conditions for WHERE conditions for the `where` argument of the query `GetLockTransactions`. */
+export type QueryGetLockTransactionsWhereWhereConditionsRelation = {
+  /** The amount to test. */
+  amount?: InputMaybe<Scalars['Int']>;
+  /** Additional condition logic. */
+  condition?: InputMaybe<QueryGetLockTransactionsWhereWhereConditions>;
+  /** The comparison operator to test against the amount. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The relation that is checked. */
+  relation: Scalars['String'];
+};
+
 /** Allowed column names for Query.GetMarkets.orderBy. */
 export enum QueryGetMarketsOrderByColumn {
   CreatedAt = 'CREATED_AT'
@@ -3079,6 +3422,108 @@ export type QueryGetMarketsWhereWhereConditionsRelation = {
   amount?: InputMaybe<Scalars['Int']>;
   /** Additional condition logic. */
   condition?: InputMaybe<QueryGetMarketsWhereWhereConditions>;
+  /** The comparison operator to test against the amount. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The relation that is checked. */
+  relation: Scalars['String'];
+};
+
+/** Allowed column names for Query.GetMyDailyLiquidity.orderBy. */
+export enum QueryGetMyDailyLiquidityOrderByColumn {
+  CreatedAt = 'CREATED_AT',
+  UpdatedAt = 'UPDATED_AT'
+}
+
+/** Order by clause for Query.GetMyDailyLiquidity.orderBy. */
+export type QueryGetMyDailyLiquidityOrderByOrderByClause = {
+  /** The column that is used for ordering. */
+  column: QueryGetMyDailyLiquidityOrderByColumn;
+  /** The direction that is used for ordering. */
+  order: SortOrder;
+};
+
+/** Allowed column names for Query.GetMyDailyLiquidity.where. */
+export enum QueryGetMyDailyLiquidityWhereColumn {
+  Amount = 'AMOUNT',
+  CreatedAt = 'CREATED_AT',
+  Currency = 'CURRENCY',
+  UpdatedAt = 'UPDATED_AT',
+  WalletId = 'WALLET_ID'
+}
+
+/** Dynamic WHERE conditions for the `where` argument of the query `GetMyDailyLiquidity`. */
+export type QueryGetMyDailyLiquidityWhereWhereConditions = {
+  /** A set of conditions that requires all conditions to match. */
+  AND?: InputMaybe<Array<QueryGetMyDailyLiquidityWhereWhereConditions>>;
+  /** Check whether a relation exists. Extra conditions or a minimum amount can be applied. */
+  HAS?: InputMaybe<QueryGetMyDailyLiquidityWhereWhereConditionsRelation>;
+  /** A set of conditions that requires at least one condition to match. */
+  OR?: InputMaybe<Array<QueryGetMyDailyLiquidityWhereWhereConditions>>;
+  /** The column that is used for the condition. */
+  column?: InputMaybe<QueryGetMyDailyLiquidityWhereColumn>;
+  /** The operator that is used for the condition. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The value that is used for the condition. */
+  value?: InputMaybe<Scalars['Mixed']>;
+};
+
+/** Dynamic HAS conditions for WHERE conditions for the `where` argument of the query `GetMyDailyLiquidity`. */
+export type QueryGetMyDailyLiquidityWhereWhereConditionsRelation = {
+  /** The amount to test. */
+  amount?: InputMaybe<Scalars['Int']>;
+  /** Additional condition logic. */
+  condition?: InputMaybe<QueryGetMyDailyLiquidityWhereWhereConditions>;
+  /** The comparison operator to test against the amount. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The relation that is checked. */
+  relation: Scalars['String'];
+};
+
+/** Allowed column names for Query.GetMyDisputes.orderBy. */
+export enum QueryGetMyDisputesOrderByColumn {
+  CreatedAt = 'CREATED_AT',
+  UpdatedAt = 'UPDATED_AT'
+}
+
+/** Order by clause for Query.GetMyDisputes.orderBy. */
+export type QueryGetMyDisputesOrderByOrderByClause = {
+  /** The column that is used for ordering. */
+  column: QueryGetMyDisputesOrderByColumn;
+  /** The direction that is used for ordering. */
+  order: SortOrder;
+};
+
+/** Allowed column names for Query.GetMyDisputes.where. */
+export enum QueryGetMyDisputesWhereColumn {
+  CreatedAt = 'CREATED_AT',
+  Priority = 'PRIORITY',
+  Reason = 'REASON',
+  Status = 'STATUS',
+  UpdatedAt = 'UPDATED_AT'
+}
+
+/** Dynamic WHERE conditions for the `where` argument of the query `GetMyDisputes`. */
+export type QueryGetMyDisputesWhereWhereConditions = {
+  /** A set of conditions that requires all conditions to match. */
+  AND?: InputMaybe<Array<QueryGetMyDisputesWhereWhereConditions>>;
+  /** Check whether a relation exists. Extra conditions or a minimum amount can be applied. */
+  HAS?: InputMaybe<QueryGetMyDisputesWhereWhereConditionsRelation>;
+  /** A set of conditions that requires at least one condition to match. */
+  OR?: InputMaybe<Array<QueryGetMyDisputesWhereWhereConditions>>;
+  /** The column that is used for the condition. */
+  column?: InputMaybe<QueryGetMyDisputesWhereColumn>;
+  /** The operator that is used for the condition. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The value that is used for the condition. */
+  value?: InputMaybe<Scalars['Mixed']>;
+};
+
+/** Dynamic HAS conditions for WHERE conditions for the `where` argument of the query `GetMyDisputes`. */
+export type QueryGetMyDisputesWhereWhereConditionsRelation = {
+  /** The amount to test. */
+  amount?: InputMaybe<Scalars['Int']>;
+  /** Additional condition logic. */
+  condition?: InputMaybe<QueryGetMyDisputesWhereWhereConditions>;
   /** The comparison operator to test against the amount. */
   operator?: InputMaybe<SqlOperator>;
   /** The relation that is checked. */
@@ -3586,6 +4031,62 @@ export type QueryGetTransactionsWhereWhereConditionsRelation = {
   amount?: InputMaybe<Scalars['Int']>;
   /** Additional condition logic. */
   condition?: InputMaybe<QueryGetTransactionsWhereWhereConditions>;
+  /** The comparison operator to test against the amount. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The relation that is checked. */
+  relation: Scalars['String'];
+};
+
+/** Allowed column names for Query.LagosRestaurantProducts.orderBy. */
+export enum QueryLagosRestaurantProductsOrderByColumn {
+  CreatedAt = 'CREATED_AT',
+  Price = 'PRICE',
+  UpdatedAt = 'UPDATED_AT'
+}
+
+/** Order by clause for Query.LagosRestaurantProducts.orderBy. */
+export type QueryLagosRestaurantProductsOrderByOrderByClause = {
+  /** The column that is used for ordering. */
+  column: QueryLagosRestaurantProductsOrderByColumn;
+  /** The direction that is used for ordering. */
+  order: SortOrder;
+};
+
+/** Allowed column names for Query.LagosRestaurantProducts.where. */
+export enum QueryLagosRestaurantProductsWhereColumn {
+  BusinessId = 'BUSINESS_ID',
+  CreatedAt = 'CREATED_AT',
+  Currency = 'CURRENCY',
+  Name = 'NAME',
+  Price = 'PRICE',
+  Slug = 'SLUG',
+  Status = 'STATUS',
+  Type = 'TYPE',
+  UpdatedAt = 'UPDATED_AT'
+}
+
+/** Dynamic WHERE conditions for the `where` argument of the query `LagosRestaurantProducts`. */
+export type QueryLagosRestaurantProductsWhereWhereConditions = {
+  /** A set of conditions that requires all conditions to match. */
+  AND?: InputMaybe<Array<QueryLagosRestaurantProductsWhereWhereConditions>>;
+  /** Check whether a relation exists. Extra conditions or a minimum amount can be applied. */
+  HAS?: InputMaybe<QueryLagosRestaurantProductsWhereWhereConditionsRelation>;
+  /** A set of conditions that requires at least one condition to match. */
+  OR?: InputMaybe<Array<QueryLagosRestaurantProductsWhereWhereConditions>>;
+  /** The column that is used for the condition. */
+  column?: InputMaybe<QueryLagosRestaurantProductsWhereColumn>;
+  /** The operator that is used for the condition. */
+  operator?: InputMaybe<SqlOperator>;
+  /** The value that is used for the condition. */
+  value?: InputMaybe<Scalars['Mixed']>;
+};
+
+/** Dynamic HAS conditions for WHERE conditions for the `where` argument of the query `LagosRestaurantProducts`. */
+export type QueryLagosRestaurantProductsWhereWhereConditionsRelation = {
+  /** The amount to test. */
+  amount?: InputMaybe<Scalars['Int']>;
+  /** Additional condition logic. */
+  condition?: InputMaybe<QueryLagosRestaurantProductsWhereWhereConditions>;
   /** The comparison operator to test against the amount. */
   operator?: InputMaybe<SqlOperator>;
   /** The relation that is checked. */
@@ -4215,6 +4716,31 @@ export type UserBankPaginator = {
   data: Array<UserBank>;
   /** Pagination information about the list of items. */
   paginatorInfo: PaginatorInfo;
+};
+
+/** A user coupon */
+export type UserCoupon = {
+  __typename?: 'UserCoupon';
+  /** Auth User ID */
+  authUserId: Scalars['Int'];
+  /** Coupon */
+  coupon: Coupon;
+  /** Coupon ID */
+  couponId: Scalars['Int'];
+  /** User Coupon Created At */
+  createdAt: Scalars['String'];
+  /** Current Value */
+  currentvalue: Scalars['String'];
+  /** Expires At */
+  expiresAt: Scalars['String'];
+  /** Unique ID */
+  id: Scalars['Int'];
+  /** Status */
+  status: Scalars['String'];
+  /** User Coupon Updated At */
+  updatedAt: Scalars['String'];
+  /** UUID */
+  uuid: Scalars['String'];
 };
 
 /** A single verification */
